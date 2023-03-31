@@ -1,32 +1,21 @@
-# Tab Layout Plugin
+# Filament Tree
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/solution-forest/tab-layout-plugin.svg?style=flat-square)](https://packagist.org/packages/solution-forest/tab-layout-plugin)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/solution-forest/tab-layout-plugin/run-tests?label=tests)](https://github.com/solution-forest/tab-layout-plugin/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/solution-forest/tab-layout-plugin/Check%20&%20fix%20styling?label=code%20style)](https://github.com/solution-forest/tab-layout-plugin/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/tab-layout-plugin.svg?style=flat-square)](https://packagist.org/packages/solution-forest/tab-layout-plugin)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/solution-forest/filament-tree/run-tests?label=tests)](https://github.com/solution-forest/filament-tree/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/solution-forest/filament-tree/Check%20&%20fix%20styling?label=code%20style)](https://github.com/solution-forest/filament-tree/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 
-This is a tab layout plugin for Filament Admin
+This is a filament tree plugin for Filament Admin
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require solution-forest/tab-layout-plugin
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="tab-layout-plugin-views"
+composer require solution-forest/filament-tree
 ```
 
 ## Usage
-
-To build `Tab` widget: 
-```php
-php artisan make:filament-tab-widget DummyTabs
-```
 
 ## Testing
 
