@@ -23,8 +23,6 @@ class ViewAction extends Action
 
         $this->modalHeading(fn (): string => __('filament-support::actions/view.single.modal.heading', ['label' => $this->getRecordTitle()]));
 
-        dd($this, $this->getRecordTitle());
-
         $this->modalActions(fn (): array => array_merge(
             $this->getExtraModalActions(),
             [$this->getModalCancelAction()->label(__('filament-support::actions/view.single.modal.actions.close.label'))],

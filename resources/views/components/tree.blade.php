@@ -60,21 +60,13 @@
     $action = $this->getMountedTreeAction();
 @endphp
 @if ($action)
-@php
-    ray([
-        'action' => $action,
-        'heading' => $action->getModalHeading(),
-        'subheading' => $action->getModalSubheading(),
-        'modalContent' => $action->getModalContent(),
-    ]);
-@endphp
     <x-filament-tree::modal
         :id="$this->id . '-tree-action'"
         :wire:key="$action ? $this->id . '.tree.actions.' . $action->getName() . '.modal' : null"
-        {{-- :visible="filled($action)" --}}
-        {{-- :width="$action?->getModalWidth()" --}}
-        {{-- :slide-over="$action?->isModalSlideOver()" --}}
-        {{-- :close-by-clicking-away="$action?->isModalClosedByClickingAway()" --}}
+        :visible="filled($action)"
+        :width="$action?->getModalWidth()"
+        :slide-over="$action?->isModalSlideOver()"
+        :close-by-clicking-away="$action?->isModalClosedByClickingAway()"
         display-classes="block"
         x-init="livewire = $wire.__instance"
         x-on:modal-closed.stop="
@@ -117,21 +109,18 @@
         {{ $action->getModalContent() }}
 
         @if ($action->hasFormSchema())
-            {{ $this->getMountedActionForm() }}
+            {{ $tree->getMountedActionForm() }}
         @endif
-
-        <span>Test</span>
 
         {{ $action->getModalFooter() }}
 
         @if (count($action->getModalActions()))
             <x-slot name="footer">
-                TODO:: Footer action
-                {{-- <x-tables::modal.actions :full-width="$action->isModalCentered()">
+                <x-tables::modal.actions :full-width="$action->isModalCentered()">
                     @foreach ($action->getModalActions() as $modalAction)
                         {{ $modalAction }}
                     @endforeach
-                </x-tables::modal.actions> --}}
+                </x-tables::modal.actions>
             </x-slot>
         @endif
     </x-filament-tree::modal>

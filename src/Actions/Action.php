@@ -88,8 +88,6 @@ class Action extends BaseAction implements Groupable, HasRecord
     {
         $record ??= $this->getRecord();
 
-        dd($record, $this);
-
         return $this->getCustomRecordTitle($record) ?? $this->getLivewire()->getTreeRecordTitle($record);
     }
 

@@ -3,6 +3,7 @@
 namespace SolutionForest\FilamentTree\Concern;
 
 use Closure;
+use Filament\Forms\ComponentContainer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use SolutionForest\FilamentTree\Components\Tree;
@@ -23,10 +24,10 @@ trait InteractWithTree
     {
         $this->tree = $this->getTree();
 
-        $this->tree = $this->getTree()->configureUsing(
-            Closure::fromCallable([$this, 'tree']),
-            fn () => $this->tree($this->tree),
-        );
+        // $this->tree = $this->getTree()->configureUsing(
+        //     Closure::fromCallable([static::class, 'tree']),
+        //     fn () => $this->tree($this->tree),
+        // );
 
         $this->cacheTreeActions();
         $this->cacheTreeEmptyStateActions();

@@ -19,7 +19,7 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected static string $model;
 
-    protected function tree(Tree $tree): Tree
+    public static function tree(Tree $tree): Tree
     {
         return $tree;
     }
@@ -87,11 +87,15 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected function configureDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
     {
+        $action->tree($this->getCachedTree());
+
         return $action;
     }
 
     protected function configureEditAction(Actions\EditAction $action): Actions\EditAction
     {
+        $action->tree($this->getCachedTree());
+
         $schema = $this->getEditFormSchema();
 
         if (empty($schema)) {
@@ -105,6 +109,8 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected function configureViewAction(Actions\ViewAction $action): Actions\ViewAction
     {
+        $action->tree($this->getCachedTree());
+        
         $schema = $this->getViewFormSchema();
 
         if (empty($schema)) {

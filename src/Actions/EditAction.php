@@ -35,19 +35,18 @@ class EditAction extends Action
 
         $this->iconButton();
 
-        // $this->mountUsing(function (ComponentContainer $form, Model $record): void {
-        $this->mountUsing(function ($form, $record): void {
-            dd($record, $form, $this);
-            // $data = $record->attributesToArray();
+        $this->mountUsing(function (ComponentContainer $form, Model $record): void {
+            $data = $record->attributesToArray();
 
-            // if ($this->mutateRecordDataUsing) {
-            //     $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data]);
-            // }
+            if ($this->mutateRecordDataUsing) {
+                $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data]);
+            }
 
-            // $form->fill($data);
+            $form->fill($data);
         });
 
         $this->action(function (): void {
+            dd($this);
             $this->process(function (array $data, Model $record) {
                 dd($data, $record);
 
