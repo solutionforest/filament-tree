@@ -3,7 +3,7 @@
 namespace SolutionForest\FilamentTree\Concern;
 
 use Closure;
-use Filament\Forms\ComponentContainer;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use SolutionForest\FilamentTree\Components\Tree;
@@ -23,11 +23,10 @@ trait InteractWithTree
     public function bootedInteractWithTree()
     {
         $this->tree = $this->getTree();
-
-        // $this->tree = $this->getTree()->configureUsing(
-        //     Closure::fromCallable([static::class, 'tree']),
-        //     fn () => $this->tree($this->tree),
-        // );
+        $this->tree = $this->tree->configureUsing(
+            Closure::fromCallable([static::class, 'tree']),
+            fn () => static::tree($this->tree)->maxDepth(static::getMaxDepth()),
+        );
 
         $this->cacheTreeActions();
         $this->cacheTreeEmptyStateActions();
@@ -55,18 +54,18 @@ trait InteractWithTree
         return Tree::make($this);
     }
 
-    protected function getInteractsWithTreeForms(): array
-    {
-        return $this->getTreeForms();
-    }
+    // protected function getInteractsWithTreeForms(): array
+    // {
+    //     return $this->getTreeForms();
+    // }
 
-    protected function getTreeForms(): array
-    {
-        ray(__METHOD__, $this);
-        return [
-            'mountedTreeActionForm' => $this->getMountedTreeActionForm(),
-        ];
-    }
+    // protected function getTreeForms(): array
+    // {
+    //     ray(__METHOD__, $this);
+    //     return [
+    //         'mountedTreeActionForm' => $this->getMountedTreeActionForm(),
+    //     ];
+    // }
 
     public function getTreeRecordTitle(?Model $record = null): string
     {
@@ -85,7 +84,7 @@ trait InteractWithTree
         if ($list) {
             $tree = $this->getCachedTree();
 
-            $records = $tree->getRecords()->keyBy(fn ($record) => $record->getAttributeValue($record->getKeyName()));
+            $records = $this->getRecords()->keyBy(fn ($record) => $record->getAttributeValue($record->getKeyName()));
 
             $unnestedArr = [];
             $this->unnestArray($unnestedArr, $list, Utils::defaultParentId());
@@ -102,9 +101,15 @@ trait InteractWithTree
                         $model->{$parentColumnName} = $newParentId;
                         $model->{$orderColumnName} = $newOrder;
                         if ($model->isDirty([$parentColumnName, $orderColumnName])) {
+                            ray($model);
                             $model->save();
 
                             $needReload = true;
+                            
+                            Notification::make()
+                                ->success()
+                                ->title(__('filament-support::actions/edit.single.messages.saved'))
+                                ->send();
                         }
                     }
                 });

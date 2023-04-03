@@ -2,7 +2,7 @@
  * Nestable
  */
 
-.dd {
+ .dd {
     position: relative;
     display: block;
     margin: 0;
@@ -34,7 +34,7 @@
     line-height: 20px;
 }
 .dd-handle {
-    display: block;
+    /* display: block;
     height: 30px;
     margin: 5px 0;
     padding: 5px 10px;
@@ -44,11 +44,11 @@
     border: 1px solid #ccc;
     background: #fafafa;
     border-radius: 3px;
-    box-sizing: border-box;
+    box-sizing: border-box; */
 }
 .dd-handle:hover {
-    color: #2ea8e5;
-    background: #fff;
+    /* color: #2ea8e5;
+    background: #fff; */
 }
 .dd-item > button {
     position: relative;
@@ -126,12 +126,39 @@
 /**
  * Custom Nestable
  */
+.dd {
+    max-width: initial;
+}
 .dd-handle {
-    background-color: initial;
-    border-width: 1px;
-    border-radius: 0.5rem;
-
+    height: 55px;
 }
 .dd-handle:hover {
-    color:initial;
+    /* color: initial; */
+}
+.dd-item > button {
+    height: 45px;
+}
+.dd-item > button:before {
+    display: block;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    text-indent: 0;
+}
+.dd-empty,
+.dd-placeholder {
+    margin: 5px 0;
+    padding: 0;
+    min-height: 30px;
+    background: #f2fbff;
+    border: 1px dashed #b6bcbf;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+.dd-empty {
+    border: 1px dashed #bbb;
+    min-height: 100px;
+    background-color: #e5e5e5;
+    background-size: 60px 60px;
+    background-position: 0 0, 30px 30px;
 }

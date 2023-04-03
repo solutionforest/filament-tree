@@ -2,14 +2,15 @@
 
 namespace SolutionForest\FilamentTree\Pages;
 
-use Filament\Forms\Contracts\HasForms;
+use Filament\Pages\Actions\Action;
+use Filament\Pages\Actions\CreateAction;
 use Filament\Pages\Page;
 use SolutionForest\FilamentTree\Actions;
 use SolutionForest\FilamentTree\Components\Tree;
 use SolutionForest\FilamentTree\Concern;
 use SolutionForest\FilamentTree\Contract\HasTree;
 
-abstract class TreePage extends Page implements HasTree, HasForms
+abstract class TreePage extends Page implements HasTree
 {
     use Concern\InteractWithTree;
 
@@ -19,9 +20,16 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected static string $model;
 
+    protected static int $maxDepth = 999;
+
     public static function tree(Tree $tree): Tree
     {
         return $tree;
+    }
+
+    public static function getMaxDepth(): int
+    {
+        return static::$maxDepth;
     }
 
     protected function model(string $model): static
@@ -36,13 +44,9 @@ abstract class TreePage extends Page implements HasTree, HasForms
         return static::$model ?? class_basename(static::class);
     }
 
-    protected function actions(): array
+    protected function hasCreateAction(): bool
     {
-        return array_merge(
-            ($this->hasEditAction() ? [$this->getEditAction()] : []),
-            ($this->hasViewAction() ? [$this->getViewAction()] : []),
-            ($this->hasDeleteAction() ? [$this->getDeleteAction()] : []),
-        );
+        return true;
     }
 
     protected function hasDeleteAction(): bool
@@ -57,22 +61,35 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected function hasViewAction(): bool
     {
-        return true;
+        return false;
     }
 
-    protected function getDeleteAction()
+    protected function getCreateAction(): CreateAction
+    {
+        return CreateAction::make();
+    }
+
+    protected function getDeleteAction(): Actions\DeleteAction
     {
         return Actions\DeleteAction::make();
     }
 
-    protected function getEditAction()
+    protected function getEditAction(): Actions\EditAction
     {
         return Actions\EditAction::make();
     }
 
-    protected function getViewAction()
+    protected function getViewAction(): Actions\ViewAction
     {
         return Actions\ViewAction::make();
+    }
+
+    protected function configureAction(Action $action): void
+    {
+        match (true) {
+            $action instanceof CreateAction => $this->configureCreateAction($action),
+            default => null,
+        };
     }
 
     protected function configureTreeAction(Actions\Action $action): void
@@ -83,6 +100,23 @@ abstract class TreePage extends Page implements HasTree, HasForms
             $action instanceof Actions\ViewAction => $this->configureViewAction($action),
             default => null,
         };
+    }
+
+    protected function configureCreateAction(CreateAction $action): CreateAction
+    {
+        $action->livewire($this);
+
+        $schema = $this->getCreateFormSchema();
+
+        if (empty($schema)) {
+            $schema = $this->getFormSchema();
+        }
+
+        $action->form($schema);
+
+        $action->model($this->getModel());
+
+        return $action;
     }
 
     protected function configureDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
@@ -104,13 +138,15 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
         $action->form($schema);
 
+        $action->model($this->getModel());
+
         return $action;
     }
 
     protected function configureViewAction(Actions\ViewAction $action): Actions\ViewAction
     {
         $action->tree($this->getCachedTree());
-        
+
         $schema = $this->getViewFormSchema();
 
         if (empty($schema)) {
@@ -119,10 +155,17 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
         $action->form($schema);
 
+        $action->model($this->getModel());
+
         return $action;
     }
 
     protected function getFormSchema(): array
+    {
+        return [];
+    }
+
+    protected function getCreateFormSchema(): array
     {
         return [];
     }
@@ -139,6 +182,17 @@ abstract class TreePage extends Page implements HasTree, HasForms
 
     protected function getTreeActions(): array
     {
-        return $this->actions();
+        return array_merge(
+            ($this->hasEditAction() ? [$this->getEditAction()] : []),
+            ($this->hasViewAction() ? [$this->getViewAction()] : []),
+            ($this->hasDeleteAction() ? [$this->getDeleteAction()] : []),
+        );
+    }
+
+    protected function getActions(): array
+    {
+        return array_merge(
+            ($this->hasCreateAction() ? [$this->getCreateAction()] : []),
+        );
     }
 }

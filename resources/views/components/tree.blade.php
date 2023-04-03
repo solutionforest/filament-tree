@@ -1,33 +1,11 @@
 @php
     $containerKey = 'filament_tree_container_' . $this->id;
-    $maxDepth = $tree->getMaxDepth() ?? 1;
+    $maxDepth = $getMaxDepth() ?? 1;
     $records = collect($this->getRootLayerRecords() ?? []);
 
 @endphp
 
-@include('filament-tree::tree-assets')
-<script>
-    $(document).ready(function () {
-        $('#{{ $containerKey }}').nestable({
-            group: {{ $containerKey }},
-            maxDepth: {{ $maxDepth }}
-        });
-        $('#nestable-menu [data-action="expand-all"]').on('click', function () {
-            $('.dd').nestable('expandAll');
-        });
-        $('#nestable-menu [data-action="collapse-all"]').on('click', function () {
-            $('.dd').nestable('collapseAll');
-        });
-        $('#nestable-menu [data-action="save"]').on('click', async function (e) {
-            let value = $('#{{ $containerKey }}').nestable('serialize');
-            let result = await @this.updateTree(value);
-            if (result['reload'] === true) {
-                console.log('Reload Menu');
-                window.location.reload();
-            }
-        });
-    });
-</script>
+@include('filament-tree::tree.scripts', ['containerKey' => $containerKey, $maxDepth => $maxDepth])
 
 <div wire:disabled="updateTree">
     <x-filament::card>
@@ -56,10 +34,15 @@
     </x-filament::card>
 </div>
 
-@php
-    $action = $this->getMountedTreeAction();
-@endphp
-@if ($action)
+<form wire:submit.prevent="callMountedTreeAction">
+    @php
+        $action = $this->getMountedTreeAction();
+        $heading = $action ? $action->getModalHeading() : null;
+        $subheading = $action ? $action->getModalSubheading() : null;
+        $modalContent = $action ? $action->getModalContent() : null;
+        $modalFooter = $action ? $action->getModalFooter() : null;
+        $modalActions = $action ? $action->getModalActions() : null;
+    @endphp
     <x-filament-tree::modal
         :id="$this->id . '-tree-action'"
         :wire:key="$action ? $this->id . '.tree.actions.' . $action->getName() . '.modal' : null"
@@ -79,50 +62,49 @@
             }
         "
     >
-        @if ($action->isModalCentered())
-            @if ($heading = $action->getModalHeading())
+        @if ($action?->isModalCentered())
+            @if ($heading)
                 <x-slot name="heading">
                     {{ $heading }}
                 </x-slot>
             @endif
 
-            @if ($subheading = $action->getModalSubheading())
+            @if ($subheading)
                 <x-slot name="subheading">
                     {{ $subheading }}
                 </x-slot>
             @endif
         @else
             <x-slot name="header">
-                @if ($heading = $action->getModalHeading())
-                    <x-tables::modal.heading>
+                @if ($heading)
+                    <x-filament-support::modal.heading>
                         {{ $heading }}
-                    </x-tables::modal.heading>
+                    </x-filament-support::modal.heading>
                 @endif
 
-                @if ($subheading = $action->getModalSubheading())
-                    <x-tables::modal.subheading>
+                @if ($subheading)
+                    <x-filament-support::modal.subheading>
                         {{ $subheading }}
-                    </x-tables::modal.subheading>
+                    </x-filament-support::modal.subheading>
                 @endif
             </x-slot>
         @endif
-        {{ $action->getModalContent() }}
+        {{ $modalContent }}
 
-        @if ($action->hasFormSchema())
-            {{ $tree->getMountedActionForm() }}
+        @if ($action?->hasFormSchema())
+            {{ $getMountedActionForm() }}
         @endif
 
-        {{ $action->getModalFooter() }}
+        {{ $modalFooter}}
 
-        @if (count($action->getModalActions()))
+        @if (count($modalActions ?? []))
             <x-slot name="footer">
-                <x-tables::modal.actions :full-width="$action->isModalCentered()">
-                    @foreach ($action->getModalActions() as $modalAction)
+                <x-filament-support::modal.actions :full-width="$action?->isModalCentered()">
+                    @foreach ($modalActions as $modalAction)
                         {{ $modalAction }}
                     @endforeach
-                </x-tables::modal.actions>
+                </x-filament-support::modal.actions>
             </x-slot>
         @endif
     </x-filament-tree::modal>
-
-@endif
+</form>

@@ -6,7 +6,7 @@
 ])
 
 <div {{ $attributes->class([
-    'filament-tree-actions-container flex items-center gap-4',
+    'filament-tree-actions-container flex items-center gap-1',
     'flex-wrap' => $wrap,
     'md:flex-nowrap' => $wrap === '-md',
     match ($alignment) {

@@ -27,13 +27,11 @@ class EditAction extends Action
 
         $this->modalHeading(fn (): string => __('filament-support::actions/edit.single.modal.heading', ['label' => $this->getRecordTitle()]));
 
-        $this->modalButton(__('filament-support::actions/edit.single.modal.actions.save.label'));
-
-        $this->successNotificationTitle(__('filament-support::actions/edit.single.messages.saved'));
-
         $this->icon('heroicon-s-pencil');
 
         $this->iconButton();
+
+        $this->successNotificationTitle(__('filament-support::actions/edit.single.messages.saved'));
 
         $this->mountUsing(function (ComponentContainer $form, Model $record): void {
             $data = $record->attributesToArray();
@@ -46,10 +44,7 @@ class EditAction extends Action
         });
 
         $this->action(function (): void {
-            dd($this);
             $this->process(function (array $data, Model $record) {
-                dd($data, $record);
-
                 $record->update($data);
             });
 
