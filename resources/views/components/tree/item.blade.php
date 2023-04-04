@@ -1,14 +1,17 @@
-@props(['record', 'containerKey', 'tree'])
+@props([
+    'record', 
+    'containerKey', 
+    'tree',
+    'title' => null,
+    'icon' => null,
+])
 @php
     /** @var $record \Illuminate\Database\Eloquent\Model */
     /** @var $containerKey string */
     /** @var $tree \SolutionForest\FilamentTree\Components\Tree */
 
-    $title = $record->getAttributeValue('title');
-    $icon = $record->getAttributeValue('icon');
-
     $recordKey = $tree->getRecordKey($record);
-    $parentKey = $record->parent ? $tree->getRecordKey($record->parent) : null;
+    $parentKey = $tree->getParentKey($record);
 
     $children = $record->children;
 
@@ -24,16 +27,12 @@
         ])>
 
         <button type="button" class="h-full flex items-center bg-gray-50 rounded-lg border-r border-gray-300 px-px">
-            <svg class="text-gray-400 w-4 h-4 -mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-            </svg>
-            <svg class="text-gray-400 w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
-            </svg>
+            <x-heroicon-o-dots-vertical class="text-gray-400 w-4 h-4 -mr-2"/>
+            <x-heroicon-o-dots-vertical class="text-gray-400 w-4 h-4"/>
         </button>
 
-        <div class="dd-title dd-nodrag ml-2 flex">
-            <div class="w-4 mr-1">
+        <div class="dd-content dd-nodrag ml-2 flex gap-1">
+            <div class="w-4">
                 @if ($icon)
                     <x-dynamic-component :component="$icon" class="w-4 h-4" />
                 @endif
@@ -42,6 +41,18 @@
             <span>
                 {{ $title }}
             </span>
+
+            <div @class([
+                'dd-item-btns',
+                'hidden' => ! count($children),
+            ])>
+                <button data-action="expand" class="hidden">
+                    <x-heroicon-o-chevron-down class="text-gray-400 w-4 h-4"/>
+                </button>
+                <button data-action="collapse">
+                    <x-heroicon-o-chevron-up class="text-gray-400 w-4 h-4"/>
+                </button>
+            </div>
         </div>
 
         @if (count($actions))
@@ -50,7 +61,7 @@
             </div>
         @endif
     </div>
-    @if ($children)
+    @if (count($children))
         <x-filament-tree::tree.list :records="$children" :containerKey="$containerKey" :tree="$tree" />
     @endif
 </li>

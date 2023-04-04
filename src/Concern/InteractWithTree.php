@@ -54,25 +54,30 @@ trait InteractWithTree
         return Tree::make($this);
     }
 
-    // protected function getInteractsWithTreeForms(): array
-    // {
-    //     return $this->getTreeForms();
-    // }
-
-    // protected function getTreeForms(): array
-    // {
-    //     ray(__METHOD__, $this);
-    //     return [
-    //         'mountedTreeActionForm' => $this->getMountedTreeActionForm(),
-    //     ];
-    // }
-
     public function getTreeRecordTitle(?Model $record = null): string
     {
         if (! $record) {
             return '';
         }
-        return $record->getAttributeValue('title');
+        return $record->{(method_exists($record, 'determineTitleColumnName') ? $record->determineTitleColumnName() : 'title')};
+    }
+
+    public function getTreeRecordIcon(?Model $record = null): ?string
+    {
+        if (! $record) {
+            return null;
+        }
+        return $record->{(method_exists($record, 'determineIconColumnName') ? $record->determineIconColumnName() : 'icon')};
+    }
+
+    public function getRecordKey(?Model $record): ?string
+    {
+        return $this->getCachedTree()->getRecordKey($record);
+    }
+
+    public function getParentKey(?Model $record):?string
+    {
+        return $this->getCachedTree()->getParentKey($record);
     }
 
     /**
@@ -82,17 +87,15 @@ trait InteractWithTree
     {
         $needReload = false;
         if ($list) {
-            $tree = $this->getCachedTree();
-
             $records = $this->getRecords()->keyBy(fn ($record) => $record->getAttributeValue($record->getKeyName()));
 
             $unnestedArr = [];
             $this->unnestArray($unnestedArr, $list, Utils::defaultParentId());
-            collect($unnestedArr)
+            $unnestedArrData = collect($unnestedArr)
                 ->map(fn (array $data, $id) => ['data' => $data, 'model' => $records->get($id)])
-                ->filter(fn (array $arr) => !is_null($arr['model']))
-                ->each(function (array $arr) {
-                    $model = $arr['model'];
+                ->filter(fn (array $arr) => !is_null($arr['model']));
+            foreach ($unnestedArrData as $arr) {
+                $model = $arr['model'];
                     [$newParentId, $newOrder] = [$arr['data']['parent_id'], $arr['data']['order']];
                     if ($model instanceof Model) {
                         $parentColumnName = method_exists($model, 'determineParentColumnName') ? $model->determineParentColumnName() : Utils::parentColumnName();
@@ -101,26 +104,22 @@ trait InteractWithTree
                         $model->{$parentColumnName} = $newParentId;
                         $model->{$orderColumnName} = $newOrder;
                         if ($model->isDirty([$parentColumnName, $orderColumnName])) {
-                            ray($model);
                             $model->save();
 
                             $needReload = true;
-                            
-                            Notification::make()
-                                ->success()
-                                ->title(__('filament-support::actions/edit.single.messages.saved'))
-                                ->send();
                         }
                     }
-                });
+            }
+        }
+        if ($needReload) {
+
+            Notification::make()
+                ->success()
+                ->title(__('filament-support::actions/edit.single.messages.saved'))
+                ->send();
         }
 
         return ['reload' => $needReload];
-    }
-
-    public function getRecordKey(?Model $record): ?string
-    {
-        return $record ? $this->getCachedTree()->getRecordKey($record) : null;
     }
 
     /**

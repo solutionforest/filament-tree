@@ -7,6 +7,7 @@ use Filament\Support\Components\ViewComponent;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Concern\BelongsToLivewire;
 use SolutionForest\FilamentTree\Contract\HasTree;
+use SolutionForest\FilamentTree\Support\Utils;
 
 class Tree extends ViewComponent
 {
@@ -63,9 +64,20 @@ class Tree extends ViewComponent
         return $this->getLivewire()->getModel();
     }
 
-    public function getRecordKey(Model $record): string
+    public function getRecordKey(?Model $record): ?string
     {
+        if (! $record) {
+            return null;
+        }
         return $record->getAttributeValue($record->getKeyName());
+    }
+
+    public function getParentKey(?Model $record):?string
+    {
+        if (! $record) {
+            return null;
+        }
+        return $record->getAttributeValue((method_exists($record, 'determineParentKey') ? $record->determineParentColumnName() : Utils::parentColumnName()));
     }
 
     public function getMountedActionForm(): ?ComponentContainer

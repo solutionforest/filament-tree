@@ -68,6 +68,11 @@ trait ModelTree
         return $query->orderBy($this->determineParentColumnName(), 'asc')->orderBy($this->determineOrderColumnName(), $direction);
     }
 
+    public function scopeIsRoot(Builder $query)
+    {
+        return $query->where($this->determineParentColumnName(), Utils::defaultParentId());
+    }
+
     public function determineOrderColumnName() : string
     {
         return Utils::orderColumnName();
