@@ -15,7 +15,76 @@ You can install the package via composer:
 composer require solution-forest/filament-tree
 ```
 
+Publish the config file with:
+```bash
+php artisan vendor:publish --tag="filament-tree-config"
+```
+Set your preferred options:
+```php
+<?php
+
+return [
+    /**
+     * Tree model fields
+     */
+    'column_name' => [
+        'order' => 'order',
+        'parent' => 'parent_id',
+        'depth' => 'depth',
+    ],
+    /**
+     * Tree model default parent key
+     */
+    'default_parent_id' => -1,
+    /**
+     * Tree model default children key name
+     */
+    'default_children_key_name' => 'children',
+];
+
+```
+
 ## Usage
+
+You can create tree page via command:
+```php
+php artisan make:filament-tree-page
+```
+Control the maximum depth of the tree by `getMaxDepth()` method
+``` bash
+use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
+
+class DumpTreePage extends BasePage
+{
+
+    public static function getMaxDepth(): int
+    {
+        return 2;
+    }
+
+    /**
+     * Must be implemented
+     */
+    public function getModel(): string
+    {
+        //
+    }
+    
+    protected function getFormSchema(): array
+    {
+        return [
+            //
+        ];
+    }
+}
+```
+
+Optionally, you can publish the views and translations using:
+```bash
+php artisan vendor:publish --tag="filament-tree-views"
+
+php artisan vendor:publish --tag="filament-tree-translations"
+```
 
 ## Testing
 
