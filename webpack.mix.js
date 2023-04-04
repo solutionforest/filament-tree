@@ -5,6 +5,10 @@ mix.setPublicPath('dist')
 mix.setResourceRoot('resources')
 mix.sourceMaps()
 
+mix.autoload({
+    jquery: ['$', 'jQuery', 'window.jQuery'],
+});
+
 mix
     .postCss('resources/css/filament-tree.css', 'dist', [
         tailwindcss('tailwind.config.js'),
