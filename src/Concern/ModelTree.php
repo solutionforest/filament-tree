@@ -23,11 +23,6 @@ trait ModelTree
             }
         });
 
-        static::saved(function(Model $model) {
-            // TODO: Clear cache
-            \Illuminate\Support\Facades\Cache::clear();
-        });
-
         // Delete children
         static::deleting(function (Model $model) {
             static::buildSortQuery()
