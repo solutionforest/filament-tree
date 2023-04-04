@@ -12,7 +12,7 @@ class Tree extends ViewComponent
 {
     use BelongsToLivewire;
 
-    protected string $view = 'filament-tree::components.tree';
+    protected string $view = 'filament-tree::components.tree.index';
 
     protected string $viewIdentifier = 'tree';
 

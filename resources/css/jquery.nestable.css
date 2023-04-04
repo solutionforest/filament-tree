@@ -138,27 +138,3 @@
 .dd-item > button {
     height: 45px;
 }
-.dd-item > button:before {
-    display: block;
-    position: absolute;
-    width: 100%;
-    text-align: center;
-    text-indent: 0;
-}
-.dd-empty,
-.dd-placeholder {
-    margin: 5px 0;
-    padding: 0;
-    min-height: 30px;
-    background: #f2fbff;
-    border: 1px dashed #b6bcbf;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-}
-.dd-empty {
-    border: 1px dashed #bbb;
-    min-height: 100px;
-    background-color: #e5e5e5;
-    background-size: 60px 60px;
-    background-position: 0 0, 30px 30px;
-}
