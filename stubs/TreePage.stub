@@ -1,0 +1,29 @@
+<?php
+
+namespace {{ namespace }};
+
+use Filament\Forms;
+use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
+use SolutionForest\FilamentTree\Support\Utils;
+
+class {{ class }} extends BasePage
+{
+    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+
+    public static function getMaxDepth(): int
+    {
+        return 2;
+    }
+
+    public function getModel(): string
+    {
+        //
+    }
+    
+    protected function getFormSchema(): array
+    {
+        return [
+            //
+        ];
+    }
+}

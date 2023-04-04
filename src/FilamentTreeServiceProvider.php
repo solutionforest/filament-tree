@@ -23,6 +23,9 @@ class FilamentTreeServiceProvider extends PluginServiceProvider
         $package->name(static::$name)
             ->hasConfigFile()
             ->hasViews()
-            ->hasTranslations();
+            ->hasTranslations()
+            ->hasCommands([
+                Commands\MakeTreePageCommand::class,
+            ]);
     }
 }
