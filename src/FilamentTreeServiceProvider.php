@@ -15,6 +15,7 @@ class FilamentTreeServiceProvider extends PluginServiceProvider
     ];
 
     protected array $scripts = [
+        'https://code.jquery.com/jquery-3.6.1.slim.min.js',
         'filament-tree-min' => __DIR__ . '/../resources/dist/filament-tree.js',
     ];
 
