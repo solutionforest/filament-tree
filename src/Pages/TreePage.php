@@ -116,12 +116,16 @@ abstract class TreePage extends Page implements HasTree
 
         $action->model($this->getModel());
 
+        $this->afterConfiguredCreateAction($action);
+
         return $action;
     }
 
     protected function configureDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
     {
         $action->tree($this->getCachedTree());
+
+        $this->afterConfiguredDeleteAction($action);
 
         return $action;
     }
@@ -140,6 +144,8 @@ abstract class TreePage extends Page implements HasTree
 
         $action->model($this->getModel());
 
+        $this->afterConfiguredEditAction($action);
+
         return $action;
     }
 
@@ -157,6 +163,28 @@ abstract class TreePage extends Page implements HasTree
 
         $action->model($this->getModel());
 
+        $this->afterConfiguredViewAction($action);
+
+        return $action;
+    }
+
+    protected function afterConfiguredCreateAction(CreateAction $action): CreateAction
+    {
+        return $action;
+    }
+
+    protected function afterConfiguredDeleteAction(Actions\DeleteAction $action): Actions\DeleteAction
+    {
+        return $action;
+    }
+
+    protected function afterConfiguredEditAction(Actions\EditAction $action): Actions\EditAction
+    {
+        return $action;
+    }
+
+    protected function afterConfiguredViewAction(Actions\ViewAction $action): Actions\ViewAction
+    {
         return $action;
     }
 
@@ -194,5 +222,14 @@ abstract class TreePage extends Page implements HasTree
         return array_merge(
             ($this->hasCreateAction() ? [$this->getCreateAction()] : []),
         );
+    }
+
+    protected function callHook(string $hook): void
+    {
+        if (! method_exists($this, $hook)) {
+            return;
+        }
+
+        $this->{$hook}();
     }
 }

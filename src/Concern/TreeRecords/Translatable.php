@@ -42,10 +42,10 @@ trait Translatable
         //
     }
 
-    protected function configureCreateAction(CreateAction $action): CreateAction
+    protected function afterConfiguredCreateAction(CreateAction $action): CreateAction
     {
         /** @var CreateAction */
-        $action = parent::configureCreateAction($action);
+        $action = parent::afterConfiguredCreateAction($action);
 
         if (method_exists($action, 'using')) {
             $model = $action->getModel();
@@ -65,10 +65,10 @@ trait Translatable
         return $action;
     }
 
-    protected function configureEditAction(Actions\EditAction $action): Actions\EditAction
+    protected function afterConfiguredEditAction(Actions\EditAction $action): Actions\EditAction
     {
         /** @var Actions\EditAction */
-        $action = parent::configureEditAction($action);
+        $action = parent::afterConfiguredEditAction($action);
 
         $action->mutateRecordDataUsing(function (array $data, Model $record) {
             return $this->mutateRecordData($data, $record);
@@ -91,10 +91,10 @@ trait Translatable
         return $action;
     }
 
-    protected function configureViewAction(Actions\ViewAction $action): Actions\ViewAction
+    protected function afterConfiguredViewAction(Actions\ViewAction $action): Actions\ViewAction
     {
         /** @var Actions\ViewAction */
-        $action = parent::configureViewAction($action);
+        $action = parent::afterConfiguredViewAction($action);
 
         $action->mutateRecordDataUsing(function (array $data, Model $record) {
             return $this->mutateRecordData($data, $record);
