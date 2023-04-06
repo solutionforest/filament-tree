@@ -19,7 +19,9 @@
 @endphp
 
 <li class="filament-tree-row dd-item" data-id="{{ $recordKey }}">
-    <div @class([
+    <div wire:loading.remove.delay 
+        wire:target="{{ implode(',', \SolutionForest\FilamentTree\Components\Tree::LOADING_TARGETS) }}"
+        @class([
             'bg-white rounded-lg border border-gray-300 dd-handle', 
             'mb-2',
             'flex w-full items-center ',
@@ -64,4 +66,9 @@
     @if (count($children))
         <x-filament-tree::tree.list :records="$children" :containerKey="$containerKey" :tree="$tree" />
     @endif
+    <div class="rounded-lg border border-gray-300 mb-2 w-full px-4 py-4 animate-pulse hidden" 
+        wire:loading.class.remove.delay="hidden" 
+        wire:target="{{ implode(',', \SolutionForest\FilamentTree\Components\Tree::LOADING_TARGETS) }}">
+        <div class="h-4 bg-gray-300 rounded-md"></div>
+    </div>
 </li>

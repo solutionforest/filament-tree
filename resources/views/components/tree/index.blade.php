@@ -8,18 +8,18 @@
 @include('filament-tree::tree.scripts', ['containerKey' => $containerKey, $maxDepth => $maxDepth])
 
 <div wire:disabled="updateTree">
-    <x-filament::card>
+    <x-filament::card >
         <menu class="flex gap-2" id="nestable-menu">
             <div class="btn-group">
-                <x-filament::button tag="button" data-action="expand-all">
+                <x-filament::button tag="button" data-action="expand-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     {{ __('filament-tree::filament-tree.button.expand_all') }}
                 </x-filament::button>
-                <x-filament::button tag="button" data-action="collapse-all">
+                <x-filament::button tag="button" data-action="collapse-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     {{ __('filament-tree::filament-tree.button.collapse_all') }}
                 </x-filament::button>
             </div>
             <div class="btn-group">
-                <x-filament::button tag="button" data-action="save">
+                <x-filament::button tag="button" data-action="save" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     <x-filament-support::loading-indicator class="h-4 w-4" wire:loading wire:target="updateTree" />
                     <span wire:loading.remove wire:target="updateTree">
                         {{ __('filament-tree::filament-tree.button.save') }}

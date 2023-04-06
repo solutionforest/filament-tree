@@ -21,6 +21,8 @@ class Tree extends ViewComponent
 
     protected array $actions = [];
 
+    public const LOADING_TARGETS = ['activeLocale'];
+
     public function __construct(HasTree $livewire)
     {
         $this->livewire($livewire);
