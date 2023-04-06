@@ -40,7 +40,7 @@ class ViewAction extends Action
             $data = $record->attributesToArray();
 
             if ($this->mutateRecordDataUsing) {
-                $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data]);
+                $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data, 'record' => $record]);
             }
 
             $form->fill($data);

@@ -5,10 +5,15 @@ namespace SolutionForest\FilamentTree\Concern;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use SolutionForest\FilamentTree\Concern\SupportTranslation;
 use SolutionForest\FilamentTree\Support\Utils;
 
 trait ModelTree
 {
+    use SupportTranslation {
+        SupportTranslation::handleTranslatable as traitHandleTranslatable;
+    }
+
     /**
      * Boot the bootable traits on the model.
      */
@@ -109,7 +114,7 @@ trait ModelTree
     {
         $result = [];
 
-        $model = new static();
+        $model = app(static::class);
 
         [$primaryKeyName, $titleKeyName, $parentKeyName, $childrenKeyName] = [
             $model->getKeyName(),
@@ -148,6 +153,11 @@ trait ModelTree
         return static::query()->ordered();
     }
 
+    public static function handleTranslatable(array &$final): void
+    {
+        static::traitHandleTranslatable($final, static::class);
+    }
+
     private static function buildSelectArrayItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName, int $depth, ?int $maxDepth = null): void
     {
         if (! isset($item[$primaryKeyName])) {
@@ -158,8 +168,13 @@ trait ModelTree
             return;
         }
 
+        static::handleTranslatable($item);
+
         $key = $item[$primaryKeyName];
         $title = isset($item[$titleKeyName])? $item[$titleKeyName] : $item[$primaryKeyName];
+        if (! is_string($title)) {
+            $title = (string) $title;
+        }
         $final[$key] = Str::padLeft($title, (str($title)->length() + ($depth * 3)), '-');
 
         if (count($item[$childrenKeyName])) {

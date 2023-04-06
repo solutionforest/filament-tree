@@ -3,6 +3,9 @@
 namespace {{ namespace }};
 
 use Filament\Forms;
+use Filament\Pages\Actions\CreateAction;
+use SolutionForest\FilamentTree\Actions;
+use SolutionForest\FilamentTree\Concern;
 use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
 use SolutionForest\FilamentTree\Support\Utils;
 

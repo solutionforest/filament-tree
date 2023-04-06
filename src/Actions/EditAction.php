@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 class EditAction extends Action
 {
     use CanCustomizeProcess;
-    
+
     protected ?Closure $mutateRecordDataUsing = null;
 
     public static function getDefaultName(): ?string
@@ -37,7 +37,7 @@ class EditAction extends Action
             $data = $record->attributesToArray();
 
             if ($this->mutateRecordDataUsing) {
-                $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data]);
+                $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data, 'record' => $record]);
             }
 
             $form->fill($data);
