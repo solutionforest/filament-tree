@@ -8,7 +8,7 @@
 @include('filament-tree::tree.scripts', ['containerKey' => $containerKey, $maxDepth => $maxDepth])
 
 <div wire:disabled="updateTree">
-    <x-filament::card >
+    <x-filament::card :heading="($this->displayTreeTitle() ?? false) ? $this->getTreeTitle() : null">
         <menu class="flex gap-2" id="nestable-menu">
             <div class="btn-group">
                 <x-filament::button tag="button" data-action="expand-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">

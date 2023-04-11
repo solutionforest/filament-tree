@@ -15,6 +15,7 @@ trait InteractWithTree
     use Concern\HasActions;
     use Concern\HasRecords;
     use Concern\HasEmptyState;
+    use Concern\HasHeading;
 
     protected bool $hasMounted = false;
 

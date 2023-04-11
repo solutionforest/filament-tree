@@ -11,4 +11,8 @@ class {{ class }} extends BaseWidget
     protected static string $model = {{ modelClass }}::class;
 
     protected static int $maxDepth = 2;
+
+    protected ?string $treeTitle = '{{ class }}';
+
+    protected bool $enableTreeTitle = true;
 }
