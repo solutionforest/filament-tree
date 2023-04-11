@@ -21,7 +21,7 @@ trait ModelTree
     {
         static::saving(function(Model $model) {
             if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === 0) {
-                $model->{$model->determineParentColumnName()} = Utils::defaultParentId();
+                $model->{$model->determineParentColumnName()} = static::defaultParentKey();
             }
             if (empty($model->{$model->determineOrderColumnName()}) || $model->{$model->determineOrderColumnName()} === 0) {
                 $model->setHighestOrderNumber();
@@ -45,7 +45,7 @@ trait ModelTree
 
     public function isRoot(): bool
     {
-        return $this->getAttributeValue($this->determineParentColumnName()) === Utils::defaultParentId();
+        return $this->getAttributeValue($this->determineParentColumnName()) === static::defaultParentKey();
     }
 
     public function setHighestOrderNumber(): void
@@ -70,7 +70,7 @@ trait ModelTree
 
     public function scopeIsRoot(Builder $query)
     {
-        return $query->where($this->determineParentColumnName(), Utils::defaultParentId());
+        return $query->where($this->determineParentColumnName(), static::defaultParentKey());
     }
 
     public function determineOrderColumnName() : string
@@ -88,9 +88,14 @@ trait ModelTree
         return 'title';
     }
 
+    public static function defaultParentKey()
+    {
+        return Utils::defaultParentId();
+    }
+
     /**
      * Format all nodes as tree.
-     * 
+     *
      * @param array|\Illuminate\Support\Collection|null $nodes
      */
     public function toTree($nodes = null): array
@@ -101,7 +106,7 @@ trait ModelTree
 
         return Utils::buildNestedArray(
             nodes: $nodes,
-            parentId: Utils::defaultParentId(),
+            parentId: static::defaultParentKey(),
             primaryKeyName: $this->getKeyName(),
             parentKeyName: $this->determineParentColumnName()
         );
@@ -125,13 +130,13 @@ trait ModelTree
 
         $nodes = Utils::buildNestedArray(
             nodes: static::allNodes(),
-            parentId: Utils::defaultParentId(),
+            parentId: static::defaultParentKey(),
             primaryKeyName: $primaryKeyName,
             parentKeyName: $parentKeyName,
             childrenKeyName: $childrenKeyName
         );
 
-        $result[Utils::defaultParentId()] = __('filament-access-management::filament-access-management.field.menu.root');
+        $result[static::defaultParentKey()] = __('filament-access-management::filament-access-management.field.menu.root');
 
         foreach ($nodes as $node) {
             static::buildSelectArrayItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName, 1, $maxDepth);

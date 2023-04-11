@@ -41,7 +41,7 @@ class Utils
     {
         $branch = [];
         $parentId = is_numeric($parentId) ? intval($parentId) : $parentId;
-        if (empty($parentId)) {
+        if (blank($parentId)) {
             $parentId = self::defaultParentId();
         }
         $primaryKeyName = $primaryKeyName ?: 'id';
