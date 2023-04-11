@@ -27,6 +27,7 @@ class FilamentTreeServiceProvider extends PluginServiceProvider
             ->hasTranslations()
             ->hasCommands([
                 Commands\MakeTreePageCommand::class,
+                Commands\MakeTreeWidgetCommand::class,
             ]);
     }
 }

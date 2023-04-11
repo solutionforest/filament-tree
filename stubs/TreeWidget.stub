@@ -1,0 +1,14 @@
+<?php
+
+namespace {{ namespace }};
+
+use App\Models\{{ model }};
+use App\Filament\Widgets;
+use SolutionForest\FilamentTree\Widgets\Tree as BaseWidget;
+
+class {{ class }} extends BaseWidget
+{
+    protected static string $model = {{ modelClass }}::class;
+
+    protected static int $maxDepth = 2;
+}
