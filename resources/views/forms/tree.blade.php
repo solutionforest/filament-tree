@@ -3,7 +3,6 @@
     :id="$getId()"
     :label="$getLabel()"
     :label-sr-only="$isLabelHidden()"
-    has-nested-recursive-validation-rules
     :helper-text="$getHelperText()"
     :hint="$getHint()"
     :hint-action="$getHintAction()"
@@ -117,5 +116,5 @@
                 @include('filament-tree::forms.tree.option-item', ['optionValue' => $optionValue, 'item' => $item])
             @endforeach
         </x-filament-support::grid>
-    
+    </div>
 </x-dynamic-component>
