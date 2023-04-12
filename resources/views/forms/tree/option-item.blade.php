@@ -1,4 +1,4 @@
-@props(['optionValue', 'item'])
+@props(['optionValue', 'item', 'parent' => null])
 @php
     $optionLabel = $item['label'] ?? null;
     $children = $item['children'] ?? [];
@@ -18,6 +18,22 @@
     
     toggleCollapsed: function () {
         this.collapsed = !this.collapsed
+    },
+
+    toggleParentCheckbox: function (el) {
+        if (el.target.checked) {
+            key = el.target.getAttribute('data-parent-key')
+            this.treeOptions.forEach((checkboxLabel) => {
+                checkbox = checkboxLabel.querySelector('input[type=checkbox]')
+    
+                if (key && checkbox.value == key) {
+                    console.log(checkbox.value, key)
+                    checkbox.checked = true
+                    checkbox.dispatchEvent(new Event('change'))
+                    checkbox.dispatchEvent(new Event('click'))
+                }
+            })
+        }
     }
 }">
     <div class="flex gap-1">
@@ -27,6 +43,8 @@
         </button>
         <label class="filament-forms-tree-component-option-label flex items-center space-x-3 rtl:space-x-reverse">
             <input 
+                data-parent-key="{{ $parent }}"
+                x-on:click="toggleParentCheckbox"
                 x-on:change="checkIfAllCheckboxesAreChecked()"
                 wire:loading.attr="disabled"
                 type="checkbox"
@@ -58,7 +76,7 @@
             <div class="filament-forms-tree-component-children ml-4 gap-1"
                 x-show="! collapsed"
             >
-                @include('filament-tree::forms.tree.option-item', ['optionValue' => $childValue, 'item' => $childItem])
+                @include('filament-tree::forms.tree.option-item', ['optionValue' => $childValue, 'item' => $childItem, 'parent' => $optionValue])
             </div>
         @endforeach
     @endif
