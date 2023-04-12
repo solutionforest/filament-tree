@@ -93,6 +93,11 @@ trait ModelTree
         return Utils::defaultParentId();
     }
 
+    public static function defaultChildrenKeyName(): string
+    {
+        return Utils::defaultChildrenKeyName();
+    }
+
     /**
      * Format all nodes as tree.
      *
@@ -113,6 +118,37 @@ trait ModelTree
     }
 
     /**
+     * Get tree nodes options.
+     */
+    public static function treeNodes(): array
+    {
+        $result = [];
+
+        $model = app(static::class);
+
+        [$primaryKeyName, $titleKeyName, $parentKeyName, $childrenKeyName] = [
+            $model->getKeyName(),
+            $model->determineTitleColumnName(),
+            $model->determineParentColumnName(),
+            static::defaultChildrenKeyName(),
+        ];
+
+        $nodes = Utils::buildNestedArray(
+            nodes: static::allNodes(),
+            parentId: static::defaultParentKey(),
+            primaryKeyName: $primaryKeyName,
+            parentKeyName: $parentKeyName,
+            childrenKeyName: $childrenKeyName
+        );
+
+        foreach ($nodes as $node) {
+            static::buildTreeNodeItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName);
+        }
+
+        return $result;
+    }
+
+    /**
      * Get select array options.
      */
     public static function selectArray(?int $maxDepth = null): array
@@ -125,7 +161,7 @@ trait ModelTree
             $model->getKeyName(),
             $model->determineTitleColumnName(),
             $model->determineParentColumnName(),
-            Utils::defaultChildrenKeyName(),
+            static::defaultChildrenKeyName(),
         ];
 
         $nodes = Utils::buildNestedArray(
@@ -187,5 +223,26 @@ trait ModelTree
                 static::buildSelectArrayItem($final, $child, $primaryKeyName, $titleKeyName, $childrenKeyName, $depth + 1, $maxDepth);
             }
         }
+    }
+
+    private static function buildTreeNodeItem(array &$final, array $item, string $primaryKeyName, string $titleKeyName, string $childrenKeyName): void
+    {
+        if (! isset($item[$primaryKeyName])) {
+            throw new \InvalidArgumentException("Unset '{$primaryKeyName}' primary key.");
+        }
+        $pk = data_get($item, $primaryKeyName);
+        $name = data_get($item, $titleKeyName);
+        $children = [];
+
+        if (count($item[$childrenKeyName])) {
+            foreach ($item[$childrenKeyName] as $child) {
+                static::buildTreeNodeItem($children, $child, $primaryKeyName, $titleKeyName, $childrenKeyName);
+            }
+        }
+        $final[] = [
+            $primaryKeyName => $pk,
+            $titleKeyName => $name,
+            $childrenKeyName => $children,
+        ];
     }
 }
