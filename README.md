@@ -5,7 +5,7 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/solution-forest/filament-tree/Check%20&%20fix%20styling?label=code%20style)](https://github.com/solution-forest/filament-tree/actions?query=workflow%3A"Check+%26+fix+styling"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 
-This is a filament tree plugin for Filament Admin
+This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to create menu, etc.
 
 ## Installation
 
@@ -50,7 +50,8 @@ You can create tree page via command:
 ```php
 php artisan make:filament-tree-page
 ```
-Control the maximum depth of the tree by `getMaxDepth()` method
+
+This is an example of the tree page:
 ``` bash
 use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
 
@@ -76,6 +77,26 @@ class DumpTreePage extends BasePage
             //
         ];
     }
+}
+```
+
+Control the maximum depth of the tree by `getMaxDepth()` method.
+
+Each tree should be assigned a model, for example: 
+```php
+public function getModel(): string
+{
+    return Menu::class;
+}
+```
+
+The model assigned should use the ModelTree Concern:
+```php
+use SolutionForest\FilamentTree\Concern\ModelTree;
+
+class Menu extends Model
+{
+    use ModelTree;
 }
 ```
 
