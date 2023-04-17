@@ -52,6 +52,8 @@ php artisan make:filament-tree-page
 ```
 
 This is an example of the tree page:
+<img width="1087" alt="image" src="https://user-images.githubusercontent.com/73818060/232463907-a0768c00-a442-4bce-96d4-d1314b0e4de4.png">
+
 ``` bash
 use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
 
