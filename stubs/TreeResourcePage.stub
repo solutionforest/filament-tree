@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ resource }};
+use Filament\Pages\Actions\CreateAction;
+use SolutionForest\FilamentTree\Actions;
+use SolutionForest\FilamentTree\Concern;
+use SolutionForest\FilamentTree\Resources\Pages\TreePage as BasePage;
+use SolutionForest\FilamentTree\Support\Utils;
+
+class {{ class }} extends BasePage
+{
+    protected static string $resource = {{ resourceClass }}::class;
+
+    protected function getActions(): array
+    {
+        return [
+            $this->getCreateAction(),
+        ];
+    }
+
+    public static function getMaxDepth(): int
+    {
+        return 2;
+    }
+}

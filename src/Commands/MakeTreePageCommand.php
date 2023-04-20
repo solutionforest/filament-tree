@@ -11,41 +11,94 @@ class MakeTreePageCommand extends Command
 {
     use CanManipulateFiles;
     use CanValidateInput;
-    protected $signature = "make:filament-tree-page {name?}";
+    protected $signature = "make:filament-tree-page {name?} {--R|resource=}";
 
     public $description = 'Creates a Filament tree page class';
 
+    protected ?string $resourceClass = null;
+    protected string $page;
+    protected string $pageClass;
+
     public function handle(): int
     {
-        $path = config('filament.pages.path', app_path('Filament/Pages/'));
-        $namespace = config('filament.pages.namespace', 'App\\Filament\\Pages');
-
-        $stub = 'TreePage';
-
-        $page =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Settings`)', 'name')))
+        $this->page =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Settings`)', 'name')))
             ->trim('/')
             ->trim('\\')
             ->trim(' ')
             ->replace('/', '\\');
-        $pageClass = (string) Str::of($page)->afterLast('\\');
-        $pageNamespace = Str::of($page)->contains('\\') ?
-            (string) Str::of($page)->beforeLast('\\') :
-            '';
 
-        $path = (string) Str::of($page)
+        $this->pageClass = (string) Str::of($this->page)->afterLast('\\');
+
+        $this->askResourceClass();
+
+        $this->createPage();
+
+        $this->info("Successfully created {$this->page}!");
+
+        return static::SUCCESS;
+    }
+
+    protected function createPage(): void
+    {
+        $path = config('filament.pages.path', app_path('Filament/Pages/'));
+        $resourcePath = config('filament.resources.path', app_path('Filament/Resources/'));
+
+        $namespace = config('filament.pages.namespace', 'App\\Filament\\Pages');
+        $resourceNamespace = config('filament.resources.namespace', 'App\\Filament\\Resources');
+        $pageNamespace = Str::of($this->page)->contains('\\') ?
+            (string) Str::of($this->page)->beforeLast('\\') :
+            '';
+        
+        $resourceClass = $this->resourceClass;
+        $stub = $this->getStub();
+
+        $path = (string) Str::of($this->pageClass)
             ->prepend('/')
-            ->prepend($path)
+            ->prepend($resourceClass === null ? $path : "{$resourcePath}\\{$resourceClass}\\Pages\\")
             ->replace('\\', '/')
             ->replace('//', '/')
             ->append('.php');
 
-        $this->copyStubToApp($stub, $path, [
-            'class' => $pageClass,
-            'namespace' => $namespace . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
-        ]);
+        if ($resourceClass === null) {
 
-        $this->info("Successfully created {$page}!");
+            $this->copyStubToApp($stub, $path, [
+                'class' => $this->pageClass,
+                'namespace' => $namespace . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+            ]);
+        } else {
+            $this->copyStubToApp($stub, $path, [
+                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages" . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'resource' => "{$resourceNamespace}\\{$resourceClass}",
+                'class' => $this->pageClass,
+                'resourceClass' => $resourceClass,
+            ]);
+        }
 
-        return static::SUCCESS;
+    }
+
+    protected function getStub(): string
+    {
+        return $this->resourceClass ? 'TreeResourcePage' : 'TreePage';
+    }
+
+    protected function askResourceClass(): void
+    {
+        $resourceInput = $this->option('resource') ?? $this->ask('(Optional) Resource (e.g. `UserResource`)');
+
+        if ($resourceInput !== null) {
+            $resource = (string) Str::of($resourceInput)
+                ->studly()
+                ->trim('/')
+                ->trim('\\')
+                ->trim(' ')
+                ->replace('/', '\\');
+
+            if (! Str::of($resource)->endsWith('Resource')) {
+                $resource .= 'Resource';
+            }
+
+            $this->resourceClass = (string) Str::of($resource)
+                ->afterLast('\\');
+        }
     }
 }
