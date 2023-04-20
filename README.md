@@ -46,6 +46,7 @@ return [
 
 ## Usage
 
+### Createing a page
 You can create tree page via command:
 ```php
 php artisan make:filament-tree-page
@@ -92,6 +93,23 @@ public function getModel(): string
 }
 ```
 
+Or you can create a page under the resource:
+
+```php
+php artisan make:filament-tree-page DumpTreePage --resource=DumpTreeResource
+```
+
+This will create a page in the app/Filament/Resources/DumpTreeResource/Pages directory:
+```bash
+.
++-- DumpTreeResource
+|   +-- Pages
+|   |   +-- DumpTreePage.php
+
+```
+
+### Model
+
 The model assigned should use the ModelTree Concern:
 ```php
 use SolutionForest\FilamentTree\Concern\ModelTree;
@@ -102,10 +120,15 @@ class Menu extends Model
 }
 ```
 
-Optionally, you can publish the views and translations using:
+### Publishing  configuration
+
+Optionally, you can publish the views using:
 ```bash
 php artisan vendor:publish --tag="filament-tree-views"
-
+```
+### Publishing translations
+Optionally, you can publish the  translations using:
+```bash
 php artisan vendor:publish --tag="filament-tree-translations"
 ```
 
