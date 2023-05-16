@@ -54,6 +54,7 @@ return [
 ];
 
 ```
+![Screenshot](https://github.com/solutionforest/filament-tree/assets/68211972/d4bc8d33-3448-4cf5-837e-14116e28b4b5)
 
 ## Usage
 
