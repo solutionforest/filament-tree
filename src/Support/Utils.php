@@ -15,7 +15,7 @@ class Utils
     }
 
     /**
-     * @deprecated Since v1.0.1
+     * @deprecated Since v1.1.0
      */
     public static function depthColumnName(): string
     {
