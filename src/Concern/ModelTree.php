@@ -14,6 +14,13 @@ trait ModelTree
         SupportTranslation::handleTranslatable as traitHandleTranslatable;
     }
 
+    public function initializeModelTree()
+    {
+        $this->fillable[] = $this->determineOrderColumnName();
+        $this->fillable[] = $this->determineParentColumnName();
+        $this->fillable[] = $this->determineTitleColumnName();
+    }
+
     /**
      * Boot the bootable traits on the model.
      */
@@ -85,7 +92,7 @@ trait ModelTree
 
     public function determineTitleColumnName() : string
     {
-        return 'title';
+        return Utils::titleColumnName();
     }
 
     public static function defaultParentKey()

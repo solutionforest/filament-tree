@@ -14,9 +14,17 @@ class Utils
         return config('filament-tree.column_name.parent', 'parent_id');
     }
 
+    /**
+     * @deprecated Since v1.0.1
+     */
     public static function depthColumnName(): string
     {
         return config('filament-tree.column_name.depth', 'depth');
+    }
+
+    public static function titleColumnName(): string
+    {
+        return config('filament-tree.column_name.title', 'title');
     }
 
     public static function defaultParentId(): int

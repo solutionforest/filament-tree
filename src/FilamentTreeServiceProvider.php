@@ -3,7 +3,9 @@
 namespace SolutionForest\FilamentTree;
 
 use Filament\PluginServiceProvider;
+use Illuminate\Database\Schema\Blueprint;
 use Livewire\Livewire;
+use SolutionForest\FilamentTree\Macros\BlueprintMarcos;
 use Spatie\LaravelPackageTools\Package;
 
 class FilamentTreeServiceProvider extends PluginServiceProvider
@@ -29,5 +31,17 @@ class FilamentTreeServiceProvider extends PluginServiceProvider
                 Commands\MakeTreePageCommand::class,
                 Commands\MakeTreeWidgetCommand::class,
             ]);
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
+        $this->registerBlueprintMacros();
+    }
+
+    protected function registerBlueprintMacros()
+    {
+        Blueprint::mixin(new BlueprintMarcos);
     }
 }
