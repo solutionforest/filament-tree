@@ -10,7 +10,9 @@ Filament Tree is a plugin for Filament Admin that creates a model management pag
 This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to create menu, etc.
 
 Demo site : https://filament-cms-website-demo.solutionforest.net/
+
 Demo username : demo@solutionforest.net
+
 Demo password : 12345678
 Auto Reset every hour.
 
@@ -41,7 +43,7 @@ return [
     'column_name' => [
         'order' => 'order',
         'parent' => 'parent_id',
-        'depth' => 'depth',
+        'title' => 'title',
     ],
     /**
      * Tree model default parent key
@@ -72,14 +74,13 @@ Next, prepare the database and model.
 
 To use Filament Tree, follow these table structure conventions:
 
-> **Tip: The `parent_id` field must always default to 0!!!**
+> **Tip: The `parent_id` field must always default to -1!!!**
 
 ```
 Schema::create('product_categories', function (Blueprint $table) {
             $table->id();
-            $table->integer('parent_id')->default(0);
+            $table->integer('parent_id')->default(-1);
             $table->integer('order')->default(0)->index();
-            $table->tinyInteger('depth')->default(1)->index();
             $table->string('title');
             $table->timestamps();
         });
