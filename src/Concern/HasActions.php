@@ -259,6 +259,9 @@ trait HasActions
         return null;
     }
 
+    /**
+     * Action for each record
+     */
     protected function getTreeActions(): array
     {
         return [];
