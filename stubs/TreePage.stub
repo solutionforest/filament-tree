@@ -12,16 +12,19 @@ use SolutionForest\FilamentTree\Support\Utils;
 
 class {{ class }} extends BasePage
 {
+    protected static string $model = {{ modelClass }}::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    public static function getMaxDepth(): int
-    {
-        return 2;
-    }
+    protected static int $maxDepth = 2;
 
-    public function getModel(): string
+    protected function getActions(): array
     {
-        return {{ modelClass }}::class;
+        return [
+            $this->getCreateAction(),
+            // SAMPLE CODE, CAN DELETE
+            //\Filament\Pages\Actions\Action::make('sampleAction'),
+        ];
     }
     
     protected function getFormSchema(): array
@@ -30,4 +33,35 @@ class {{ class }} extends BasePage
             //
         ];
     }
+
+    protected function hasDeleteAction(): bool
+    {
+        return false;
+    }
+
+    protected function hasEditAction(): bool
+    {
+        return true;
+    }
+
+    protected function hasViewAction(): bool
+    {
+        return false;
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [];
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [];
+    }
+
+    // CUSTOMIZE ICON OF EACH RECORD, CAN DELETE
+    // public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
+    // {
+    //     return null;
+    // }
 }
