@@ -172,7 +172,7 @@ trait ModelTree
             childrenKeyName: $childrenKeyName
         );
 
-        $result[static::defaultParentKey()] = __('filament-access-management::filament-access-management.field.menu.root');
+        $result[static::defaultParentKey()] = __('filament-tree::filament-tree.root');
 
         foreach ($nodes as $node) {
             static::buildSelectArrayItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName, 1, $maxDepth);
