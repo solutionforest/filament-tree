@@ -15,14 +15,37 @@ class MakeTreeWidgetCommand extends Command
 
     protected $description = 'Creates a Filament tree widget class.';
 
-    protected $signature = 'make:filament-tree-widget {name?} {model?}';
+    protected $signature = 'make:filament-tree-widget {name?} {model?} {--R|resource=} {--F|force}';
 
     public function handle(): int
     {
         $path = config('filament.widgets.path', app_path('Filament/Widgets/'));
+        $resourcePath = config('filament.resources.path', app_path('Filament/Resources/'));
         $namespace = config('filament.widgets.namespace', 'App\\Filament\\Widgets');
+        $resourceNamespace = config('filament.resources.namespace', 'App\\Filament\\Resources');
 
-        $widget =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `MemberDetails`)', 'name')))
+        $resource = null;
+        $resourceClass = null;
+
+        $resourceInput = $this->option('resource') ?? $this->ask('(Optional) Resource (e.g. `ProductCategoryResource`)');
+
+        if ($resourceInput !== null) {
+            $resource = (string) Str::of($resourceInput)
+                ->studly()
+                ->trim('/')
+                ->trim('\\')
+                ->trim(' ')
+                ->replace('/', '\\');
+
+            if (! Str::of($resource)->endsWith('Resource')) {
+                $resource .= 'Resource';
+            }
+
+            $resourceClass = (string) Str::of($resource)
+                ->afterLast('\\');
+        }
+
+        $widget =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `ProductCategory`)', 'name')))
             ->trim('/')
             ->trim('\\')
             ->trim(' ')
@@ -34,12 +57,12 @@ class MakeTreeWidgetCommand extends Command
 
         $path = (string) Str::of($widget)
             ->prepend('/')
-            ->prepend($path)
+            ->prepend($resource === null ? $path : "{$resourcePath}\\{$resource}\\Widgets\\")
             ->replace('\\', '/')
             ->replace('//', '/')
             ->append('.php');
 
-        $model = (string) Str::of($this->argument('model') ?? $this->askRequired('Model (e.g. `Menu`)', 'model'))
+        $model = (string) Str::of($this->argument('model') ?? $this->askRequired('Model (e.g. `ProductCategory`)', 'model'))
             ->studly()
             ->trim('/')
             ->trim('\\')
@@ -48,14 +71,22 @@ class MakeTreeWidgetCommand extends Command
             ->replace('/', '\\');
         $modelClass = (string) Str::of($model)->afterLast('\\');
 
+        if (! $this->option('force') && $this->checkForCollision([$path])) {
+            return static::INVALID;
+        }
+
         $this->copyStubToApp('TreeWidget', $path, [
             'class' => $widgetClass,
-            'namespace' => $namespace . ($widgetNamespace !== '' ? "\\{$widgetNamespace}" : ''),
-            'model' => $model,
-            'modelClass' => $modelClass,
+            'namespace' => filled($resource) ? "{$resourceNamespace}\\{$resource}\\Widgets" . ($widgetNamespace !== '' ? "\\{$widgetNamespace}" : '') : $namespace . ($widgetNamespace !== '' ? "\\{$widgetNamespace}" : ''),
+            'model' => $model == $widgetClass ? "{$model} as TreeWidgetModel" : $model,
+            'modelClass' => $modelClass == $widgetClass ? "TreeWidgetModel" : $modelClass,
         ]);
 
-        $this->info("Successfully created {$widget}!");
+        $this->info("Successfully created {$widget} !");
+
+        if ($resource !== null) {
+            $this->info("Make sure to register the widget in `{$resourceClass}::getWidgets()`, and then again in `getHeaderWidgets()` or `getFooterWidgets()` of any `{$resourceClass}` page.");
+        }
 
         return static::SUCCESS;
     }
