@@ -2,6 +2,7 @@
 
 namespace {{ namespace }};
 
+use App\Models\{{ model }};
 use Filament\Forms;
 use Filament\Pages\Actions\CreateAction;
 use SolutionForest\FilamentTree\Actions;
@@ -20,7 +21,7 @@ class {{ class }} extends BasePage
 
     public function getModel(): string
     {
-        //
+        return {{ modelClass }}::class;
     }
     
     protected function getFormSchema(): array
