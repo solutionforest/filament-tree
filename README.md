@@ -9,7 +9,7 @@ Filament Tree is a plugin for Filament Admin that creates a model management pag
 
 This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to create menu, etc.
 
-Demo site : https://filament-cms-website-demo.solutionforest.net/
+Demo site : https://filament-cms-website-demo.solutionforest.net/admin
 
 Demo username : demo@solutionforest.net
 
@@ -60,17 +60,7 @@ return [
 
 ## Usage
 
-### Creating a Filament Resource Page
-
-To create a resources page, run the following command:
-
-```bash
-php artisan make:filament-resource ProductCategory
-```
-
-Next, prepare the database and model.
-
-### Table Structure and Model
+### Prepare the database and model
 
 To use Filament Tree, follow these table structure conventions:
 
@@ -78,13 +68,23 @@ To use Filament Tree, follow these table structure conventions:
 
 ```
 Schema::create('product_categories', function (Blueprint $table) {
-            $table->id();
-            $table->integer('parent_id')->default(-1);
-            $table->integer('order')->default(0)->index();
-            $table->string('title');
-            $table->timestamps();
-        });
+    $table->id();
+    $table->integer('parent_id')->default(-1);
+    $table->integer('order')->default(0)->index();
+    $table->string('title');
+    $table->timestamps();
+});
 ```
+This plugin provides a convenient method called `treeColumns()` that you can use to add the required columns for the tree structure to your table more easily. Here's an example:
+```
+Schema::create('product_categories', function (Blueprint $table) {
+    $table->id();
+    $table->treeColumns();
+    $table->timestamps();
+});
+```
+This will automatically add the required columns for the tree structure to your table.
+
 
 The above table structure contains three required fields: `parent_id`, `order`, `title`, and other fields do not have any requirements.
 
@@ -157,15 +157,28 @@ class ProductCategory extends Model
 
 ```
 
-### Create Tree Widget
+### Widget
+Filament provides a powerful feature that allows you to display widgets inside pages, below the header and above the footer. This can be useful for adding additional functionality to your resource pages.
+
+To create a Tree Widget and apply it to a resource page, you can follow these steps:
+
+#### 1. Creating a Filament Resource Page
+To create a resources page, run the following command:
+
+``` 
+php artisan make:filament-resource ProductCategory
+```
+
+#### 2. Create Tree Widget
 
 Prepare the filament-tree Widget and show it in Resource page.
 
-```bash
+```php
 php artisan make:filament-tree-widget ProductCategoryWidget
 ```
+
 Now you can see the Widget in Filament Folder
-```
+``` php
 <?php
 
 namespace App\Filament\Widgets;
@@ -178,6 +191,7 @@ class ProductCategoryWidget extends BaseWidget
 {
     protected static string $model = ModelsProductCategory::class;
 
+    // you can customize the maximum depth of your tree
     protected static int $maxDepth = 2;
 
     protected ?string $treeTitle = 'ProductCategory';
@@ -187,9 +201,9 @@ class ProductCategoryWidget extends BaseWidget
 ```
 
 
-### Resource Page 
+#### 3. Displaying a widget on a resource page
 
-Once you have created the widget, modify the resource page to show the tree view:
+Once you have created the widget, modify the `getHeaderWidgets()` or `getFooterWidgets()` methods of the resource page to show the tree view:
 
 ```php
 <?php
@@ -220,8 +234,104 @@ class ListProductCategories extends ListRecords
     }
 }
 ```
+    
+### Resources
+Filament allows you to create a custom pages for resources, you also can create a tree page that display hierarchical data.
+#### Create a Page
+To create a tree page for resource, you can use:
+``` 
+php artisan make:filament-tree-page ProductCategoryTree --resource=ProductCategory
+```
+    
+#### Register a Page to the resource
+You must register the tree page to a route in the static `getPages()` methods of your resource. For example:
 
-### Publishing Configuration
+``` php
+public static function getPages(): array
+{
+    return [
+        // ...
+        'tree-list' => Pages\ProductCategoryTree::route('/tree-list'),
+    ];
+}
+```
+#### Actions
+Define the available "actions" for the tree page using the `getActions()` and `getTreeActions()` methods of your page class.
+
+The `getActions()` method defines actions that are displayed next to the page's heading:
+```php
+    use Filament\Pages\Actions\CreateAction;
+
+    protected function getActions(): array
+    {
+        return [
+            CreateAction::make(),
+            // SAMPLE CODE, CAN DELETE
+            //\Filament\Pages\Actions\Action::make('sampleAction'),
+        ];
+    }
+```
+
+The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example: 
+```php
+use Filament\Pages\Actions\Action;
+
+protected function getTreeActions(): array
+{
+    return [
+        Actions\ViewAction::make(),
+        Actions\EditAction::make(),
+        Actions\DeleteAction::make(),
+    ];
+}
+
+```
+
+Alternatively, you can use the `hasDeleteAction()`, `hasEditAction()`, and `hasViewAction()` methods to customize each action individually.
+
+``` php
+protected function hasDeleteAction(): bool
+{
+    return false;
+}
+
+protected function hasEditAction(): bool
+{
+    return true;
+}
+
+protected function hasViewAction(): bool
+{
+    return false;
+}
+```
+#### Record ICON
+To customize the prefix icon for each record in a tree page, you can use the `getTreeRecordIcon()` method in your tree page class. This method should return a string that represents the name of the icon you want to use for the record. For example:
+
+```php
+public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
+{
+    // default null
+    return 'heroicon-o-cake';
+}
+```
+![tree-icon](https://github.com/solutionforest/filament-tree/assets/68525320/6a1ef719-9029-4e91-a20a-515a514c4326)
+
+
+### Pages
+This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use the `make:filament-tree-page` command. For example, to create a tree page for the ProductCategory model, you can run:
+#### Create a Page
+> **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelTree` trait**
+```php
+php artisan make:filament-tree-page ProductCategory --model=ProductCategory
+```
+    
+#### Actions, Widgets and Icon for each record
+Once you've created the tree page, you can customize the available actions, widgets, and icon for each record. You can use the same methods as for resource pages. See the [Resource Page](#resources)  for more information on how to customize actions, widgets, and icons.
+
+
+
+### Publishing Views
 
 To publish the views, use:
 
