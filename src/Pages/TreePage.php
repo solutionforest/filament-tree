@@ -144,6 +144,8 @@ abstract class TreePage extends Page implements HasTree
 
         $action->model($this->getModel());
 
+        $action->mutateFormDataBeforeSaveUsing(fn (array $data) => $this->mutateFormDataBeforeSave($data));
+
         $this->afterConfiguredEditAction($action);
 
         return $action;
@@ -222,6 +224,11 @@ abstract class TreePage extends Page implements HasTree
         return array_merge(
             ($this->hasCreateAction() ? [$this->getCreateAction()] : []),
         );
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return $data;
     }
 
     protected function callHook(string $hook): void

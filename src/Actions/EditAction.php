@@ -14,6 +14,8 @@ class EditAction extends Action
 
     protected ?Closure $mutateRecordDataUsing = null;
 
+    protected ?Closure $mutateFormDataBeforeSaveUsing = null;
+
     public static function getDefaultName(): ?string
     {
         return 'edit';
@@ -45,9 +47,12 @@ class EditAction extends Action
 
         $this->action(function (): void {
             $this->process(function (array $data, Model $record) {
+                if ($this->mutateFormDataBeforeSaveUsing) {
+                    $data = $this->evaluate($this->mutateFormDataBeforeSaveUsing, ['data' => $data]);
+                }
                 $record->update($data);
             });
-
+            
             $this->success();
         });
     }
@@ -57,5 +62,17 @@ class EditAction extends Action
         $this->mutateRecordDataUsing = $callback;
 
         return $this;
+    }
+
+    public function mutateFormDataBeforeSaveUsing(?Closure $callback): static
+    {
+        $this->mutateFormDataBeforeSaveUsing = $callback;
+
+        return $this;
+    }
+
+    public function getMutateFormDataBeforeSave(): ?Closure
+    {
+        return $this->mutateFormDataBeforeSaveUsing;
     }
 }

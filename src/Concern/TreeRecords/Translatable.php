@@ -75,7 +75,10 @@ trait Translatable
         });
 
         if (method_exists($action, 'using')) {
-            $action->using(function (array $data, Model $record) {
+            $action->using(function (array $data, Model $record) use ($action) {
+
+                $data = $action->evaluate($action->getMutateFormDataBeforeSave(), ['data' => $data]);
+                
                 $record->fill($data);
                 if (method_exists($record, 'setTranslation') &&
                     method_exists($record, 'getTranslatableAttributes')
