@@ -27,7 +27,7 @@ trait ModelTree
     public static function bootModelTree()
     {
         static::saving(function(Model $model) {
-            if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === 0) {
+            if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === -1) {
                 $model->{$model->determineParentColumnName()} = static::defaultParentKey();
             }
             if (empty($model->{$model->determineOrderColumnName()}) || $model->{$model->determineOrderColumnName()} === 0) {
