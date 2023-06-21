@@ -91,7 +91,8 @@ trait InteractWithTree
             $records = $this->getRecords()->keyBy(fn ($record) => $record->getAttributeValue($record->getKeyName()));
 
             $unnestedArr = [];
-            $this->unnestArray($unnestedArr, $list, Utils::defaultParentId());
+            $defaultParentId = Utils::defaultParentId();
+            $this->unnestArray($unnestedArr, $list, $defaultParentId);
             $unnestedArrData = collect($unnestedArr)
                 ->map(fn (array $data, $id) => ['data' => $data, 'model' => $records->get($id)])
                 ->filter(fn (array $arr) => !is_null($arr['model']));
@@ -101,6 +102,7 @@ trait InteractWithTree
                     if ($model instanceof Model) {
                         $parentColumnName = method_exists($model, 'determineParentColumnName') ? $model->determineParentColumnName() : Utils::parentColumnName();
                         $orderColumnName = method_exists($model, 'determineOrderColumnName') ? $model->determineOrderColumnName() : Utils::orderColumnName();
+                        $newParentId = $newParentId === $defaultParentId && method_exists($model, 'defaultParentKey') ? $model::defaultParentKey() : $newParentId;
 
                         $model->{$parentColumnName} = $newParentId;
                         $model->{$orderColumnName} = $newOrder;
