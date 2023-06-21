@@ -21,4 +21,10 @@ return [
     'components.tree.buttons.deselect_all.label' => '取消全選',
     'components.tree.buttons.expand_all.label' => '全部展開',
     'components.tree.buttons.collapse_all.label' => '全部折叠',
+    /*
+        |--------------------------------------------------------------------------
+        | Message
+        |--------------------------------------------------------------------------
+    */
+    'actions.delete.confirmation.with_children' => '你確定要刪除這條記錄及其子記錄嗎？',
 ];
