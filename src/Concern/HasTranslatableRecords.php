@@ -45,7 +45,10 @@ trait HasTranslatableRecords
             foreach ($record->getRelations() as $relationKey => $item) {
                 if (is_array($item) || $item instanceof Arrayable) {
                     foreach ($item as $relationRecord) {
-                        $this->updateModelTranslation($relationRecord);
+                        if ($relationRecord instanceof Model) {
+
+                            $this->updateModelTranslation($relationRecord);
+                        }
                     }
 
                 } else if (! empty($item)) {
