@@ -81,6 +81,11 @@ trait InteractWithTree
         return $this->getCachedTree()->getParentKey($record);
     }
 
+    public function getNodeCollapsedState(?Model $record = null): bool
+    {
+        return false;
+    }
+
     /**
      * Update the tree list.
      */
