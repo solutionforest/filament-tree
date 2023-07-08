@@ -323,7 +323,8 @@ You can customize a collapsed state of the node. If you would like to show your 
 ```php
 public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
 {
-    return false;
+    // All tree nodes will be collapsed by default.
+    return true;
 }
 ```
 
