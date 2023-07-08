@@ -1,5 +1,14 @@
-@props(['records', 'containerKey', 'tree'])
-<ol class="filament-tree-list dd-list">
+@props([
+    'records',
+    'containerKey',
+    'tree',
+    'collapsed' => null,
+])
+<ol @class([
+    'filament-tree-list',
+    'dd-list',
+    'hidden' => $collapsed,
+])>
     @foreach ($records ?? [] as $record)
         @php
             $title = $this->getTreeRecordTitle($record);

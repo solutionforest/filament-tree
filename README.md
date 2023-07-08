@@ -317,6 +317,16 @@ public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record =
 ```
 ![tree-icon](https://github.com/solutionforest/filament-tree/assets/68525320/6a1ef719-9029-4e91-a20a-515a514c4326)
 
+#### Node collapsed state
+You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:
+
+```php
+public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
+{
+    // All tree nodes will be collapsed by default.
+    return true;
+}
+```
 
 ### Pages
 This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use the `make:filament-tree-page` command. For example, to create a tree page for the ProductCategory model, you can run:
