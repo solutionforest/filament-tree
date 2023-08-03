@@ -14,6 +14,7 @@
     $parentKey = $tree->getParentKey($record);
 
     $children = $record->children;
+    $collapsed = $this->getNodeCollapsedState($record);
 
     $actions = $tree->getActions();
 @endphp
@@ -48,10 +49,10 @@
                 'dd-item-btns',
                 'hidden' => ! count($children),
             ])>
-                <button data-action="expand" class="hidden">
+                <button data-action="expand" @class(['hidden' => ! $collapsed])>
                     <x-heroicon-o-chevron-down class="text-gray-400 w-4 h-4"/>
                 </button>
-                <button data-action="collapse">
+                <button data-action="collapse" @class(['hidden' => $collapsed])>
                     <x-heroicon-o-chevron-up class="text-gray-400 w-4 h-4"/>
                 </button>
             </div>
@@ -64,7 +65,7 @@
         @endif
     </div>
     @if (count($children))
-        <x-filament-tree::tree.list :records="$children" :containerKey="$containerKey" :tree="$tree" />
+        <x-filament-tree::tree.list :records="$children" :containerKey="$containerKey" :tree="$tree" :collapsed="$collapsed"/>
     @endif
     <div class="rounded-lg border border-gray-300 mb-2 w-full px-4 py-4 animate-pulse hidden" 
         wire:loading.class.remove.delay="hidden" 
