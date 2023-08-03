@@ -46,9 +46,7 @@
         $('#nestable-menu [data-action="save"]').on('click', async function (e) {
             let value = $('#{{ $containerKey }}').nestable('serialize');
             let result = await @this.updateTree(value);
-            console.log(result);
             if (result['reload'] === true) {
-                console.log('Reload Menu');
                 window.location.reload();
             }
         });
