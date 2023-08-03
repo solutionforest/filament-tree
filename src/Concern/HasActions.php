@@ -190,6 +190,13 @@ trait HasActions
         return $this->getCachedTreeAction($this->mountedTreeAction) ?? $this->getCachedTreeEmptyStateAction($this->mountedTreeAction);
     }
 
+    protected function getHasActionsForms(): array
+    {
+        return [
+            'mountedTreeActionData' => $this->getMountedTreeActionForm(),
+        ];
+    }
+
     public function getMountedTreeActionForm()
     {
         $action = $this->getMountedTreeAction();
