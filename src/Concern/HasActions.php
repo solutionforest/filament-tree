@@ -3,25 +3,35 @@
 namespace SolutionForest\FilamentTree\Concern;
 
 use Closure;
+use Filament\Forms\Form;
 use Filament\Support\Exceptions\Cancel;
 use Filament\Support\Exceptions\Halt;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Actions\Action;
 use SolutionForest\FilamentTree\Actions\ActionGroup;
 
+/**
+ * @property Form $mountedTreeActionForm
+ */
 trait HasActions
 {
-    public $mountedTreeAction = null;
+    /**
+     * @var array<string> | null
+     */
+    public ?array $mountedTreeAction = [];
 
-    public $mountedTreeActionData = [];
+    /**
+     * @var array<string, array<string, mixed>> | null
+     */
+    public ?array $mountedTreeActionData = [];
 
-    public $mountedTreeActionRecord = null;
+    public int | string | null $mountedTreeActionRecord = null;
 
     protected array $cachedTreeActions;
 
     protected ?Model $cachedMountedTreeActionRecord = null;
 
-    protected $cachedMountedTreeActionRecordKey = null;
+    protected int | string | null $cachedMountedTreeActionRecordKey = null;
 
     public function cacheTreeActions(): void
     {
@@ -58,15 +68,15 @@ trait HasActions
         $action = $this->getMountedTreeAction();
 
         if (! $action) {
-            return;
+            return null;
         }
 
         if (filled($this->mountedTreeActionRecord) && ($action->getRecord() === null)) {
-            return;
+            return null;
         }
 
         if ($action->isDisabled()) {
-            return;
+            return null;
         }
 
         $action->arguments($arguments ? json_decode($arguments, associative: true) : []);
@@ -76,7 +86,7 @@ trait HasActions
         $result = null;
 
         try {
-            if ($action->hasForm()) {
+            if ($this->mountedTreeActionHasForm()) {
                 $action->callBeforeFormValidated();
 
                 $action->formData($form->getState());
@@ -92,25 +102,14 @@ trait HasActions
 
             $result = $action->callAfter() ?? $result;
         } catch (Halt $exception) {
-            return;
+            return null;
         } catch (Cancel $exception) {
         }
-
-        if (filled($this->redirectTo)) {
-            return $result;
-        }
-
-        $this->mountedTreeAction = null;
-
-        $action->record(null);
-        $this->mountedTreeActionRecord(null);
 
         $action->resetArguments();
         $action->resetFormData();
 
-        $this->dispatchBrowserEvent('close-modal', [
-            'id' => "{$this->id}-tree-action",
-        ]);
+        $this->unmountTreeAction();
 
         return $result;
     }
@@ -122,13 +121,19 @@ trait HasActions
 
     public function mountTreeAction(string $name, ?string $record = null)
     {
-        $this->mountedTreeAction = $name;
-        $this->mountedTreeActionRecord($record);
+        $this->mountedTreeAction[] = $name;
+        $this->mountedTreeActionData[] = [];
+
+        if (count($this->mountedTreeAction) === 1) {
+            $this->mountedTreeActionRecord($record);
+        }
 
         $action = $this->getMountedTreeAction();
 
         if (! $action) {
-            return;
+            $this->unmountTreeAction();
+
+            return null;
         }
 
         if (filled($record) && ($action->getRecord() === null)) {
@@ -139,13 +144,12 @@ trait HasActions
             return;
         }
 
-        $this->cacheForm(
-            'mountedTreeActionForm',
-            fn () => $this->getMountedTreeActionForm(),
-        );
+        $this->cacheMountedTreeActionForm();
 
         try {
-            if ($action->hasForm()) {
+            $hasForm = $this->mountedTreeActionHasForm();
+
+            if ($hasForm) {
                 $action->callBeforeFormFilled();
             }
 
@@ -153,27 +157,41 @@ trait HasActions
                 'form' => $this->getMountedTreeActionForm(),
             ]);
 
-            if ($action->hasForm()) {
+            if ($hasForm) {
                 $action->callAfterFormFilled();
             }
         } catch (Halt $exception) {
-            return;
+            return null;
         } catch (Cancel $exception) {
-            $this->mountedTreeAction = null;
-            $this->mountedTreeActionRecord(null);
+            $this->unmountTreeAction(shouldCancelParentActions: false);
 
-            return;
+            return null;
         }
 
-        if (! $action->shouldOpenModal()) {
+        if (! $this->mountedTreeActionShouldOpenModal()) {
             return $this->callMountedTreeAction();
         }
 
         $this->resetErrorBag();
 
-        $this->dispatchBrowserEvent('open-modal', [
-            'id' => "{$this->id}-tree-action",
-        ]);
+        $this->openTreeActionModal();
+
+        return null;
+    }
+
+    public function mountedTreeActionShouldOpenModal(): bool
+    {
+        $action = $this->getMountedTreeAction();
+
+        if ($action->isModalHidden()) {
+            return false;
+        }
+
+        return $action->getModalDescription() ||
+            $action->getModalContent() ||
+            $action->getModalContentFooter() ||
+            $action->getInfolist() ||
+            $this->mountedTreeActionHasForm();
     }
 
     public function getCachedTreeActions(): array
@@ -183,11 +201,16 @@ trait HasActions
 
     public function getMountedTreeAction(): ?Action
     {
-        if (! $this->mountedTreeAction) {
+        if (! count($this->mountedTreeAction ?? [])) {
             return null;
         }
 
         return $this->getCachedTreeAction($this->mountedTreeAction) ?? $this->getCachedTreeEmptyStateAction($this->mountedTreeAction);
+    }
+
+    public function mountedTreeActionHasForm(): bool
+    {
+        return (bool) count($this->getMountedTreeActionForm()?->getComponents() ?? []);
     }
 
     protected function getHasActionsForms(): array
@@ -195,6 +218,68 @@ trait HasActions
         return [
             'mountedTreeActionData' => $this->getMountedTreeActionForm(),
         ];
+    }
+
+    protected function popMountedTreeAction(): ?string
+    {
+        try {
+            return array_pop($this->mountedTreeAction);
+        } finally {
+            array_pop($this->mountedTreeActionData);
+        }
+    }
+
+    protected function resetMountedTreeActionProperties(): void
+    {
+        $this->mountedTreeAction = [];
+        $this->mountedTreeActionData = [];
+    }
+
+    public function unmountTreeAction(bool $shouldCancelParentActions = true): void
+    {
+        $action = $this->getMountedTreeAction();
+
+        if (! ($shouldCancelParentActions && $action)) {
+            $this->popMountedTreeAction();
+        } elseif ($action->shouldCancelAllParentActions()) {
+            $this->resetMountedTreeActionProperties();
+        } else {
+            $parentActionToCancelTo = $action->getParentActionToCancelTo();
+
+            while (true) {
+                $recentlyClosedParentAction = $this->popMountedTreeAction();
+
+                if (
+                    blank($parentActionToCancelTo) ||
+                    ($recentlyClosedParentAction === $parentActionToCancelTo)
+                ) {
+                    break;
+                }
+            }
+        }
+
+        if (! count($this->mountedTreeAction)) {
+            $this->closeTreeActionModal();
+
+            $action?->record(null);
+            $this->mountedTreeActionRecord(null);
+
+            return;
+        }
+
+        $this->cacheMountedTreeActionForm();
+
+        $this->resetErrorBag();
+
+        $this->openTreeActionModal();
+    }
+
+    protected function cacheMountedTreeActionForm(): void
+    {
+        $this->cacheForm(
+            'mountedTreeActionForm',
+            fn () => $this->getMountedTreeActionForm(),
+        );
     }
 
     public function getMountedTreeActionForm()
@@ -209,14 +294,15 @@ trait HasActions
             return $this->getCachedForm('mountedTreeActionForm');
         }
 
-        return $this->makeForm()
-            ->schema($action->getFormSchema())
-            ->model($this->getMountedTreeActionRecord() ?? $this->getTreeQuery()->getModel()::class)
-            ->statePath('mountedTreeActionData')
-            ->context($this->mountedTreeAction);
+        return $action->getForm(
+            $this->makeForm()
+                ->model($this->getMountedTreeActionRecord() ?? $this->getTreeQuery()->getModel()::class)
+                ->statePath('mountedTreeActionData.' . array_key_last($this->mountedTreeActionData))
+                ->operation(implode('.', $this->mountedTreeAction)),
+        );
     }
 
-    public function getMountedTreeActionRecordKey()
+    public function getMountedTreeActionRecordKey(): int | string | null
     {
         return $this->mountedTreeActionRecord;
     }
@@ -234,8 +320,21 @@ trait HasActions
         return $this->cachedMountedTreeActionRecord = $this->getTreeRecord($recordKey);
     }
 
-    public function getCachedTreeAction(string $name): ?Action
+    /**
+     * @param  string | array<string>  $name
+     */
+    public function getCachedTreeAction(string|array $name): ?Action
     {
+        if (is_string($name) && str($name)->contains('.')) {
+            $name = explode('.', $name);
+        }
+
+        if (is_array($name)) {
+            $firstName = array_shift($name);
+
+            $name = $firstName;
+        }
+
         return $this->findTreeAction($name)?->record($this->getMountedTreeActionRecord());
     }
 
@@ -264,6 +363,16 @@ trait HasActions
         }
 
         return null;
+    }
+
+    protected function closeTreeActionModal(): void
+    {
+        $this->dispatch('close-modal', id: "{$this->getId()}-tree-action");
+    }
+
+    protected function openTreeActionModal(): void
+    {
+        $this->dispatch('open-modal', id: "{$this->getId()}-tree-action");
     }
 
     /**

@@ -3,8 +3,9 @@
 namespace SolutionForest\FilamentTree\Actions;
 
 use Closure;
-use Filament\Forms\ComponentContainer;
+use Filament\Actions\StaticAction;
 use Illuminate\Database\Eloquent\Model;
+use SolutionForest\FilamentTree\Components\Tree;
 
 class ViewAction extends Action
 {
@@ -19,31 +20,31 @@ class ViewAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('filament-support::actions/view.single.label'));
+        $this->label(__('filament-actions::view.single.label'));
 
-        $this->modalHeading(fn (): string => __('filament-support::actions/view.single.modal.heading', ['label' => $this->getRecordTitle()]));
+        $this->modalHeading(fn (): string => __('filament-actions::view.single.modal.heading', ['label' => $this->getRecordTitle()]));
 
-        $this->modalActions(fn (): array => array_merge(
-            $this->getExtraModalActions(),
-            [$this->getModalCancelAction()->label(__('filament-support::actions/view.single.modal.actions.close.label'))],
-        ));
+        $this->modalSubmitAction(false);
+        $this->modalCancelAction(fn (StaticAction $action) => $action->label(__('filament-actions::view.single.modal.actions.close.label')));
 
-        $this->color('secondary');
+        $this->color('gray');
 
-        $this->icon('heroicon-s-eye');
+        $this->icon('heroicon-m-eye');
 
-        $this->iconButton();
+        $this->disabledForm();
 
-        $this->disableForm();
-
-        $this->mountUsing(function (ComponentContainer $form, Model $record): void {
-            $data = $record->attributesToArray();
+        $this->fillForm(function (Model $record, Tree $tree): array {
+            if ($translatableContentDriver = $tree->makeFilamentTranslatableContentDriver()) {
+                $data = $translatableContentDriver->getRecordAttributesToArray($record);
+            } else {
+                $data = $record->attributesToArray();
+            }
 
             if ($this->mutateRecordDataUsing) {
                 $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data, 'record' => $record]);
             }
 
-            $form->fill($data);
+            return $data;
         });
 
         $this->action(static function (): void {

@@ -28,6 +28,13 @@ class {{ class }} extends BaseWidget
         ];
     }
 
+    // INFOLIST, CAN DELETE
+    public function getViewFormSchema(): array {
+        return [
+            //
+        ];
+    }
+
     // CUSTOMIZE ICON OF EACH RECORD, CAN DELETE
     // public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
     // {

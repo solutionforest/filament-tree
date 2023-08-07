@@ -2,7 +2,7 @@
 
 namespace SolutionForest\FilamentTree\Actions;
 
-use Filament\Support\Actions\Concerns\CanCustomizeProcess;
+use Filament\Actions\Concerns\CanCustomizeProcess;
 use Illuminate\Database\Eloquent\Model;
 
 class DeleteAction extends Action
@@ -18,17 +18,17 @@ class DeleteAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('filament-support::actions/delete.single.label'));
+        $this->label(__('filament-actions::delete.single.label'));
 
-        $this->modalHeading(fn (): string => __('filament-support::actions/delete.single.modal.heading', ['label' => $this->getRecordTitle()]));
+        $this->modalHeading(fn (): string => __('filament-actions::delete.single.modal.heading', ['label' => $this->getRecordTitle()]));
 
-        $this->successNotificationTitle(__('filament-support::actions/delete.single.messages.deleted'));
+        $this->modalSubmitActionLabel(__('filament-actions::delete.single.modal.actions.delete.label'));
+
+        $this->successNotificationTitle(__('filament-actions::delete.single.notifications.deleted.title'));
 
         $this->color('danger');
 
-        $this->icon('heroicon-s-trash');
-        
-        $this->iconButton();
+        $this->icon('heroicon-m-trash');
 
         $this->requiresConfirmation();
 
@@ -37,10 +37,12 @@ class DeleteAction extends Action
                 return __('filament-tree::filament-tree.actions.delete.confirmation.with_children');
 
             } else {
-                return __('filament-support::actions/modal.confirmation');
+                return __('filament-actions::modal.confirmation');
 
             }
         });
+        
+        $this->modalIcon('heroicon-o-trash');
 
         $this->hidden(static function (Model $record): bool {
             if (! method_exists($record, 'trashed')) {

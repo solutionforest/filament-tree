@@ -2,9 +2,14 @@
 
 namespace SolutionForest\FilamentTree\Resources\Pages;
 
-use Filament\Pages\Actions\CreateAction;
-use Filament\Resources\Pages\Concerns\UsesResourceForm;
+use Filament\Actions\CreateAction;
+use Filament\Forms\Form;
+use Filament\Pages\Concerns\InteractsWithFormActions;
+use Filament\Panel;
+use Filament\Resources\Pages\PageRegistration;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route as RouteFacade;
 use Illuminate\Support\Str;
 use SolutionForest\FilamentTree\Actions\DeleteAction;
 use SolutionForest\FilamentTree\Actions\EditAction;
@@ -13,7 +18,7 @@ use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
 
 abstract class TreePage extends BasePage
 {
-    use UsesResourceForm;
+    use InteractsWithFormActions;
 
     protected static ?string $breadcrumb = null;
 
@@ -21,15 +26,36 @@ abstract class TreePage extends BasePage
 
     protected function getFormSchema(): array
     {
-        return $this->getResourceForm(columns: 2)->getSchema();
+        return static::getResource()::form(Form::make($this))->getComponents();
     }
 
-    public static function route(string $path): array
+    public static function route(string $path): PageRegistration
     {
-        return [
-            'class' => static::class,
-            'route' => $path,
-        ];
+        return new PageRegistration(
+            page: static::class,
+            route: fn (Panel $panel): Route => RouteFacade::get($path, static::class)
+                ->middleware(static::getRouteMiddleware($panel)),
+        );
+    }
+
+    public static function getEmailVerifiedMiddleware(Panel $panel): string
+    {
+        return static::getResource()::getEmailVerifiedMiddleware($panel);
+    }
+
+    public static function isEmailVerificationRequired(Panel $panel): bool
+    {
+        return static::getResource()::isEmailVerificationRequired($panel);
+    }
+
+    public static function getTenantSubscribedMiddleware(Panel $panel): string
+    {
+        return static::getResource()::getTenantSubscribedMiddleware($panel);
+    }
+
+    public static function isTenantSubscriptionRequired(Panel $panel): bool
+    {
+        return static::getResource()::isTenantSubscriptionRequired($panel);
     }
 
     public function getBreadcrumb(): ?string
@@ -37,7 +63,7 @@ abstract class TreePage extends BasePage
         return static::$breadcrumb ?? static::getTitle();
     }
 
-    protected function getBreadcrumbs(): array
+    public function getBreadcrumbs(): array
     {
         $resource = static::getResource();
 
@@ -79,6 +105,21 @@ abstract class TreePage extends BasePage
             ->authorize(fn (Model $record): bool => static::getResource()::canEdit($record));
     }
 
+    protected function hasDeleteAction(): bool
+    {
+        return true;
+    }
+
+    protected function hasEditAction(): bool
+    {
+        return true;
+    }
+
+    protected function hasViewAction(): bool
+    {
+        return false;
+    }
+
     public function getModel(): string
     {
         return static::getResource()::getModel();
@@ -89,7 +130,7 @@ abstract class TreePage extends BasePage
         return static::$resource;
     }
 
-    protected function getTitle(): string
+    public function getTitle(): string
     {
         return static::$title ?? Str::headline(static::getResource()::getPluralModelLabel());
     }

@@ -1,7 +1,7 @@
 <x-filament-tree::actions.action
     :action="$action"
-    component="filament::dropdown.list.item"
-    :icon="$action->getGroupedIcon()"
+    dynamic-component="filament::dropdown.list.item"
+    :icon="$getGroupedIcon()"
     class="filament-grouped-action"
 >
     {{ $getLabel() }}

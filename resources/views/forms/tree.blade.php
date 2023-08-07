@@ -103,7 +103,7 @@
             />
         </div>
 
-        <x-filament-support::grid
+        <x-filament::grid
             :default="$getColumns('default')"
             :sm="$getColumns('sm')"
             :md="$getColumns('md')"
@@ -115,6 +115,6 @@
             @foreach ($getOptions() as $optionValue => $item)
                 @include('filament-tree::forms.tree.option-item', ['optionValue' => $optionValue, 'item' => $item])
             @endforeach
-        </x-filament-support::grid>
+        </x-filament::grid>
     </div>
 </x-dynamic-component>

@@ -2,6 +2,7 @@
 
 namespace SolutionForest\FilamentTree\Concern;
 
+use Filament\Support\Contracts\TranslatableContentDriver;
 use SolutionForest\FilamentTree\Contract\HasTree;
 
 trait BelongsToLivewire
@@ -18,5 +19,10 @@ trait BelongsToLivewire
     public function getLivewire(): HasTree
     {
         return $this->livewire;
+    }
+    
+    public function makeFilamentTranslatableContentDriver(): ?TranslatableContentDriver
+    {
+        return $this->getLivewire()->makeFilamentTranslatableContentDriver();
     }
 }

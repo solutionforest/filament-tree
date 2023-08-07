@@ -2,16 +2,14 @@
 
 namespace SolutionForest\FilamentTree\Actions\Modal;
 
-use Filament\Support\Actions\Modal\Actions\Action as BaseAction;
+use Filament\Actions\StaticAction;
+use SolutionForest\FilamentTree\Concern\Actions\HasTree;
+use SolutionForest\FilamentTree\Concern\BelongsToTree;
 
-class Action extends BaseAction
+/**
+ * @deprecated Use `\Filament\Actions\StaticAction` instead.
+ */
+class Action extends StaticAction implements HasTree
 {
-    protected string $view = 'filament-tree::actions.modal.actions.button-action';
-
-    public function button(): static
-    {
-        $this->view(static::$view);
-
-        return $this;
-    }
+    use BelongsToTree;
 }

@@ -4,13 +4,13 @@
     ];
 @endphp
 <x-filament::page class="filament-tree-page">
-    <x-filament-support::grid 
+    <x-filament::grid 
         :default="$columns['default']"
         class="gap-4"
     >
-        <x-filament-support::grid.column>
+        <x-filament::grid.column>
             {{ $this->tree }}
-        </x-filament-support::grid.column>
+        </x-filament::grid.column>
 
-    </x-filament-support::grid>
+    </x-filament::grid>
 </x-filament::page>

@@ -2,7 +2,8 @@
 
 namespace SolutionForest\FilamentTree\Concern\TreeRecords;
 
-use Filament\Pages\Actions\CreateAction;
+use Filament\Actions\CreateAction;
+use Filament\Support\Contracts\TranslatableContentDriver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

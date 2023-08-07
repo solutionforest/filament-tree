@@ -1,33 +1,35 @@
 @props([
     'action',
-    'component',
+    'dynamicComponent',
     'icon' => null,
 ])
 
 @php
-if ((! $action->getAction()) || $action->getUrl()) {
-    $wireClickAction = null;
-} elseif ($record = $action->getRecord()) {
-    $wireClickAction = "mountTreeAction('{$action->getName()}', '{$this->getRecordKey($record)}')";
-} else {
-    $wireClickAction = "mountTreeAction('{$action->getName()}')";
-}
+    $isDisabled = $action->isDisabled();
+    $url = $action->getUrl();
 @endphp
 
 <x-dynamic-component
-    :component="$component"
-    :dark-mode="config('filament.dark_mode')"
-    :attributes="\Filament\Support\prepare_inherited_attributes($attributes)->merge($action->getExtraAttributes())"
-    :tag="$action->getUrl() ? 'a' : 'button'"
-    :wire:click="$wireClickAction"
-    :href="$action->isEnabled() ? $action->getUrl() : null"
-    :target="$action->shouldOpenUrlInNewTab() ? '_blank' : null"
-    :disabled="$action->isDisabled()"
+    :badge="$action->getBadge()"
+    :badge-color="$action->getBadgeColor()"
+    :component="$dynamicComponent"
+    :form="$action->getFormToSubmit()"
+    :tag="$url ? 'a' : 'button'"
+    :x-on:click="$action->getAlpineClickHandler()"
+    :wire:click="$action->getLivewireClickHandler()"
+    :wire:target="$action->getLivewireTarget()"
+    :href="$isDisabled ? null : $url"
+    :target="($url && $action->shouldOpenUrlInNewTab()) ? '_blank' : null"
+    :type="$action->canSubmitForm() ? 'submit' : 'button'"
     :color="$action->getColor()"
+    :key-bindings="$action->getKeyBindings()"
     :tooltip="$action->getTooltip()"
+    :disabled="$isDisabled"
     :icon="$icon ?? $action->getIcon()"
-    :size="$action->getSize() ?? 'sm'"
-    dusk="filament.tree.action.{{ $action->getName() }}"
+    :icon-size="$action->getIconSize()"
+    :size="$action->getSize()"
+    :label-sr-only="$action->isLabelHidden()"
+    :attributes="\Filament\Support\prepare_inherited_attributes($attributes)->merge($action->getExtraAttributes(), escape: false)"
 >
     {{ $slot }}
 </x-dynamic-component>

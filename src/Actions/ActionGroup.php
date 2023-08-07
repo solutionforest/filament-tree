@@ -2,10 +2,13 @@
 
 namespace SolutionForest\FilamentTree\Actions;
 
-use Filament\Support\Actions\ActionGroup as BaseActionGroup;
-use Filament\Support\Actions\Concerns\InteractsWithRecord;
+use Filament\Actions\ActionGroup as BaseActionGroup;
+use Filament\Actions\Concerns\InteractsWithRecord;
+use Filament\Actions\Contracts\HasRecord;
+use SolutionForest\FilamentTree\Components\Tree;
+use SolutionForest\FilamentTree\Concern\Actions\HasTree;
 
-class ActionGroup extends BaseActionGroup
+class ActionGroup extends BaseActionGroup implements HasRecord, HasTree
 {
     use InteractsWithRecord;
 
@@ -20,5 +23,18 @@ class ActionGroup extends BaseActionGroup
         }
 
         return $actions;
+    }
+
+    public function tree(Tree $tree): static
+    {
+        foreach ($this->actions as $action) {
+            if (! $action instanceof HasTree) {
+                continue;
+            }
+
+            $action->tree($tree);
+        }
+
+        return $this;
     }
 }

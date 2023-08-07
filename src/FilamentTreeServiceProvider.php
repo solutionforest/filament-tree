@@ -2,30 +2,24 @@
 
 namespace SolutionForest\FilamentTree;
 
-use Filament\PluginServiceProvider;
+use Filament\Support\Assets\Css;
+use Filament\Support\Assets\Js;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Schema\Blueprint;
-use Livewire\Livewire;
 use SolutionForest\FilamentTree\Macros\BlueprintMarcos;
 use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class FilamentTreeServiceProvider extends PluginServiceProvider
+class FilamentTreeServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'filament-tree';
-
-    protected array $styles = [
-        'filament-tree-min' => __DIR__ . '/../resources/dist/filament-tree.css',
-    ];
-
-    protected array $scripts = [
-        'https://code.jquery.com/jquery-3.6.1.slim.min.js',
-        'filament-tree-min' => __DIR__ . '/../resources/dist/filament-tree.js',
-    ];
-
+    
     public function configurePackage(Package $package): void
     {
         $package->name(static::$name)
             ->hasConfigFile()
             ->hasViews()
+            ->hasAssets()
             ->hasTranslations()
             ->hasCommands([
                 Commands\MakeTreePageCommand::class,
@@ -38,6 +32,15 @@ class FilamentTreeServiceProvider extends PluginServiceProvider
         parent::boot();
 
         $this->registerBlueprintMacros();
+    }
+
+    public function packageBooted(): void
+    {
+        FilamentAsset::register([
+            Css::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.css'),
+            Js::make('filament-tree-jquery', 'https://code.jquery.com/jquery-3.6.1.slim.min.js'),
+            Js::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.js'),
+        ], 'solution-forest/filament-tree');
     }
 
     protected function registerBlueprintMacros()

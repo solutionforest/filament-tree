@@ -3,85 +3,82 @@
 namespace SolutionForest\FilamentTree\Actions;
 
 
-use Filament\Support\Actions\Action as BaseAction;
-use Filament\Support\Actions\Concerns\CanBeDisabled;
-use Filament\Support\Actions\Concerns\CanBeOutlined;
-use Filament\Support\Actions\Concerns\CanOpenUrl;
-use Filament\Support\Actions\Concerns\HasGroupedIcon;
-use Filament\Support\Actions\Concerns\HasTooltip;
-use Filament\Support\Actions\Concerns\InteractsWithRecord;
-use Filament\Support\Actions\Contracts\Groupable;
-use Filament\Support\Actions\Contracts\HasRecord;
+use Filament\Actions\Concerns\HasMountableArguments;
+use Filament\Actions\Concerns\InteractsWithRecord;
+use Filament\Actions\Contracts\Groupable;
+use Filament\Actions\Contracts\HasRecord;
+use Filament\Actions\MountableAction as BaseAction;
+use Filament\Actions\StaticAction;
 use Illuminate\Database\Eloquent\Model;
-use SolutionForest\FilamentTree\Actions\Modal\Action as ModalAction;
+use SolutionForest\FilamentTree\Concern\Actions\HasTree;
 use SolutionForest\FilamentTree\Concern\BelongsToTree;
 
-class Action extends BaseAction implements Groupable, HasRecord
+class Action extends BaseAction implements Groupable, HasRecord, HasTree
 {
-    use CanBeDisabled;
-    use CanBeOutlined;
-    use CanOpenUrl;
-    use HasGroupedIcon;
-    use HasTooltip;
-    use InteractsWithRecord;
     use BelongsToTree;
+    use HasMountableArguments;
+    use InteractsWithRecord;
 
-    protected string $view = 'filament-tree::actions.link-action';
+    public const BUTTON_VIEW = 'filament-tree::actions.button-action';
 
-    public function button(): static
-    {
-        $this->view('filament-tree::actions.button-action');
+    public const GROUPED_VIEW = 'filament-tree::actions.grouped-action';
 
-        return $this;
-    }
+    public const ICON_BUTTON_VIEW = 'filament-tree::actions.icon-button-action';
 
-    public function grouped(): static
-    {
-        $this->view('filament-tree::actions.grouped-action');
+    public const LINK_VIEW = 'filament-tree::actions.link-action';
 
-        return $this;
-    }
-
-    public function iconButton(): static
-    {
-        $this->view('filament-tree::actions.icon-button-action');
-
-        return $this;
-    }
-
-    public function link(): static
-    {
-        $this->view('filament-tree::actions.link-action');
-
-        return $this;
-    }
-
-    protected function getLivewireCallActionName(): string
+    public function getLivewireCallMountedActionName(): string
     {
         return 'callMountedTreeAction';
     }
 
-    protected static function getModalActionClass(): string
+    public function getLivewireClickHandler(): ?string
     {
-        return ModalAction::class;
+        if (! $this->isLivewireClickHandlerEnabled()) {
+            return null;
+        }
+
+        if (is_string($this->action)) {
+            return $this->action;
+        }
+
+        if ($record = $this->getRecord()) {
+            $recordKey = $this->getLivewire()->getRecordKey($record);
+
+            return "mountTreeAction('{$this->getName()}', '{$recordKey}')";
+        }
+
+        return "mountTreeAction('{$this->getName()}')";
     }
 
-    public static function makeModalAction(string $name): ModalAction
+    /**
+     * @return array<mixed>
+     */
+    protected function resolveDefaultClosureDependencyForEvaluationByName(string $parameterName): array
     {
-        /** @var ModalAction $action */
-        $action = parent::makeModalAction($name);
-
-        return $action;
+        return match ($parameterName) {
+            'model' => [$this->getModel()],
+            'record' => [$this->getRecord()],
+            'tree' => [$this->getTree()],
+            default => parent::resolveDefaultClosureDependencyForEvaluationByName($parameterName),
+        };
     }
 
-    protected function getDefaultEvaluationParameters(): array
+    /**
+     * @return array<mixed>
+     */
+    protected function resolveDefaultClosureDependencyForEvaluationByType(string $parameterType): array
     {
-        return array_merge(parent::getDefaultEvaluationParameters(), [
-            'record' => $this->resolveEvaluationParameter(
-                'record',
-                fn (): ?Model => $this->getRecord(),
-            ),
-        ]);
+        $record = $this->getRecord();
+
+        if (! $record) {
+            return parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType);
+        }
+
+        return match ($parameterType) {
+            Model::class, $record::class => [$record],
+            default => parent::resolveDefaultClosureDependencyForEvaluationByType($parameterType),
+        };
     }
 
     public function getRecordTitle(?Model $record = null): string
@@ -91,8 +88,44 @@ class Action extends BaseAction implements Groupable, HasRecord
         return $this->getCustomRecordTitle($record) ?? $this->getLivewire()->getTreeRecordTitle($record);
     }
 
+    public function getRecordTitleAttribute(): ?string
+    {
+        return $this->getCustomRecordTitleAttribute() ?? $this->getTree()->getRecordTitleAttribute();
+    }
+
+    public function getModelLabel(): string
+    {
+        return $this->getCustomModelLabel() ?? $this->getTree()->getModelLabel();
+    }
+
+    public function getPluralModelLabel(): string
+    {
+        return $this->getCustomPluralModelLabel() ?? $this->getTree()->getPluralModelLabel();
+    }
+
     public function getModel(): string
     {
         return $this->getCustomModel() ?? $this->getLivewire()->getModel();
+    }
+
+    public function prepareModalAction(StaticAction $action): StaticAction
+    {
+        $action = parent::prepareModalAction($action);
+
+        if (! $action instanceof Action) {
+            return $action;
+        }
+
+        return $action
+            ->tree($this->getTree())
+            ->record($this->getRecord());
+    }
+
+    protected function getDefaultEvaluationParameters(): array
+    {
+        return collect(['record', 'model', 'tree'])
+            ->flip()
+            ->map(fn ($v, $name) => $this->resolveDefaultClosureDependencyForEvaluationByName($name)[0] ?? null)
+            ->toArray();
     }
 }

@@ -26,12 +26,12 @@
             'bg-white rounded-lg border border-gray-300 dd-handle', 
             'mb-2',
             'flex w-full items-center ',
-            'dark:bg-gray-900' => config('filament.dark_mode'),
+            'dark:bg-gray-900' => \Filament\Facades\Filament::hasDarkMode(),
         ])>
 
         <button type="button" class="h-full flex items-center bg-gray-50 rounded-lg border-r border-gray-300 px-px">
-            <x-heroicon-o-dots-vertical class="text-gray-400 w-4 h-4 -mr-2"/>
-            <x-heroicon-o-dots-vertical class="text-gray-400 w-4 h-4"/>
+            <x-heroicon-o-ellipsis-vertical class="text-gray-400 w-4 h-4 -mr-2"/>
+            <x-heroicon-o-ellipsis-vertical class="text-gray-400 w-4 h-4"/>
         </button>
 
         <div class="dd-content dd-nodrag ml-2 flex gap-1">
@@ -59,7 +59,7 @@
         </div>
 
         @if (count($actions))
-            <div class="dd-nodrag ml-auto">
+            <div class="dd-nodrag ml-auto px-1">
                 <x-filament-tree::actions :actions="$actions" :record="$record" />
             </div>
         @endif

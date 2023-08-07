@@ -5,17 +5,19 @@ namespace SolutionForest\FilamentTree\Concern;
 use Closure;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use SolutionForest\FilamentTree\Components\Tree;
-use SolutionForest\FilamentTree\Concern;
+use SolutionForest\FilamentTree\Concern\HasActions;
+use SolutionForest\FilamentTree\Concern\HasRecords;
+use SolutionForest\FilamentTree\Concern\HasEmptyState;
+use SolutionForest\FilamentTree\Concern\HasHeading;
 use SolutionForest\FilamentTree\Support\Utils;
 
 trait InteractWithTree
 {
-    use Concern\HasActions;
-    use Concern\HasRecords;
-    use Concern\HasEmptyState;
-    use Concern\HasHeading;
+    use HasActions;
+    use HasRecords;
+    use HasEmptyState;
+    use HasHeading;
 
     protected bool $hasMounted = false;
 
@@ -23,15 +25,15 @@ trait InteractWithTree
 
     public function bootedInteractWithTree()
     {
-        $this->tree = $this->getTree();
-        $this->tree = $this->tree->configureUsing(
+        $tree = $this->getTree();
+        $this->tree = $tree->configureUsing(
             Closure::fromCallable([static::class, 'tree']),
-            fn () => static::tree($this->tree)->maxDepth(static::getMaxDepth()),
+            fn (): Tree => static::tree($tree)->maxDepth(static::getMaxDepth()),
         );
 
         $this->cacheTreeActions();
         $this->cacheTreeEmptyStateActions();
-
+        
         $this->tree->actions(array_values($this->getCachedTreeActions()));
 
         if ($this->hasMounted) {
@@ -123,8 +125,9 @@ trait InteractWithTree
 
             Notification::make()
                 ->success()
-                ->title(__('filament-support::actions/edit.single.messages.saved'))
+                ->title(__('filament-actions::edit.single.modal.actions.save.label'))
                 ->send();
+
         }
 
         return ['reload' => $needReload];

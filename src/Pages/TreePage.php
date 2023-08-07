@@ -2,17 +2,19 @@
 
 namespace SolutionForest\FilamentTree\Pages;
 
-use Filament\Pages\Actions\Action;
-use Filament\Pages\Actions\CreateAction;
+use Filament\Actions\Action as FilamentActionsAction;
+use Filament\Actions\CreateAction;
+use Filament\Infolists\Components\Component as InfolistsComponent;
+use Filament\Pages\Actions\Action as PagesAction;
 use Filament\Pages\Page;
 use SolutionForest\FilamentTree\Actions;
 use SolutionForest\FilamentTree\Components\Tree;
-use SolutionForest\FilamentTree\Concern;
+use SolutionForest\FilamentTree\Concern\InteractWithTree;
 use SolutionForest\FilamentTree\Contract\HasTree;
 
 abstract class TreePage extends Page implements HasTree
 {
-    use Concern\InteractWithTree;
+    use InteractWithTree;
 
     protected static string $view = 'filament-tree::pages.tree';
 
@@ -84,7 +86,7 @@ abstract class TreePage extends Page implements HasTree
         return Actions\ViewAction::make();
     }
 
-    protected function configureAction(Action $action): void
+    protected function configureAction(FilamentActionsAction $action): void
     {
         match (true) {
             $action instanceof CreateAction => $this->configureCreateAction($action),
@@ -161,7 +163,13 @@ abstract class TreePage extends Page implements HasTree
             $schema = $this->getFormSchema();
         }
 
-        $action->form($schema);
+        $action->form($this->getFormSchema());
+
+        $isInfoList = count(array_filter($schema, fn ($component) => $component instanceof InfolistsComponent)) > 0;
+
+        if ($isInfoList) {
+            $action->infolist($schema);
+        }
 
         $action->model($this->getModel());
 
