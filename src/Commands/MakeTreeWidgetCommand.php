@@ -4,7 +4,6 @@ namespace SolutionForest\FilamentTree\Commands;
 
 use Closure;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
-use Filament\Support\Commands\Concerns\CanValidateInput;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -12,8 +11,7 @@ use Illuminate\Support\Str;
 class MakeTreeWidgetCommand extends Command
 {
     use CanManipulateFiles;
-    use CanValidateInput;
-
+    
     protected $description = 'Creates a Filament tree widget class.';
 
     protected $signature = 'make:filament-tree-widget {name?} {model?} {--R|resource=} {--F|force}';
