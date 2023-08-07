@@ -25,6 +25,11 @@ To install the package, run the following command:
 composer require solution-forest/filament-tree
 ```
 
+> **Important: Need to publish assets after version 2.x**
+```bash
+php artisan filament:assets
+```
+
 Then, publish the config file using:
 
 ```bash
