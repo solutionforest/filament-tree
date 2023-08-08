@@ -127,6 +127,8 @@ abstract class TreePage extends Page implements HasTree
     {
         $action->tree($this->getCachedTree());
 
+        $action->iconButton();
+
         $this->afterConfiguredDeleteAction($action);
 
         return $action;
@@ -135,6 +137,8 @@ abstract class TreePage extends Page implements HasTree
     protected function configureEditAction(Actions\EditAction $action): Actions\EditAction
     {
         $action->tree($this->getCachedTree());
+
+        $action->iconButton();
 
         $schema = $this->getEditFormSchema();
 
@@ -156,6 +160,8 @@ abstract class TreePage extends Page implements HasTree
     protected function configureViewAction(Actions\ViewAction $action): Actions\ViewAction
     {
         $action->tree($this->getCachedTree());
+
+        $action->iconButton();
 
         $schema = $this->getViewFormSchema();
 

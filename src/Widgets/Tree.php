@@ -117,6 +117,8 @@ class Tree extends Widget implements HasTree, HasForms
     {
         $action->tree($this->getCachedTree());
 
+        $action->iconButton();
+
         $this->afterConfiguredDeleteAction($action);
 
         return $action;
@@ -125,6 +127,8 @@ class Tree extends Widget implements HasTree, HasForms
     protected function configureEditAction(EditAction $action): EditAction
     {
         $action->tree($this->getCachedTree());
+
+        $action->iconButton();
 
         $schema = $this->getEditFormSchema();
 
@@ -144,6 +148,8 @@ class Tree extends Widget implements HasTree, HasForms
     protected function configureViewAction(ViewAction $action): ViewAction
     {
         $action->tree($this->getCachedTree());
+
+        $action->iconButton();
 
         $schema = $this->getViewFormSchema();
 
