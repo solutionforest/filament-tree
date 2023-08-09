@@ -190,6 +190,7 @@ namespace App\Filament\Widgets;
 
 use App\Models\ProductCategory as ModelsProductCategory;
 use App\Filament\Widgets;
+use Filament\Forms\Components\TextInput;
 use SolutionForest\FilamentTree\Widgets\Tree as BaseWidget;
 
 class ProductCategoryWidget extends BaseWidget
@@ -202,6 +203,13 @@ class ProductCategoryWidget extends BaseWidget
     protected ?string $treeTitle = 'ProductCategory';
 
     protected bool $enableTreeTitle = true;
+
+    protected function getFormSchema(): array
+    {
+        return [
+            TextInput::make('title'),
+        ];
+    }
 }
 ```
 
