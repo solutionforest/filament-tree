@@ -6,7 +6,7 @@
 @endphp
 
 <div wire:disabled="updateTree"
-    x-data="{
+     x-data="{
         init: function () {
             let nestedTree = $('#{{ $containerKey }}').nestable({
                 group: {{ $containerKey }},
@@ -14,7 +14,7 @@
                 expandBtnHTML: '',
                 collapseBtnHTML: '',
             });
-    
+
             // Custom expand/collapse buttons
             $('#{{ $containerKey }} .dd-item-btns [data-action=expand]').on('click', function (el) {
                 let list = $(this).closest('li');
@@ -34,7 +34,7 @@
                     list.find('> .dd-list > .dd-item').addClass('dd-collapsed hidden');
                 }
             });
-    
+
             $('#nestable-menu [data-action=expand-all]').on('click', function () {
                 $('.dd').nestable('expandAll');
                 $('.dd').find('.dd-item-btns [data-action=expand]').addClass('hidden');
@@ -59,25 +59,25 @@
     <x-filament::section :heading="($this->displayTreeTitle() ?? false) ? $this->getTreeTitle() : null">
         <menu class="flex gap-2 mb-4" id="nestable-menu">
             <div class="btn-group">
-                <x-filament::button tag="button" data-action="expand-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
+                <x-filament::button color="gray" tag="button" data-action="expand-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     {{ __('filament-tree::filament-tree.button.expand_all') }}
                 </x-filament::button>
-                <x-filament::button tag="button" data-action="collapse-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
+                <x-filament::button color="gray" tag="button" data-action="collapse-all" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     {{ __('filament-tree::filament-tree.button.collapse_all') }}
                 </x-filament::button>
             </div>
             <div class="btn-group">
-                <x-filament::button tag="button" data-action="save" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70" >
-                    <x-filament::loading-indicator class="h-4 w-4" wire:loading wire:target="updateTree" />
+                <x-filament::button tag="button" data-action="save" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
+                    <x-filament::loading-indicator class="h-4 w-4" wire:loading wire:target="updateTree"/>
                     <span wire:loading.remove wire:target="updateTree">
                         {{ __('filament-tree::filament-tree.button.save') }}
                     </span>
-                    
+
                 </x-filament::button>
             </div>
         </menu>
         <div class="filament-tree dd" id="{{ $containerKey }}">
-            <x-filament-tree::tree.list :records="$records" :containerKey="$containerKey" :tree="$tree" />
+            <x-filament-tree::tree.list :records="$records" :containerKey="$containerKey" :tree="$tree"/>
         </div>
     </x-filament::section>
 </div>
@@ -86,7 +86,7 @@
     @php
         $action = $this->getMountedTreeAction();
     @endphp
-    
+
     <x-filament::modal
         :alignment="$action?->getModalAlignment()"
         :close-button="$action?->hasModalCloseButton()"
