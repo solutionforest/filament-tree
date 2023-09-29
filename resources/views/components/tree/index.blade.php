@@ -2,51 +2,58 @@
     $containerKey = 'filament_tree_container_' . $this->getId();
     $maxDepth = $getMaxDepth() ?? 1;
     $records = collect($this->getRootLayerRecords() ?? []);
-
 @endphp
 
 <div wire:disabled="updateTree"
      x-data="{
         init: function () {
-            let nestedTree = $('#{{ $containerKey }}').nestable({
+            const nestedTreeElement = $('#{{ $containerKey }}');
+            nestedTreeElement.nestable({
                 group: {{ $containerKey }},
                 maxDepth: {{ $maxDepth }},
                 expandBtnHTML: '',
                 collapseBtnHTML: '',
             });
+            const nestedTree = nestedTreeElement.data('nestable');
 
-            // Custom expand/collapse buttons
-            $('#{{ $containerKey }} .dd-item-btns [data-action=expand]').on('click', function (el) {
-                let list = $(this).closest('li');
-                if (list.length) {
-                    $(this).addClass('hidden');
-                    $(this).parent().children('.dd-item-btns [data-action=collapse]').removeClass('hidden');
-                    list.find('> .dd-list').removeClass('hidden').show();
-                    list.find('> .dd-list > .dd-item').removeClass('dd-collapsed hidden');
-                }
-            });
-            $('#{{ $containerKey }} .dd-item-btns [data-action=collapse]').on('click', function (el) {
-                let list = $(this).closest('li');
-                if (list.length) {
-                    $(this).addClass('hidden');
-                    $(this).parent().children('.dd-item-btns [data-action=expand]').removeClass('hidden');
-                    list.find('> .dd-list').addClass('hidden').hide();
-                    list.find('> .dd-list > .dd-item').addClass('dd-collapsed hidden');
-                }
+            function expandItem(item) {
+                item.removeClass(nestedTree.options.collapsedClass);
+                item.children('.dd-content').find('[data-action=expand]').addClass('hidden');
+                item.children('.dd-content').find('[data-action=collapse]').removeClass('hidden');
+                item.children(nestedTree.options.listNodeName).removeClass('hidden');
+            }
+
+            function collapseItem(item) {
+                item.addClass(nestedTree.options.collapsedClass);
+                item.children('.dd-content').find('[data-action=collapse]').addClass('hidden');
+                item.children('.dd-content').find('[data-action=expand]').removeClass('hidden');
+                item.children(nestedTree.options.listNodeName).addClass('hidden');
+            }
+
+            // Custom expand / collapse buttons
+            $('#{{ $containerKey }} .dd-item').on('click', '.dd-item-btns button', function (e) {
+                const target = $(e.currentTarget);
+                const item = target.closest('li');
+
+                target.data('action') === 'collapse' ? collapseItem(item) : expandItem(item);
             });
 
+            // Expand / collapse all buttons
             $('#nestable-menu [data-action=expand-all]').on('click', function () {
-                $('.dd').nestable('expandAll');
-                $('.dd').find('.dd-item-btns [data-action=expand]').addClass('hidden');
-                $('.dd').find('.dd-item-btns [data-action=collapse]').removeClass('hidden');
-                $('.dd > ol > li').find('li').removeClass('hidden');
+                nestedTree.el.find(nestedTree.options.itemNodeName).each((idx, item) => expandItem($(item)));
             });
             $('#nestable-menu [data-action=collapse-all]').on('click', function () {
-                $('.dd').nestable('collapseAll');
-                $('.dd').find('.dd-item-btns [data-action=expand]').removeClass('hidden');
-                $('.dd').find('.dd-item-btns [data-action=collapse]').addClass('hidden');
-                $('.dd > ol > li').find('li').addClass('hidden');
+                nestedTree.el.find(nestedTree.options.itemNodeName).each((idx, item) => collapseItem($(item)));
             });
+
+            // Update expand / collapse button visibility on tree update
+            nestedTreeElement.on('change', function () {
+                $('.dd-item-btns').each(function () {
+                    const childList = $(this).closest('li').children('ol');
+                    childList.length ? $(this).removeClass('hidden') : $(this).addClass('hidden');
+                });
+            });
+
             $('#nestable-menu [data-action=save]').on('click', async function (e) {
                 let value = $('#{{ $containerKey }}').nestable('serialize');
                 let result = await @this.updateTree(value);
