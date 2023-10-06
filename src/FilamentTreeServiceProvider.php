@@ -5,6 +5,7 @@ namespace SolutionForest\FilamentTree;
 use Filament\Support\Assets\Css;
 use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
 use Illuminate\Database\Schema\Blueprint;
 use SolutionForest\FilamentTree\Macros\BlueprintMarcos;
 use Spatie\LaravelPackageTools\Package;
@@ -38,9 +39,13 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
     {
         FilamentAsset::register([
             Css::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.css'),
-            Js::make('filament-tree-jquery', 'https://code.jquery.com/jquery-3.6.1.slim.min.js'),
             Js::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.js'),
         ], 'solution-forest/filament-tree');
+        
+        FilamentView::registerRenderHook(
+            'panels::body.start',
+            fn (): string => "<script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>",
+        );
     }
 
     protected function registerBlueprintMacros()
