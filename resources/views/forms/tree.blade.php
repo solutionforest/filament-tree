@@ -60,7 +60,7 @@
             class="flex gap-2 mb-2"
             wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons"
         >
-            <x-forms::link
+            <x-filament::link
                 tag="button"
                 size="sm"
                 x-show="! areAllCheckboxesChecked"
@@ -69,9 +69,9 @@
                 wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.select_all"
             >
                 {{ __('filament-tree::filament-tree.components.tree.buttons.select_all.label') }}
-            </x-forms::link>
+            </x-filament::link>
 
-            <x-forms::link
+            <x-filament::link
                 tag="button"
                 size="sm"
                 x-show="areAllCheckboxesChecked"
@@ -80,9 +80,9 @@
                 wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.deselect_all"
             >
                 {{ __('filament-tree::filament-tree.components.tree.buttons.deselect_all.label') }}
-            </x-forms::link>
+            </x-filament::link>
 
-            <x-forms::icon-button
+            <x-filament::icon-button
                 size="sm"
                 icon="heroicon-o-plus"
                 color="secondary"
@@ -92,7 +92,7 @@
                 wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.expand_all"
             />
 
-            <x-forms::icon-button
+            <x-filament::icon-button
                 size="sm"
                 icon="heroicon-o-minus"
                 color="secondary"
