@@ -32,7 +32,8 @@ composer require solution-forest/filament-tree
 php artisan filament:assets
 ```
 
-> **Note: Add plugin Blade files to your custom theme `tailwind.config.js` for dark mode**
+> **Note: Add plugin Blade files to your custom theme `tailwind.config.js` for dark mode.**
+> 
 > To set up your own custom theme, you can visit the [official instruction page](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme) on the Filament website.
 
 Add the plugin's views to your `tailwind.config.js` file.
