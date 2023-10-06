@@ -14,8 +14,8 @@ class BlueprintMarcos
     {
         return function (string $titleType = 'string') {
             $this->{$titleType}(Utils::titleColumnName());
-            $this->integer(Utils::parentColumnName())->default(Utils::defaultParentId());
-            $this->integer(Utils::orderColumnName())->default(0)->index();
+            $this->integer(Utils::parentColumnName())->default(Utils::defaultParentId())->index();
+            $this->integer(Utils::orderColumnName())->default(0);
         };
     }
 }
