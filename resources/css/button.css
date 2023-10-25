@@ -2,14 +2,37 @@
     display: flex;
     gap: 1px;
 }
-.btn-group button {
-    border-radius: 0;
-}
+
+
+
 .btn-group button:first-of-type {
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
+
+[dir="rtl"] .btn-group button:first-of-type {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
 .btn-group button:last-of-type {
     border-top-right-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+[dir="rtl"] .btn-group button:last-of-type {
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.btn-group button:only-of-type {
+    border-radius: 0.5rem !important;
 }
