@@ -24,7 +24,7 @@
 <div
     {{
         $attributes->class([
-            'fi-ta-actions flex shrink-0 items-center gap-3',
+            'fi-tree-actions flex shrink-0 items-center gap-3',
             'flex-wrap' => $wrap,
             'sm:flex-nowrap' => $wrap === '-sm',
             match ($alignment) {
@@ -36,26 +36,5 @@
         ])
     }}
 >
-    @foreach ($actions as $action)
-        @php
-            $labeledFromBreakpoint = $action->getLabeledFromBreakpoint();
-        @endphp
-
-        <span
-            @class([
-                'inline-flex',
-                '-mx-2' => $action->isIconButton() || $labeledFromBreakpoint,
-                match ($labeledFromBreakpoint) {
-                    'sm' => 'sm:mx-0',
-                    'md' => 'md:mx-0',
-                    'lg' => 'lg:mx-0',
-                    'xl' => 'xl:mx-0',
-                    '2xl' => '2xl:mx-0',
-                    default => null,
-                },
-            ])
-        >
-            {{ $action }}
-        </span>
-    @endforeach
+    <x-filament-actions::actions :actions="$actions"/>
 </div>
