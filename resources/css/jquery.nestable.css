@@ -2,7 +2,7 @@
  * Nestable
  */
 
- .dd {
+.dd {
     position: relative;
     display: block;
     margin: 0;
@@ -12,6 +12,7 @@
     font-size: 13px;
     line-height: 20px;
 }
+
 .dd-list {
     display: block;
     position: relative;
@@ -19,9 +20,16 @@
     padding: 0;
     list-style: none;
 }
+
 .dd-list .dd-list {
     padding-left: 30px;
 }
+
+[dir="rtl"] .dd-list .dd-list {
+    padding-left: unset !important;
+    padding-right: 30px !important;
+}
+
 .dd-empty,
 .dd-item,
 .dd-placeholder {
@@ -33,6 +41,7 @@
     font-size: 13px;
     line-height: 20px;
 }
+
 .dd-handle {
     /* display: block;
     height: 30px;
@@ -46,11 +55,13 @@
     border-radius: 3px;
     box-sizing: border-box; */
 }
+
 .dd-handle:hover {
     /* color: #2ea8e5;
     background: #fff; */
 }
-.dd-item > button {
+
+.dd-item>button {
     position: relative;
     cursor: pointer;
     float: left;
@@ -58,7 +69,6 @@
     height: 20px;
     margin: 5px 0;
     padding: 0;
-    text-indent: 100%;
     white-space: nowrap;
     overflow: hidden;
     border: 0;
@@ -68,29 +78,40 @@
     text-align: center;
     font-weight: 700;
 }
-.dd-item > button:before {
+
+[dir="rtl"] .dd-item>button {
+    float: right;
+}
+
+.dd-item>button:before {
     display: block;
     position: absolute;
     width: 100%;
     text-align: center;
     text-indent: 0;
 }
-.dd-item > button.dd-expand:before {
+
+.dd-item>button.dd-expand:before {
     content: "+";
 }
-.dd-item > button.dd-collapse:before {
+
+.dd-item>button.dd-collapse:before {
     content: "-";
 }
+
 .dd-expand {
     display: none;
 }
+
 .dd-collapsed .dd-collapse,
 .dd-collapsed .dd-list {
     display: none;
 }
+
 .dd-collapsed .dd-expand {
     display: block;
 }
+
 .dd-empty,
 .dd-placeholder {
     margin: 5px 0;
@@ -101,6 +122,7 @@
     box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
+
 .dd-empty {
     border: 1px dashed #bbb;
     min-height: 100px;
@@ -108,17 +130,21 @@
     background-size: 60px 60px;
     background-position: 0 0, 30px 30px;
 }
+
 .dd-dragel {
     position: absolute;
     pointer-events: none;
     z-index: 9999;
 }
-.dd-dragel > .dd-item .dd-handle {
+
+.dd-dragel>.dd-item .dd-handle {
     margin-top: 0;
 }
+
 .dd-dragel .dd-handle {
     box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.1);
 }
+
 .dd-nochildren .dd-placeholder {
     display: none;
 }
@@ -129,12 +155,15 @@
 .dd {
     max-width: initial;
 }
+
 .dd-handle {
     height: 55px;
 }
+
 .dd-handle:hover {
     /* color: initial; */
 }
-.dd-item > button {
+
+.dd-item>button {
     height: 45px;
 }
