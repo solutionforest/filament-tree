@@ -18,16 +18,20 @@
 
 <li class="filament-tree-row dd-item" data-id="{{ $recordKey }}">
     <div wire:loading.remove.delay
-         wire:target="{{ implode(',', Tree::LOADING_TARGETS) }}"
+        wire:target="{{ implode(',', Tree::LOADING_TARGETS) }}"
         @class([
-            'bg-white rounded-lg border border-gray-300 dark:border-white/10 dd-handle h-10',
+            'rounded-lg border dd-handle h-10',
             'mb-2',
-            'flex w-full items-center ',
-            'dark:bg-gray-900' => Filament::hasDarkMode(),
+            'flex w-full items-center',
+            'border-gray-300 bg-white dark:border-white/10 dark:bg-gray-900',
         ])>
 
-        <button type="button" class="h-full flex items-center bg-gray-50 dark:bg-black/30 rounded-l-lg border-r rtl:border-l border-gray-300 dark:border-white/10 px-px">
-            <x-heroicon-m-ellipsis-vertical class="text-gray-400 dark:text-gray-500 w-4 h-4 -mr-2"/>
+        <button type="button" @class([
+            'h-full flex items-center',
+            'rounded-l-lg border-r rtl:rounded-l rtl:border-r-0 rtl:border-l px-px',
+            'bg-gray-50 border-gray-300 dark:bg-white/5 dark:border-white/10',
+        ])>
+            <x-heroicon-m-ellipsis-vertical class="text-gray-400 dark:text-gray-500 w-4 h-4 -mr-2 rtl:mr-0 rtl:-ml-2"/>
             <x-heroicon-m-ellipsis-vertical class="text-gray-400 dark:text-gray-500 w-4 h-4"/>
         </button>
 
@@ -39,7 +43,7 @@
             @endif
 
             <span @class([
-                'ml-4' => !$icon,
+                'ml-4 rtl:mr-4' => !$icon,
                 'font-semibold'
             ])>
                 {{ $title }}
