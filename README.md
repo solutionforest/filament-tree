@@ -1,6 +1,20 @@
 > [!IMPORTANT]
 > Please note that we will only be updating to version 2.x, excluding any bug fixes.
 
+# SolutionForest Limited BlackFriday Promotion
+
+![20%_off_Black_friday_promote](https://github.com/solutionforest/Filament-SimpleLightBox/assets/68211972/a724e1eb-d033-490f-823b-3e3155d3b4b3)
+
+
+
+- A Event Photo Management Tools [GatherPro.events](https://gatherpro.events/)
+  
+Promote Code : SFBLACKFRIDAY2023
+
+- [Filament CMS Plugin ](https://filamentphp.com/plugins/solution-forest-cms-website)
+
+Promote Code : SFBLACKFRIDAY2023
+
 # Filament Tree
 
 Filament Tree is a plugin for Filament Admin that creates a model management page with a heritage tree structure view. This plugin can be used to create menus and more.
