@@ -16,7 +16,7 @@ trait ModelTree
 
     public function initializeModelTree()
     {
-        if (!empty($this->fillable)) {
+        if (!empty($this->getFillable())) {
             $this->mergeFillable([
                 $this->determineOrderColumnName(),
                 $this->determineParentColumnName(),
