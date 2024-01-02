@@ -16,9 +16,13 @@ trait ModelTree
 
     public function initializeModelTree()
     {
-        $this->fillable[] = $this->determineOrderColumnName();
-        $this->fillable[] = $this->determineParentColumnName();
-        $this->fillable[] = $this->determineTitleColumnName();
+        if (!empty($this->getFillable())) {
+            $this->mergeFillable([
+                $this->determineOrderColumnName(),
+                $this->determineParentColumnName(),
+                $this->determineTitleColumnName(),
+            ]);
+        }
     }
 
     /**
