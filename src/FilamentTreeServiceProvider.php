@@ -39,12 +39,17 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
     {
         FilamentAsset::register([
             Css::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.css'),
-            Js::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.js'),
         ], 'solution-forest/filament-tree');
         
         FilamentView::registerRenderHook(
-            'panels::body.start',
+            'panels::body.end',
             fn (): string => "<script src=\"https://code.jquery.com/jquery-3.6.0.min.js\"></script>",
+        );
+
+        $js = asset('js/solution-forest/filament-tree/filament-tree-min.js');
+        FilamentView::registerRenderHook(
+            'panels::body.end',
+            fn (): string => "<script src=\"$js\"></script>",
         );
     }
 
