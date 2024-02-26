@@ -33,7 +33,7 @@ trait InteractWithTree
 
         $this->cacheTreeActions();
         $this->cacheTreeEmptyStateActions();
-        
+
         $this->tree->actions(array_values($this->getCachedTreeActions()));
 
         if ($this->hasMounted) {
@@ -105,20 +105,27 @@ trait InteractWithTree
                 ->filter(fn (array $arr) => !is_null($arr['model']));
             foreach ($unnestedArrData as $arr) {
                 $model = $arr['model'];
-                    [$newParentId, $newOrder] = [$arr['data']['parent_id'], $arr['data']['order']];
-                    if ($model instanceof Model) {
-                        $parentColumnName = method_exists($model, 'determineParentColumnName') ? $model->determineParentColumnName() : Utils::parentColumnName();
-                        $orderColumnName = method_exists($model, 'determineOrderColumnName') ? $model->determineOrderColumnName() : Utils::orderColumnName();
-                        $newParentId = $newParentId === $defaultParentId && method_exists($model, 'defaultParentKey') ? $model::defaultParentKey() : $newParentId;
 
-                        $model->{$parentColumnName} = $newParentId;
-                        $model->{$orderColumnName} = $newOrder;
-                        if ($model->isDirty([$parentColumnName, $orderColumnName])) {
-                            $model->save();
+                [$newParentId, $newOrder] = [$arr['data']['parent_id'], $arr['data']['order']];
 
-                            $needReload = true;
-                        }
+                if ($model instanceof Model) {
+                    $parentColumnName = method_exists($model, 'determineParentColumnName') ? $model->determineParentColumnName() : Utils::parentColumnName();
+                    $orderColumnName = method_exists($model, 'determineOrderColumnName') ? $model->determineOrderColumnName() : Utils::orderColumnName();
+                    $newParentId = $newParentId === $defaultParentId && method_exists($model, 'defaultParentKey') ? $model::defaultParentKey() : $newParentId;
+
+                    $model->{$parentColumnName} = $newParentId;
+                    $model->{$orderColumnName} = $newOrder;
+
+                    if (method_exists($model, 'beforeUpdateTree')) {
+                        $model->beforeUpdateTree($arr['data']);
                     }
+
+                    if ($model->isDirty()) {
+                        $model->save();
+
+                        $needReload = true;
+                    }
+                }
             }
         }
         if ($needReload) {
@@ -140,10 +147,15 @@ trait InteractWithTree
     {
         foreach($current as $index => $item) {
             $key = data_get($item, 'id');
+
             $result[$key] = [
                 'parent_id' => $parent,
                 'order' => $index + 1,
             ];
+
+            // allow additional view/model data to be passed to the save function
+            $result[$key] += array_filter($item, fn($key) => $key !== 'id', ARRAY_FILTER_USE_KEY);
+
             if (isset($item['children']) && count($item['children'])) {
                 $this->unnestArray($result, $item['children'], $key);
             }
