@@ -2,6 +2,21 @@
  * Nestable jQuery Plugin - Copyright (c) 2012 David Bushell - http://dbushell.com/
  * Dual-licensed under the BSD or MIT licenses
  */
+
+; (function($) {
+    $.fn.attrs = function() {
+        var attributes = {};
+
+        if( this.length ) {
+            $.each( this[0].attributes, function( index, attr ) {
+                attributes[ attr.name ] = attr.value;
+            } );
+        }
+
+        return attributes;
+    };
+})(jQuery);
+
 ; (function ($, window, document, undefined) {
     var hasTouch = 'ontouchstart' in document;
 
@@ -132,23 +147,35 @@
         },
 
         serialize: function () {
+
             var data,
                 depth = 0,
                 list  = this;
+
             step = function (level, depth) {
-                    var array = [ ],
-                        items = level.children(list.options.itemNodeName);
+                var array = [ ],
+                    items = level.children(list.options.itemNodeName);
+
                 items.each(function () {
-                        var li   = $(this),
-                            item = $.extend({}, li.data()),
-                            sub  = li.children(list.options.listNodeName);
-                        if (sub.length) {
-                            item.children = step(sub, depth + 1);
-                        }
-                        array.push(item);
-                    });
-                    return array;
-                };
+                    var li   = $(this),
+                        // we need to use attr, here, or the data attributes are cached and unchangeable
+                        item = Object.fromEntries(
+                            Object.entries(li.attrs())
+                                .filter(([ key, value ]) => key.startsWith('data-'))
+                                .map(([key, value]) => [key.replace(/^data\-/, '').replace(/-./g, x=>x[1].toUpperCase()), value])
+                        ),
+                        sub  = li.children(list.options.listNodeName);
+
+                    if (sub.length) {
+                        item.children = step(sub, depth + 1);
+                    }
+
+                    array.push(item);
+                });
+
+                return array;
+            };
+
             data = step(list.el.find(list.options.listNodeName).first(), depth);
             return data;
         },

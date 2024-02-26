@@ -172,6 +172,12 @@ class ProductCategory extends Model
     //     return "children";
     // }
 
+    // public function beforeUpdateTree(array $data): void
+    // {
+    //     $this->online_at = data_get($data, 'onlineAt');
+    //     $this->offline_at = data_get($data, 'offlineAt');
+    // }
+
 }
 
 ```
