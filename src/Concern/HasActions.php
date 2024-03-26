@@ -183,8 +183,16 @@ trait HasActions
     {
         $action = $this->getMountedTreeAction();
 
-        if ($action->isModalHidden()) {
-            return false;
+        if(method_exists($action, 'isHidden')) {
+            if ($action->isHidden()) {
+                return false;
+            }
+        }
+        
+        if(method_exists($action, 'isModalHidden')) {
+            if ($action->isModalHidden()) {
+                return false;
+            }
         }
 
         return $action->getModalDescription() ||
