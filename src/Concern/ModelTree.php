@@ -57,7 +57,7 @@ trait ModelTree
 
     public function isRoot(): bool
     {
-        return $this->getAttributeValue($this->determineParentColumnName()) === static::defaultParentKey();
+        return $this->getAttributeValue($this->determineParentColumnName()) == static::defaultParentKey();
     }
 
     public function setHighestOrderNumber(): void
