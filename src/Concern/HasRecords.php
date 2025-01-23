@@ -43,7 +43,7 @@ trait HasRecords
                     return $record->isRoot();
                 }
                 if (method_exists($record, 'determineParentColumnName')) {
-                    return $record->getAttributeValue($record->determineParentColumnName()) === Utils::defaultParentId();
+                    return $record->getAttributeValue($record->determineParentColumnName()) == Utils::defaultParentId();
                 }
                 return $record->getAttributeValue('parent')  === Utils::defaultParentId();
             });
