@@ -38,6 +38,14 @@ class Tree extends Field
         parent::setUp();
 
         $this->default([]);
+
+        $this->afterStateHydrated(function (Tree $component, $state) {
+            if (! is_array($state)) {
+                $state = [];
+            }
+
+            $component->state($state);
+        });
     }
 
     public function getNodes(): array
