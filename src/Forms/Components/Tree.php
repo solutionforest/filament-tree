@@ -3,18 +3,14 @@
 namespace SolutionForest\FilamentTree\Forms\Components;
 
 use Closure;
-use Filament\Forms\ComponentContainer;
 use Filament\Forms\Components\Concerns\BelongsToModel;
 use Filament\Forms\Components\Concerns\HasState;
 use Filament\Forms\Components\Field;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Database\Eloquent\Relations\HasOneOrMany;
+use SolutionForest\FilamentTree\Concern\ModelTree;
 
 class Tree extends Field
 {
@@ -23,7 +19,7 @@ class Tree extends Field
 
     protected string $view = 'filament-tree::forms.tree';
 
-    protected ?array $nodes = null;
+    protected null|Closure|array $nodes = null;
 
     protected string | Closure | null $keyColumn = null;
 
@@ -42,41 +38,32 @@ class Tree extends Field
         parent::setUp();
 
         $this->default([]);
-
-        $this->afterStateHydrated(static function (Tree $component, $state) {
-            if (is_array($state)) {
-                return;
-            }
-
-            $component->state([]);
-        });
-
-        $this->dehydrateStateUsing(static function (Tree $component, $state) {
-            if (! is_array($state)) {
-                $state = [];
-            }
-            return $component->formatNodeState($state, $component->getOptions());
-        });
-    }
-
-    public function getState()
-    {
-        $state = parent::getState();
-
-        if (is_array($state)) {
-            return $this->getNodeState($state);
-        } else {
-            try {
-                return json_decode($state);
-            } catch (\Exception $e) {
-                return [];
-            }
-        }
     }
 
     public function getNodes(): array
     {
-        return $this->nodes ?? [];
+        $result = $this->evaluate($this->nodes) ?? [];
+
+        if (is_array($result) && empty($result) && $this->hasRelationship()) {
+            try {
+
+                $relationship = $this->getRelationship();
+                $relatedModel = $relationship->getRelated();
+
+                if (in_array(ModelTree::class, class_uses($relatedModel))) {
+                    $result = $relatedModel::treeNodes();
+                }
+
+            } catch (\Throwable $th) {
+                //
+            }
+        }
+        
+        if ($result instanceof Arrayable) {
+            return $result->toArray();
+        } 
+
+        return $result;
     }
 
     public function getKeyColumn(): ?string
@@ -147,7 +134,7 @@ class Tree extends Field
         );
     }
 
-    public function nodes(array|Arrayable $nodes): static
+    public function nodes(Closure|array|Arrayable $nodes): static
     {
         if ($nodes instanceof Arrayable) {
             $this->nodes = $nodes->toArray();
@@ -212,6 +199,8 @@ class Tree extends Field
             } 
         });
 
+        $this->dehydrated(false);
+
         return $this;
     }
 
@@ -243,7 +232,8 @@ class Tree extends Field
             return [];
         }
 
-        $activeLocale = $this->getLivewire()->getActiveFormLocale();
+        $livewire = $this->getLivewire();
+        $activeLocale = method_exists($livewire, 'getActiveFormLocale') ? $livewire->getActiveFormLocale() : null;
 
         return $records
             ->map(function (Model $record) use ($activeLocale): array {
@@ -264,7 +254,8 @@ class Tree extends Field
     {
         return collect($options)
             ->keyBy(fn ($item) => strval(data_get($item, $this->getKeyColumn() ?? 'id')))
-            ->map(fn (array $item) => [
+            ->map(fn (array $item, $key) => [
+                'id' => $key,
                 'label' => data_get($item, $this->getTitleColumn() ?? 'title'),
                 'children' => $this->getNodeOptions(data_get($item, $this->getChildrenColumn() ?? 'children') ?? []),
             ])

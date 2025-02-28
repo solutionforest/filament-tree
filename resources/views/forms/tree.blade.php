@@ -1,85 +1,178 @@
+@php
+    $statePath = $getStatePath();
+@endphp
 <x-dynamic-component
     :component="$getFieldWrapperView()"
-    :id="$getId()"
-    :label="$getLabel()"
-    :label-sr-only="$isLabelHidden()"
-    :helper-text="$getHelperText()"
-    :hint="$getHint()"
-    :hint-action="$getHintAction()"
-    :hint-color="$getHintColor()"
-    :hint-icon="$getHintIcon()"
-    :required="$isRequired()"
-    :state-path="$getStatePath()"
+    :field="$field"
 >
-    <div {{ $attributes->merge($getExtraAttributes())->class([
-            'filament-forms-tree-component py-2 px-5 bg-white border border-gray-300 rounded-xl shadow-sm',
-            'dark:bg-gray-500/10' => config('forms.dark_mode'),
-        ]) }}
+    <div {{ 
+            $attributes
+                ->merge($getExtraAttributes())
+                ->class([
+                    'filament-forms-tree-component py-2 px-5 border rounded-xl shadow-sm',
+                    'bg-white dark:bg-gray-500/10 border-gray-300 dark:border-gray-600',
+                ]) 
+        }}
         wire:ignore 
         x-data="{
 
+            state: $wire.{{ $applyStateBindingModifiers("\$entangle('{$statePath}')") }},
+
+            checkboxOptions: [],
+
+            expanded: [],
+
             areAllCheckboxesChecked: false,
 
-            treeOptions: Array.from($root.querySelectorAll('.filament-forms-tree-component-option-label')),
+            areAllExpanded: false,
 
-            collapsedAll: false,
+            isNodeExpanded: function (key) {
+                if (this.areAllExpanded) {
+                    return true;
+                }
 
-            init: function () {
-
-                this.checkIfAllCheckboxesAreChecked()
-
-                Livewire.hook('message.processed', () => {
-                    this.checkIfAllCheckboxesAreChecked()
-                })
+                return Array.from(this.expanded).includes(key);
             },
 
-            checkIfAllCheckboxesAreChecked: function () {
-                this.areAllCheckboxesChecked = this.treeOptions.length === this.treeOptions.filter((checkboxLabel) => checkboxLabel.querySelector('input[type=checkbox]:checked')).length
+            toggleNodeExpand: function (key) {
+
+                const expandedKeys = Array.from(this.expanded);
+
+                // If previous state of 'expand_all' button is true, then add other keys into 'collapsed'
+                if (this.areAllExpanded === true) {
+                    this.expanded = Array.from(this.checkboxOptions.map(checkbox => checkbox?.getAttribute('value'))).filter(value => value != key);
+                }
+                // Collapse requesting key if already expanded it before
+                else if (expandedKeys.includes(key)) {
+                    this.expanded = expandedKeys.filter(c => c !== key)
+                } 
+                // Expand requesting key
+                else {
+                    this.expanded.push(key);
+                }
+
+                // Init state for 'expand_all' button
+                this.areAllExpanded = false;
             },
 
-            toggleAllCheckboxes: function () {
-                state = ! this.areAllCheckboxesChecked
+            toggleExpandAll: function (isExpand) {
+                this.areAllExpanded = Boolean(isExpand);
+                if (this.areAllExpanded) {
+                    this.expanded = Array.from(this.checkboxOptions.map(checkbox => checkbox?.getAttribute('value')));
+                } else {
+                    this.initExpandedState();
+                }
+            },
 
-                this.treeOptions.forEach((checkboxLabel) => {
-                    checkbox = checkboxLabel.querySelector('input[type=checkbox]')
+            treeNodeCheckboxToggleEvent: function (event) {
 
+                const currentCheckbox = event.target;
+                if (!currentCheckbox) return;
+
+                const ctn = currentCheckbox.closest('.filament-forms-tree-component-option-node[data-treenode-group]');
+                if (!ctn) return;
+
+                if (currentCheckbox.checked === false && currentCheckbox.indeterminate === false) {
+
+                    const currentKey = ctn.getAttribute('data-treenode');
+                    if (currentKey) {
+                        // All its children
+                        const children = $root.querySelectorAll(`.filament-forms-tree-component-option-node[data-treenode-group='${currentKey}'] input[type=checkbox]`);
+                        const checkedChildren = Array.from(children).filter(item => item.checked);
+                        const indeterminateChildren = Array.from(children).filter(item => item.indeterminate);
+
+                        // If any children checked/ indeterminate, set currentCheckbox as 'indeterminate'
+                        if (checkedChildren.length > 0 || indeterminateChildren.length > 0) {
+                            currentCheckbox.indeterminate = true;
+                        }
+                    }
+                }
+                
+                const parentKey = ctn.getAttribute('data-treenode-group');
+                if (parentKey) {
+                    const parentCheckbox = $root.querySelector(`.filament-forms-tree-component-option-node[data-treenode='${parentKey}'] input[type=checkbox]`);
+
+                    // Skip set 'Indeterminate' status if parentCheckbox is 'checked' 
+                    if (parentCheckbox && parentCheckbox.checked == false)  {
+
+                        // All the parent's children.
+                        const siblingsAndSelf = $root.querySelectorAll(`.filament-forms-tree-component-option-node[data-treenode-group='${parentKey}'] input[type=checkbox]`);
+                        const checkedSiblingsAndSelf = Array.from(siblingsAndSelf).filter(item => item.checked);
+                        const indeterminateSiblingsAndSelf = Array.from(siblingsAndSelf).filter(item => item.indeterminate);
+
+                        let isDispatchParentUpdateEvent = false;
+                        // If any siblings checked/indeterminate, set parentCheckbox as 'indeterminate'
+                        if (checkedSiblingsAndSelf.length > 0 || indeterminateSiblingsAndSelf.length > 0) {
+                            parentCheckbox.indeterminate = true;
+                            isDispatchParentUpdateEvent = true;
+                        } else {
+                            parentCheckbox.indeterminate = false;
+                            isDispatchParentUpdateEvent = true;
+                        }
+
+                        if (isDispatchParentUpdateEvent) {
+                            parentCheckbox.dispatchEvent(new Event('change'))
+                        }
+                    }
+                }
+            },
+
+            toggleSelectAllCheckboxes: function () {
+                let state = ! this.areAllCheckboxesChecked
+
+                this.checkboxOptions.forEach((checkbox) => {
                     checkbox.checked = state
+                    checkbox.indeterminate = false;
+
                     checkbox.dispatchEvent(new Event('change'))
                 })
 
                 this.areAllCheckboxesChecked = state
             },
 
-            toggleCollapseAll: function () {
-                this.collapsedAll = ! this.collapsedAll
+            initAllCheckboxesAreChecked: function () {
+                const allCheckboxes = this.checkboxOptions;
+
+                this.areAllCheckboxesChecked = allCheckboxes.length === allCheckboxes.filter((checkbox) => checkbox.checked == true).length
+            },
+
+            initExpandedState: function () {
+                this.expanded = [];
+            },
+
+            initCheckboxOptions: function () {
+                this.checkboxOptions = Array.from($root.querySelectorAll('.filament-forms-tree-component-option-label input[type=checkbox]'));
+            },
+
+            init: function () {
+
+                this.$nextTick(() => { 
+                    this.initCheckboxOptions();
+                    this.initAllCheckboxesAreChecked();
+                    this.initExpandedState();
+                });
+
+                this.$watch('state', (value) => {
+                    this.initAllCheckboxesAreChecked();
+                });
             }
         }">
 
         <div
             x-cloak
             class="flex gap-2 mb-2"
-            wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons"
         >
             <x-filament::link
                 tag="button"
                 size="sm"
-                x-show="! areAllCheckboxesChecked"
-                x-on:click="toggleAllCheckboxes()"
-                wire:loading.attr="disabled"
-                wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.select_all"
+                x-on:click="toggleSelectAllCheckboxes()"
             >
-                {{ __('filament-tree::filament-tree.components.tree.buttons.select_all.label') }}
-            </x-filament::link>
-
-            <x-filament::link
-                tag="button"
-                size="sm"
-                x-show="areAllCheckboxesChecked"
-                x-on:click="toggleAllCheckboxes()"
-                wire:loading.attr="disabled"
-                wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.deselect_all"
-            >
+                <span x-show="areAllCheckboxesChecked">
                 {{ __('filament-tree::filament-tree.components.tree.buttons.deselect_all.label') }}
+                </span>
+                <span x-show="!areAllCheckboxesChecked">
+                    {{ __('filament-tree::filament-tree.components.tree.buttons.select_all.label') }}
+                </span>
             </x-filament::link>
 
             <x-filament::icon-button
@@ -87,9 +180,8 @@
                 icon="heroicon-o-plus"
                 color="secondary"
                 label="{{ __('filament-tree::filament-tree.components.tree.buttons.expand_all.label') }}"
-                x-on:click="toggleCollapseAll()"
-                wire:loading.attr="disabled"
-                wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.expand_all"
+                x-on:click="toggleExpandAll(true)"
+                
             />
 
             <x-filament::icon-button
@@ -97,24 +189,15 @@
                 icon="heroicon-o-minus"
                 color="secondary"
                 label="{{ __('filament-tree::filament-tree.components.tree.buttons.collapse_all.label') }}"
-                x-on:click="toggleCollapseAll()"
-                wire:loading.attr="disabled"
-                wire:key="{{ $this->id }}.{{ $getStatePath() }}.{{ $field::class }}.buttons.collapse_all"
+                x-on:click="toggleExpandAll(false)"
             />
         </div>
 
-        <x-filament::grid
-            :default="$getColumns('default')"
-            :sm="$getColumns('sm')"
-            :md="$getColumns('md')"
-            :lg="$getColumns('lg')"
-            :xl="$getColumns('xl')"
-            :two-xl="$getColumns('2xl')"
-            class="gap-1"
-        >
-            @foreach ($getOptions() as $optionValue => $item)
-                @include('filament-tree::forms.tree.option-item', ['optionValue' => $optionValue, 'item' => $item])
+        
+        <div>
+            @foreach($getOptions() as $node)
+                <x-filament-tree::forms.tree.group :node="$node"/>
             @endforeach
-        </x-filament::grid>
+        </div>
     </div>
 </x-dynamic-component>
