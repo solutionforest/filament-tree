@@ -1,3 +1,3 @@
-<x-filament::widget class="filament-widgets-tree-widget">
+<x-filament-widgets::widget class="filament-widgets-tree-widget">
     {{ $this->tree }}
-</x-filament::widget>
+</x-filament-widgets::widget>

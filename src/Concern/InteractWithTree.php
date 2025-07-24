@@ -24,7 +24,7 @@ trait InteractWithTree
 
     protected Tree $tree;
 
-    public function bootedInteractWithTree()
+    public function bootInteractWithTree()
     {
         $tree = $this->getTree();
         $this->tree = $tree->configureUsing(

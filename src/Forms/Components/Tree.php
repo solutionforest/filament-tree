@@ -2,9 +2,10 @@
 
 namespace SolutionForest\FilamentTree\Forms\Components;
 
+use Filament\Schemas\Components\Concerns\BelongsToModel;
+use Filament\Schemas\Components\Concerns\HasState;
+use Throwable;
 use Closure;
-use Filament\Forms\Components\Concerns\BelongsToModel;
-use Filament\Forms\Components\Concerns\HasState;
 use Filament\Forms\Components\Field;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
@@ -62,7 +63,7 @@ class Tree extends Field
                     $result = $relatedModel::treeNodes();
                 }
 
-            } catch (\Throwable $th) {
+            } catch (Throwable $th) {
                 //
             }
         }
@@ -91,7 +92,7 @@ class Tree extends Field
 
     public function getNodeLabel(string $uuid): ?string
     {
-        return data_get($this->getChildComponentContainer($uuid)->getRawState(), $this->getTitleColumn() ?? 'title');
+        return data_get($this->getChildSchema($uuid)->getRawState(), $this->getTitleColumn() ?? 'title');
     }
 
     public function getOptions(): array

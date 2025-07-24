@@ -2,6 +2,8 @@
 
 namespace SolutionForest\FilamentTree\Concern\TreeRecords;
 
+use SolutionForest\FilamentTree\Actions\EditAction;
+use SolutionForest\FilamentTree\Actions\ViewAction;
 use Filament\Actions\CreateAction;
 use Filament\Support\Contracts\TranslatableContentDriver;
 use Illuminate\Database\Eloquent\Builder;
@@ -66,7 +68,7 @@ trait Translatable
         return $action;
     }
 
-    protected function afterConfiguredEditAction(Actions\EditAction $action): Actions\EditAction
+    protected function afterConfiguredEditAction(EditAction $action): EditAction
     {
         /** @var Actions\EditAction */
         $action = parent::afterConfiguredEditAction($action);
@@ -95,7 +97,7 @@ trait Translatable
         return $action;
     }
 
-    protected function afterConfiguredViewAction(Actions\ViewAction $action): Actions\ViewAction
+    protected function afterConfiguredViewAction(ViewAction $action): ViewAction
     {
         /** @var Actions\ViewAction */
         $action = parent::afterConfiguredViewAction($action);

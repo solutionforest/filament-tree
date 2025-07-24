@@ -2,13 +2,14 @@
 
 namespace SolutionForest\FilamentTree;
 
-use Filament\Support\Assets\Js;
+use SolutionForest\FilamentTree\Commands\MakeTreePageCommand;
+use SolutionForest\FilamentTree\Commands\MakeTreeWidgetCommand;
 use Filament\Support\Assets\Css;
 use Spatie\LaravelPackageTools\Package;
 use Illuminate\Database\Schema\Blueprint;
-use Filament\Support\Facades\FilamentView;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Support\Assets\AlpineComponent;
+use Filament\Support\Assets\Js;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use SolutionForest\FilamentTree\Macros\BlueprintMarcos;
 
@@ -24,8 +25,8 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
             ->hasAssets()
             ->hasTranslations()
             ->hasCommands([
-                Commands\MakeTreePageCommand::class,
-                Commands\MakeTreeWidgetCommand::class,
+                MakeTreePageCommand::class,
+                MakeTreeWidgetCommand::class,
             ]);
     }
 
@@ -40,10 +41,8 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
     {
         FilamentAsset::register([
             Css::make('filament-tree-min', __DIR__ . '/../resources/dist/filament-tree.css'),
-        ], 'solution-forest/filament-tree');
-        
-        FilamentAsset::register([
-            AlpineComponent::make('filament-tree-component', __DIR__ . '/../resources/dist/components/filament-tree-component.js'),
+            AlpineComponent::make('filament-tree-component', __DIR__ . '/../resources/dist/components/filament-tree-component.js')->loadedOnRequest(),
+            Js::make('filament-tree', __DIR__ . '/../resources/dist/filament-tree.js'),
         ], 'solution-forest/filament-tree');
     }
 

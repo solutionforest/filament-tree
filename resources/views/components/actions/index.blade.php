@@ -36,5 +36,5 @@
         ])
     }}
 >
-    <x-filament-actions::actions :actions="$actions"/>
+    <x-filament::actions :actions="$actions"/>
 </div>

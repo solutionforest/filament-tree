@@ -3,7 +3,6 @@
 namespace SolutionForest\FilamentTree\Actions;
 
 use Closure;
-use Filament\Actions\StaticAction;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Components\Tree;
 
@@ -25,7 +24,7 @@ class ViewAction extends Action
         $this->modalHeading(fn (): string => __('filament-actions::view.single.modal.heading', ['label' => $this->getRecordTitle()]));
 
         $this->modalSubmitAction(false);
-        $this->modalCancelAction(fn (StaticAction $action) => $action->label(__('filament-actions::view.single.modal.actions.close.label')));
+        $this->modalCancelAction(fn (\Filament\Actions\Action $action) => $action->label(__('filament-actions::view.single.modal.actions.close.label')));
 
         $this->color('gray');
 

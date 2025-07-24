@@ -2,7 +2,7 @@
 
 namespace SolutionForest\FilamentTree\Components;
 
-use Filament\Forms\ComponentContainer;
+use Filament\Schemas\Schema;
 use Filament\Support\Components\ViewComponent;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Concern\BelongsToLivewire;
@@ -61,6 +61,19 @@ class Tree extends ViewComponent
         return $this->actions;
     }
 
+    public function getAction($name)
+    {
+        foreach ($this->actions as $action) {
+            if ($action instanceof \Filament\Actions\ActionGroup) {
+                return collect($action->getFlatActions())->get($name);
+            }
+            if ($action->getName() === $name) {
+                return $action;
+            }
+        }
+        return null;
+    }
+
     public function getModel(): string
     {
         return $this->getLivewire()->getModel();
@@ -82,7 +95,7 @@ class Tree extends ViewComponent
         return $record->getAttributeValue((method_exists($record, 'determineParentKey') ? $record->determineParentColumnName() : Utils::parentColumnName()));
     }
 
-    public function getMountedActionForm(): ?ComponentContainer
+    public function getMountedActionForm(): ?Schema
     {
         return $this->getLivewire()->getMountedTreeActionForm();
     }

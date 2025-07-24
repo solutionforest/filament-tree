@@ -2,6 +2,8 @@
 
 namespace SolutionForest\FilamentTree\Support;
 
+use Illuminate\Support\Collection;
+
 class Utils
 {
     public static function orderColumnName(): string
@@ -38,7 +40,7 @@ class Utils
     }
 
     /**
-     * @param array|\Illuminate\Support\Collection $nodes
+     * @param array|Collection $nodes
      */
     public static function buildNestedArray(
         $nodes = [],

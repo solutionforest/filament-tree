@@ -48,3 +48,8 @@ compile({
     entryPoints: ['./resources/js/components/filament-tree-component.js'],
     outfile: './resources/dist/components/filament-tree-component.js',
 });
+compile({
+    ...defaultOptions,
+    entryPoints: ['./resources/js/filament-tree.js'],
+    outfile: './resources/dist/filament-tree.js',
+});
