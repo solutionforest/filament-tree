@@ -3,31 +3,25 @@
     use Illuminate\Support\HtmlString;
 @endphp
 
-<div 
-{{
+<div {{
     $attributes->merge([
-        'class' => 'flex items-center flex-1 gap-1'
+        'class' => 'tree-item-display'
     ])
 }}>
     @if ($icon)
-        <div class="w-4">
-            <x-dynamic-component :component="$icon" class="w-4 h-4"/>
+        <div class="icon-ctn">
+            <x-dynamic-component :component="$icon"/>
         </div>
     @endif
 
-    <div @class([
-        'ml-4 rtl:mr-4' => !$icon,
-        'flex-1',
-    ])>
-        <span @class([
-            'font-semibold',
-        ])>
+    <div class="item-content-ctn">
+        <span class="item-title">
             {{ str($title)->sanitizeHtml()->toHtmlString() }}
         </span>
     
         @if ($description && (is_string($description) || $description instanceof HtmlString))
             @if (is_string($description))
-                <span class="text-gray-500 dark:text-gray-400 text-sm truncate">
+                <span class="item-description">
                     {{ str($description)->sanitizeHtml()->toHtmlString() }}
                 </span>
                 

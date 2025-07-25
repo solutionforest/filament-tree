@@ -5,7 +5,7 @@
 
 @endphp
 
-<div 
+<div class="filament-tree-component"
     wire:disabled="updateTree"
     {{-- x-ignore --}}
     ax-load
@@ -15,7 +15,7 @@
         maxDepth: {{ $maxDepth }}
     })">
     <x-filament::section :heading="($this->displayTreeTitle() ?? false) ? $this->getTreeTitle() : null">
-        <menu class="flex gap-2 mb-4" id="nestable-menu">
+        <menu class="nestable-menu" id="nestable-menu">
             <div class="btn-group">
                 <x-filament::button color="gray" tag="button" data-action="expand-all" x-on:click="expandAll()" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     {{ __('filament-tree::filament-tree.button.expand_all') }}

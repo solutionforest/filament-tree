@@ -121,6 +121,10 @@
     border: 1px dashed #b6bcbf;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
+    &:is(.dark *) {
+        background: #1f2937;
+        border-color: #4b5563;
+    }
 }
 
 .dd-empty {
@@ -143,6 +147,12 @@
 
 .dd-dragel .dd-handle {
     box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.1);
+    height: 40px;
+    padding: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+    &:is(.dark *) {
+        background-color: rgba(31, 41, 55, 0.8);
+    }
 }
 
 .dd-nochildren .dd-placeholder {

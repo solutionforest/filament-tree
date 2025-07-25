@@ -1,0 +1,102 @@
+
+/* Item Colors + Styles*/
+.filament-tree .dd-item .dd-handle,
+.filament-tree .dd-item > .loading-indicator,
+.dd-dragel .dd-handle {
+    @apply rounded-lg border h-10 mb-2;
+    /* Color: oklch */
+    border-color: var(--color-gray-300);
+    &:is(.dark *) {
+        border-color: var(--color-gray-700);
+    }
+}
+
+.filament-tree .dd-placeholder {
+    @apply flex w-full items-center;
+}
+
+.filament-tree .dd-item .dd-handle {
+    @apply flex w-full items-center;
+    background-color: white;
+    &:is(.dark *) {
+        background-color: var(--color-gray-950);
+    }
+}
+
+.filament-tree .dd-item .dd-handle > button {
+    @apply h-full flex items-center;
+    @apply rounded-l-lg border-r rtl:rounded-l rtl:border-r-0 rtl:border-l px-px;
+    /* Color: oklch */
+    background-color: var(--color-gray-50);
+    border-color: var(--color-gray-300);
+    &:is(.dark *) {
+        background-color: var(--color-gray-700);
+        border-color: var(--color-gray-700);
+    }
+    svg {
+        @apply w-4 h-4 first:-mr-2 first:rtl:mr-0 first:rtl:-ml-2;
+        color: var(--color-gray-400);
+        &:is(.dark *) {
+            color: white;
+        }
+    }
+}
+
+.dd-dragel .dd-content {
+    @apply h-full;
+}
+.dd-dragel .dd-handle > button, 
+.dd-dragel .fi-tree-actions-ctn {
+    @apply hidden;
+}
+
+.filament-tree .dd-item .dd-content,
+.dd-dragel .dd-content {
+    @apply flex gap-1;
+}
+.filament-tree .dd-item .dd-content > .tree-item-display,
+.dd-dragel .tree-item-display {
+    @apply flex items-center flex-1 gap-1 ml-1 rtl:mr-1;
+    .icon-ctn svg {
+        @apply w-4 h-4;
+    }
+    .item-content-ctn {
+        @apply flex-1 w-24 md:w-32 lg:w-40 xl:w-48 2xl:w-56;
+        @apply flex flex-col truncate;
+        .item-title {
+            @apply font-medium;
+        }
+        .item-description {
+            @apply text-sm;
+            color: var(--color-gray-500);
+            &:is(.dark *) {
+                color: var(--color-gray-400);
+            }
+        }
+    }
+    &:not(:has(.icon-ctn)) .item-content-ctn {
+        @apply ml-1 rtl:mr-1;
+    }
+}
+.filament-tree .dd-item .dd-content .dd-item-btns {
+    @apply flex items-center justify-center pl-3;
+}
+.filament-tree .dd-item .dd-content .dd-item-btns button svg {
+    @apply w-4 h-4;
+    color: var(--color-gray-400);
+}
+
+.filament-tree .dd-item .fi-tree-actions-ctn {
+    @apply ml-auto mr-4 rtl:ml-4 rtl:mr-auto;
+}
+.filament-tree .dd-item .fi-tree-actions-ctn .fi-tree-actions {
+    @apply flex shrink-0 items-center gap-3;
+}
+
+.filament-tree .dd-item > .loading-indicator {
+    @apply animate-pulse hidden;
+    background-color: var(--color-gray-300);
+    &:is(.dark *) {
+        background-color: var(--color-gray-600);
+    }
+}

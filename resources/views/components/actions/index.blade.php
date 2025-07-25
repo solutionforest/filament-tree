@@ -2,7 +2,7 @@
     'actions',
     'alignment' => null,
     'record' => null,
-    'wrap' => false,
+    // 'wrap' => false,
 ])
 
 @php
@@ -21,20 +21,4 @@
     );
 @endphp
 
-<div
-    {{
-        $attributes->class([
-            'fi-tree-actions flex shrink-0 items-center gap-3',
-            'flex-wrap' => $wrap,
-            'sm:flex-nowrap' => $wrap === '-sm',
-            match ($alignment) {
-                Alignment::Center, 'center' => 'justify-center',
-                Alignment::Start, Alignment::Left, 'start', 'left' => 'justify-start',
-                'start md:end' => 'justify-start md:justify-end',
-                default => 'justify-end',
-            },
-        ])
-    }}
->
-    <x-filament::actions :actions="$actions"/>
-</div>
+<x-filament::actions :actions="$actions" :alignment="$alignment" class="fi-tree-actions"/>

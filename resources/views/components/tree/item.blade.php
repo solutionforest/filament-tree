@@ -19,41 +19,30 @@
 <li class="filament-tree-row dd-item" data-id="{{ $recordKey }}">
     <div wire:loading.remove.delay
         wire:target="{{ implode(',', Tree::LOADING_TARGETS) }}"
-        @class([
-            'rounded-lg border dd-handle h-10',
-            'mb-2',
-            'flex w-full items-center',
-            'border-gray-300 bg-white dark:border-white/10 dark:bg-gray-900',
-        ])>
+        class="dd-handle"
+    >
 
-        <button type="button" @class([
-            'h-full flex items-center',
-            'rounded-l-lg border-r rtl:rounded-l rtl:border-r-0 rtl:border-l px-px',
-            'bg-gray-50 border-gray-300 dark:bg-white/5 dark:border-white/10',
-        ])>
-            <x-heroicon-m-ellipsis-vertical class="text-gray-400 dark:text-gray-500 w-4 h-4 -mr-2 rtl:mr-0 rtl:-ml-2"/>
-            <x-heroicon-m-ellipsis-vertical class="text-gray-400 dark:text-gray-500 w-4 h-4"/>
+        <button type="button">
+            <x-heroicon-m-ellipsis-vertical/>
+            <x-heroicon-m-ellipsis-vertical/>
         </button>
 
-        <div class="dd-content dd-nodrag flex gap-1">
+        <div class="dd-content dd-nodrag">
 
-            <x-filament-tree::tree.item-display 
-                class="ml-1 rtl:mr-1"
-                :record="$record" :title="$title" :icon="$icon" :description="$description"
-            />
+            <x-filament-tree::tree.item-display :record="$record" :title="$title" :icon="$icon" :description="$description"/>
 
-            <div @class(['dd-item-btns', 'hidden' => !count($children), 'flex items-center justify-center pl-3'])>
+            <div @class(['dd-item-btns', 'hidden' => !count($children)])>
                 <button data-action="expand" @class(['hidden' => !$collapsed])>
-                    <x-heroicon-o-chevron-down class="text-gray-400 w-4 h-4" />
+                    <x-heroicon-o-chevron-down />
                 </button>
                 <button data-action="collapse" @class(['hidden' => $collapsed])>
-                    <x-heroicon-o-chevron-up class="text-gray-400 w-4 h-4" />
+                    <x-heroicon-o-chevron-up />
                 </button>
             </div>
         </div>
 
         @if (count($actions))
-            <div class="dd-nodrag ml-auto mr-4 rtl:ml-4 rtl:mr-auto">
+            <div class="fi-tree-actions-ctn dd-nodrag">
                 <x-filament-tree::actions :actions="$actions" :record="$record" />
             </div>
         @endif
@@ -61,9 +50,8 @@
     @if (count($children))
         <x-filament-tree::tree.list :records="$children" :containerKey="$containerKey" :tree="$tree" :collapsed="$collapsed" />
     @endif
-    <div class="rounded-lg border border-gray-300 mb-2 w-full px-4 py-4 animate-pulse hidden"
+    <div class="loading-indicator"
          wire:loading.class.remove.delay="hidden"
-         wire:target="{{ implode(',', Tree::LOADING_TARGETS) }}">
-        <div class="h-4 bg-gray-300 rounded-md"></div>
-    </div>
+         wire:target="{{ implode(',', Tree::LOADING_TARGETS) }}"
+    ></div>
 </li>
