@@ -28,9 +28,7 @@
         </button>
 
         <div class="dd-content dd-nodrag">
-
             <x-filament-tree::tree.item-display :record="$record" :title="$title" :icon="$icon" :description="$description"/>
-
             <div class="dd-item-btns">
                 <button data-action="expand" @class(['hidden' => !$collapsed])>
                     <x-heroicon-o-chevron-down />
@@ -42,7 +40,7 @@
         </div>
 
         @if (count($actions))
-            <div class="fi-tree-actions-ctn dd-nodrag">
+            <div class="fi-tree-actions-ctn dd-nodrag ml-auto">
                 <x-filament-tree::actions :actions="$actions" :record="$record" />
             </div>
         @endif

@@ -24,7 +24,6 @@
                 <span class="item-description">
                     {{ str($description)->sanitizeHtml()->toHtmlString() }}
                 </span>
-                
             @else
                 {!! $description->toHtml() !!}
             @endif

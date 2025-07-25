@@ -57,17 +57,18 @@
 .filament-tree .dd-item .dd-content > .tree-item-display,
 .dd-dragel .tree-item-display {
     @apply flex items-center flex-1 gap-1 ml-1 rtl:mr-1;
+    @apply w-full max-w-[150px] md:max-w-[155px] lg:max-w-[200px] xl:max-w-[350px];
     .icon-ctn svg {
         @apply w-4 h-4;
     }
     .item-content-ctn {
-        @apply flex-1 w-24 md:w-32 lg:w-40 xl:w-48 2xl:w-56;
-        @apply flex flex-col truncate;
+        @apply flex-1 flex flex-col min-w-0;
+        @apply max-w-xs;
         .item-title {
-            @apply font-medium;
+            @apply font-medium truncate;
         }
         .item-description {
-            @apply text-sm;
+            @apply text-sm truncate;
             color: var(--color-gray-500);
             &:is(.dark *) {
                 color: var(--color-gray-400);
@@ -79,7 +80,7 @@
     }
 }
 .filament-tree .dd-item .dd-content .dd-item-btns {
-    @apply flex items-center justify-center pl-3;
+    @apply flex-1 flex items-center justify-center;
 }
 .filament-tree .dd-item .dd-content .dd-item-btns button svg {
     @apply w-4 h-4;
