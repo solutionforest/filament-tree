@@ -20,14 +20,36 @@ trait HasActiveLocaleSwitcher
 
     public function getTranslatableLocales(): array
     {
-        return $this->translatableLocales ?? (
-            method_exists(static::class, 'getResource')
-                ? static::getResource()::getTranslatableLocales()
-                : (
-                    method_exists(static::class, 'getTranslatableLocales') 
-                        ? $this->getTranslatableLocales()
-                        : []
-                )
-        );
+        try {
+
+            if ($this->translatableLocales) {
+                return $this->translatableLocales;
+            }
+
+            if (method_exists(static::class, 'getResource')) {
+                $resource = static::getResource();
+                if (method_exists($resource, 'getTranslatableLocales')) {
+                    return $resource::getTranslatableLocales();
+                }
+            }
+
+            // Check any translatable plugin
+            $fiPanel = filament()?->getCurrentPanel();
+
+            // Find translatable locales from the resource
+            foreach ($fiPanel?->getPlugins() as $pluginKey => $plugin) {
+                if (method_exists($plugin, 'getDefaultLocales')) { 
+                    $locales = $plugin->getDefaultLocales();
+                    if (!empty($locales)) {
+                        return $locales;
+                    }
+                }
+            }
+
+        } catch (\Throwable $e) {
+            //
+        }
+
+        return [];
     }
 }
