@@ -75,7 +75,8 @@ return [
 ];
 
 ```
-![Screenshot](https://github.com/solutionforest/filament-tree/assets/68211972/d4bc8d33-3448-4cf5-837e-14116e28b4b5)
+
+![Using tree widget on page](https://github.com/user-attachments/assets/b590afeb-6178-4382-a669-2f6d1af4559e)
 
 ## Usage
 
@@ -346,7 +347,8 @@ public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record =
     return 'heroicon-o-cake';
 }
 ```
-![tree-icon](https://github.com/solutionforest/filament-tree/assets/68525320/6a1ef719-9029-4e91-a20a-515a514c4326)
+
+![Item record on tree](https://github.com/user-attachments/assets/5a3b5b68-39d5-450c-9e7d-3b3c95433bbc)
 
 #### Node collapsed state
 You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:
