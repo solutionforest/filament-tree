@@ -3,6 +3,8 @@
 namespace SolutionForest\FilamentTree\Resources\Pages;
 
 use Filament\Actions\CreateAction;
+use Filament\Navigation\NavigationGroup;
+use Filament\Navigation\NavigationItem;
 use Filament\Resources\Pages\Page as BasePage;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
@@ -43,6 +45,18 @@ abstract class TreePage extends BasePage implements HasTree
             //
         }
         return $this->traitGetViewFormSchema();
+    }
+    
+    /**
+     * @return array<NavigationItem | NavigationGroup>
+     */
+    public function getSubNavigation(): array
+    {
+        if (filled($cluster = static::getCluster())) {
+            return $this->generateNavigationItems($cluster::getClusteredComponents());
+        }
+
+        return [];
     }
     
     protected function configureCreateAction(CreateAction $action): CreateAction
