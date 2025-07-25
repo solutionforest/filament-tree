@@ -75,7 +75,7 @@
         }
     }
     &:not(:has(.icon-ctn)) .item-content-ctn {
-        @apply ml-1 rtl:mr-1;
+        @apply ml-4 rtl:mr-4;
     }
 }
 .filament-tree .dd-item .dd-content .dd-item-btns {
@@ -84,6 +84,9 @@
 .filament-tree .dd-item .dd-content .dd-item-btns button svg {
     @apply w-4 h-4;
     color: var(--color-gray-400);
+}
+.filament-tree .dd-item:not(:has(.dd-list)) .dd-item-btns {
+    @apply hidden;
 }
 
 .filament-tree .dd-item .fi-tree-actions-ctn {

@@ -31,7 +31,7 @@
 
             <x-filament-tree::tree.item-display :record="$record" :title="$title" :icon="$icon" :description="$description"/>
 
-            <div @class(['dd-item-btns', 'hidden' => !count($children)])>
+            <div class="dd-item-btns">
                 <button data-action="expand" @class(['hidden' => !$collapsed])>
                     <x-heroicon-o-chevron-down />
                 </button>
