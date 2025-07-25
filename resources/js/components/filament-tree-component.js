@@ -85,22 +85,30 @@ export default function treeNestableComponent({
          * Collapse all the tree
          */
         collapseAll: function () {
-            jQueryNestable.buildNestable($('.dd'), 'collapseAll');
+            const dd = this.$refs.treeContainer;
+            if (!dd) {
+                return;
+            }
+            jQueryNestable.buildNestable($(dd), 'collapseAll'); // jQueryNestable.buildNestable($('.dd'), 'collapseAll');
             // $('.dd').nestable('collapseAll');
-            $('.dd').find('.dd-item-btns [data-action=expand]').removeClass('hidden');
-            $('.dd').find('.dd-item-btns [data-action=collapse]').addClass('hidden');
-            $('.dd > ol > li').find('li').addClass('hidden');
+            $(dd).find('.dd-item-btns [data-action=expand]').removeClass('hidden'); // $('.dd').find('.dd-item-btns [data-action=expand]').removeClass('hidden');
+            $(dd).find('.dd-item-btns [data-action=collapse]').addClass('hidden'); // $('.dd').find('.dd-item-btns [data-action=collapse]').addClass('hidden');
+            $(dd).find('ol > li').find('li').addClass('hidden'); // $('.dd > ol > li').find('li').addClass('hidden');
         },
 
         /**
          * Expand all the tree
          */
         expandAll: function () {
-            jQueryNestable.buildNestable($('.dd'), 'expandAll');
+            const dd = this.$refs.treeContainer;
+            if (!dd) {
+                return;
+            }
+            jQueryNestable.buildNestable($(dd), 'expandAll'); // jQueryNestable.buildNestable($('.dd'), 'expandAll');
             // $('.dd').nestable('expandAll');
-            $('.dd').find('.dd-item-btns [data-action=expand]').addClass('hidden');
-            $('.dd').find('.dd-item-btns [data-action=collapse]').removeClass('hidden');
-            $('.dd > ol > li').find('li').removeClass('hidden');
+            $(dd).find('.dd-item-btns [data-action=expand]').addClass('hidden'); // $('.dd').find('.dd-item-btns [data-action=expand]').addClass('hidden');
+            $(dd).find('.dd-item-btns [data-action=collapse]').removeClass('hidden'); // $('.dd').find('.dd-item-btns [data-action=collapse]').removeClass('hidden');
+            $(dd).find('ol > li').find('li').removeClass('hidden'); // $('.dd > ol > li').find('li').removeClass('hidden');
         },
     }
 }

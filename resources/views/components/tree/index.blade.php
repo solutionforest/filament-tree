@@ -33,7 +33,7 @@
                 </x-filament::button>
             </div>
         </menu>
-        <div class="filament-tree dd" id="{{ $containerKey }}">
+        <div class="filament-tree dd" id="{{ $containerKey }}" x-ref="treeContainer">
             <x-filament-tree::tree.list :records="$records" :containerKey="$containerKey" :tree="$tree"/>
         </div>
     </x-filament::section>
