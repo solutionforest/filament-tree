@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> Please note that we will only be updating to version 2.x, excluding any bug fixes.
+> Please note that we will only be updating to version 2.x or 3.x, excluding any bug fixes.
 
 # Filament Tree
 
