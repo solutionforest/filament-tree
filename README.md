@@ -5,7 +5,6 @@
 
 Filament Tree is a plugin for Filament Admin that creates a model management page with a heritage tree structure view. This plugin can be used to create menus and more.
 
-
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 [![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 
@@ -18,7 +17,6 @@ Demo username : demo@solutionforest.net
 Demo password : 12345678
 Auto Reset every hour.
 
-
 ## Installation
 
 To install the package, run the following command:
@@ -28,19 +26,20 @@ composer require solution-forest/filament-tree
 ```
 
 > **Important: Need to publish assets after version 2.x**
+
 ```bash
 php artisan filament:assets
 ```
 
 > **Note: Add plugin Blade files to your custom theme `tailwind.config.js` for dark mode.**
-> 
+>
 > To set up your own custom theme, you can visit the [official instruction page](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme) on the Filament website.
 
 Add the plugin's views to your `tailwind.config.js` file.
 
 ```js
 content: [
-    '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php',
+  '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php',
 ]
 ```
 
@@ -95,7 +94,9 @@ Schema::create('product_categories', function (Blueprint $table) {
     $table->timestamps();
 });
 ```
+
 This plugin provides a convenient method called `treeColumns()` that you can use to add the required columns for the tree structure to your table more easily. Here's an example:
+
 ```
 Schema::create('product_categories', function (Blueprint $table) {
     $table->id();
@@ -103,8 +104,8 @@ Schema::create('product_categories', function (Blueprint $table) {
     $table->timestamps();
 });
 ```
-This will automatically add the required columns for the tree structure to your table.
 
+This will automatically add the required columns for the tree structure to your table.
 
 The above table structure contains three required fields: `parent_id`, `order`, `title`, and other fields do not have any requirements.
 
@@ -127,7 +128,7 @@ class ProductCategory extends Model
     protected $casts = [
         'parent_id' => 'int'
     ];
-    
+
     protected $table = 'product_categories';
 }
 ```
@@ -182,14 +183,16 @@ class ProductCategory extends Model
 ```
 
 ### Widget
+
 Filament provides a powerful feature that allows you to display widgets inside pages, below the header and above the footer. This can be useful for adding additional functionality to your resource pages.
 
 To create a Tree Widget and apply it to a resource page, you can follow these steps:
 
 #### 1. Creating a Filament Resource Page
+
 To create a resources page, run the following command:
 
-``` 
+```
 php artisan make:filament-resource ProductCategory
 ```
 
@@ -202,7 +205,8 @@ php artisan make:filament-tree-widget ProductCategoryWidget
 ```
 
 Now you can see the Widget in Filament Folder
-``` php
+
+```php
 <?php
 
 namespace App\Filament\Widgets;
@@ -231,7 +235,6 @@ class ProductCategoryWidget extends BaseWidget
     }
 }
 ```
-
 
 #### 3. Displaying a widget on a resource page
 
@@ -266,19 +269,24 @@ class ListProductCategories extends ListRecords
     }
 }
 ```
-    
+
 ### Resources
+
 Filament allows you to create a custom pages for resources, you also can create a tree page that display hierarchical data.
+
 #### Create a Page
+
 To create a tree page for resource, you can use:
-``` 
+
+```
 php artisan make:filament-tree-page ProductCategoryTree --resource=ProductCategory
 ```
-    
+
 #### Register a Page to the resource
+
 You must register the tree page to a route in the static `getPages()` methods of your resource. For example:
 
-``` php
+```php
 public static function getPages(): array
 {
     return [
@@ -287,10 +295,13 @@ public static function getPages(): array
     ];
 }
 ```
+
 #### Actions
+
 Define the available "actions" for the tree page using the `getActions()` and `getTreeActions()` methods of your page class.
 
 The `getActions()` method defines actions that are displayed next to the page's heading:
+
 ```php
     use Filament\Pages\Actions\CreateAction;
 
@@ -304,7 +315,8 @@ The `getActions()` method defines actions that are displayed next to the page's 
     }
 ```
 
-The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example: 
+The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example:
+
 ```php
 use Filament\Pages\Actions\Action;
 
@@ -321,7 +333,7 @@ protected function getTreeActions(): array
 
 Alternatively, you can use the `hasDeleteAction()`, `hasEditAction()`, and `hasViewAction()` methods to customize each action individually.
 
-``` php
+```php
 protected function hasDeleteAction(): bool
 {
     return false;
@@ -337,7 +349,9 @@ protected function hasViewAction(): bool
     return false;
 }
 ```
+
 #### Record ICON
+
 To customize the prefix icon for each record in a tree page, you can use the `getTreeRecordIcon()` method in your tree page class. This method should return a string that represents the name of the icon you want to use for the record. For example:
 
 ```php
@@ -360,6 +374,7 @@ public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record =
 ![Item record on tree](https://github.com/user-attachments/assets/f5d2fcb8-f366-47e9-956d-6b81c8edd2ac)
 
 #### Node collapsed state
+
 You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:
 
 ```php
@@ -371,6 +386,7 @@ public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $reco
 ```
 
 #### Record Title
+
 To customize the ttile for each record in a tree page, you can use the `getTreeRecordTitle()` method in your tree page class. This method should return a string that represents the name of the icon you want to use for the record. For example:
 
 ```php
@@ -386,20 +402,27 @@ public function getTreeRecordTitle(?\Illuminate\Database\Eloquent\Model $record 
 ```
 
 ### Pages
+
 This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use the `make:filament-tree-page` command. For example, to create a tree page for the ProductCategory model, you can run:
+
 #### Create a Page
+
 > **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelTree` trait**
+
 ```php
 php artisan make:filament-tree-page ProductCategory --model=ProductCategory
 ```
-    
-#### Actions, Widgets and Icon for each record
-Once you've created the tree page, you can customize the available actions, widgets, and icon for each record. You can use the same methods as for resource pages. See the [Resource Page](#resources)  for more information on how to customize actions, widgets, and icons.
 
+#### Actions, Widgets and Icon for each record
+
+Once you've created the tree page, you can customize the available actions, widgets, and icon for each record. You can use the same methods as for resource pages. See the [Resource Page](#resources) for more information on how to customize actions, widgets, and icons.
 
 ### Translation
-Suggest used with Spatie Translatable (https://filamentphp.com/plugins/filament-spatie-translatable) Plugin.
+
+Suggest used with Spatie Translatable (https://github.com/lara-zeus/translatable) Plugin.
+
 1. Ensure your model already apply translatable setup. (Refence on https://spatie.be/docs/laravel-translatable/v6/installation-setup)
+
 ```php
 use Filament\Actions\LocaleSwitcher;
 use SolutionForest\FilamentTree\Concern\ModelTree;
@@ -415,7 +438,9 @@ class Category extends Model
     ];
 }
 ```
+
 2. You need to add the necessary trait and `LocaleSwitcher` header action to your tree page:
+
 ```php
 use App\Models\Category as TreePageModel;
 use SolutionForest\FilamentTree\Concern\TreeRecords\Translatable;
@@ -440,7 +465,6 @@ class Category extends BasePage
     }
 }
 ```
-
 
 ### Publishing Views
 
@@ -487,13 +511,11 @@ If you discover any security related issues, please email info+package@solutionf
 
 Filament Tree is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-
 <p align="center"><a href="https://solutionforest.com" target="_blank"><img src="https://github.com/solutionforest/.github/blob/main/docs/images/sf.png?raw=true" width="200"></a></p>
-
 
 ## About Solution Forest
 
-[Solution Forest](https://solutionforest.com) Web development agency based in Hong Kong. We help customers to solve their problems. We Love Open Soruces. 
+[Solution Forest](https://solutionforest.com) Web development agency based in Hong Kong. We help customers to solve their problems. We Love Open Soruces.
 
 We have built a collection of best-in-class products:
 
