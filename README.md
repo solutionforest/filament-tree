@@ -419,7 +419,7 @@ Once you've created the tree page, you can customize the available actions, widg
 
 ### Translation
 
-Suggest used with Spatie Translatable (https://github.com/lara-zeus/translatable) Plugin.
+Suggest used with Spatie Translatable [https://github.com/lara-zeus/translatable](https://github.com/lara-zeus/spatie-translatable) Plugin.
 
 1. Ensure your model already apply translatable setup. (Refence on https://spatie.be/docs/laravel-translatable/v6/installation-setup)
 
