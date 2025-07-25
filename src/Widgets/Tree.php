@@ -2,11 +2,7 @@
 
 namespace SolutionForest\FilamentTree\Widgets;
 
-use Filament\Schemas\Components\Component;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Filament\Support\Contracts\TranslatableContentDriver;
-use Filament\Widgets\Widget;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Actions\Action;
 use SolutionForest\FilamentTree\Actions\DeleteAction;
@@ -16,10 +12,9 @@ use SolutionForest\FilamentTree\Components\Tree as TreeComponent;
 use SolutionForest\FilamentTree\Concern\InteractWithTree;
 use SolutionForest\FilamentTree\Contract\HasTree;
 
-class Tree extends Widget implements HasTree, HasForms
+class Tree extends BaseWidget implements HasTree
 {
     use InteractWithTree;
-    use InteractsWithForms;
 
     protected string $view = 'filament-tree::widgets.tree';
 
@@ -157,13 +152,13 @@ class Tree extends Widget implements HasTree, HasForms
             $schema = $this->getFormSchema();
         }
 
-        $action->schema($this->getFormSchema());
+        $action->schema($schema);
 
-        $isInfoList = count(array_filter($schema, fn($component) => $component instanceof Component)) > 0;
+        // $isInfoList = count(array_filter($schema, fn($component) => $component instanceof Component)) > 0;
 
-        if ($isInfoList) {
-            $action->schema($schema);
-        }
+        // if ($isInfoList) {
+        //     $action->schema($schema);
+        // }
 
         $action->model($this->getModel());
 
