@@ -343,8 +343,17 @@ To customize the prefix icon for each record in a tree page, you can use the `ge
 ```php
 public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
 {
-    // default null
-    return 'heroicon-o-cake';
+    if ($record->parent_id != -1) {
+        return null; // no icon for child records
+    }
+
+    return match ($record->title) {
+        'Top' => 'heroicon-o-arrow-up',
+        'Bottom' => 'heroicon-o-arrow-down',
+        'Shoes' => 'heroicon-o-shopping-bag',
+        'Accessories' => 'heroicon-o-briefcase',
+        default => null, // no icon for other records
+    };
 }
 ```
 
