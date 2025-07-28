@@ -9,8 +9,4 @@
 @import './button.css';
 @import './custom-nestable-item.css';
 
-.filament-tree-component .nestable-menu {
-    @apply flex gap-2 mb-4;
-}
-
 @source '../views/**/*.blade.php';

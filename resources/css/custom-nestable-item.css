@@ -104,3 +104,7 @@
         background-color: var(--color-gray-600);
     }
 }
+
+.filament-tree-component .nestable-menu {
+    @apply flex gap-2 mb-4;
+}
