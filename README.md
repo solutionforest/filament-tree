@@ -39,14 +39,15 @@ php artisan filament:assets
 
 > **Note: Add plugin Blade files to your custom theme `tailwind.config.js` for dark mode.**
 >
-> To set up your own custom theme, you can visit the [official instruction page](https://filamentphp.com/docs/3.x/panels/themes#creating-a-custom-theme) on the Filament website.
+> To set up your own custom theme, you can visit the [official instruction page](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) on the Filament website.
 
-Add the plugin's views to your `tailwind.config.js` file.
+Add the plugin's views and css to your `theme.css` file.
 
-```js
-content: [
-  '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php',
-]
+```css
+@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/jquery.nestable.css';
+@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/button.css';
+@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/custom-nestable-item.css';
+@source '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php'
 ```
 
 Then, publish the config file using:
