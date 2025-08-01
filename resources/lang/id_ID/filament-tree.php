@@ -2,7 +2,7 @@
 
 return [
     'root' => 'Induk',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Buttons
@@ -21,7 +21,7 @@ return [
     'components.tree.buttons.deselect_all.label' => 'Batalkan Pilihan Semua',
     'components.tree.buttons.expand_all.label' => 'Perluas Semua',
     'components.tree.buttons.collapse_all.label' => 'Tutup Semua',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Message
@@ -29,4 +29,3 @@ return [
     */
     'actions.delete.confirmation.with_children' => 'Apakah Anda yakin ingin menghapus data ini dan turunannya?',
 ];
-

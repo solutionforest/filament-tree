@@ -3,7 +3,6 @@
 namespace SolutionForest\FilamentTree\Concern;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +13,7 @@ trait HasTranslatableRecords
         HasRecords::resolveTreeRecord as traitResolveTreeRecord;
     }
 
-    public function getRecords(): Collection | null
+    public function getRecords(): ?Collection
     {
         $records = $this->traitGetRecords();
         if ($records) {
@@ -22,6 +21,7 @@ trait HasTranslatableRecords
                 $this->updateModelTranslation($record);
             }
         }
+
         return $records;
     }
 
@@ -30,7 +30,7 @@ trait HasTranslatableRecords
         $record = $this->traitResolveTreeRecord($key);
 
         $this->updateModelTranslation($record);
-        
+
         return $record;
     }
 
@@ -51,7 +51,7 @@ trait HasTranslatableRecords
                         }
                     }
 
-                } else if (! empty($item)) {
+                } elseif (! empty($item)) {
 
                     $this->updateModelTranslation($item);
                 }

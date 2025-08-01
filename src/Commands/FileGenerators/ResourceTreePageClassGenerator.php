@@ -6,7 +6,6 @@ use Filament\Commands\FileGenerators\Resources\Pages\Concerns\CanGenerateResourc
 use Filament\Resources\Resource;
 use Filament\Support\Commands\FileGenerators\ClassGenerator;
 use Nette\PhpGenerator\ClassType;
-use Nette\PhpGenerator\TraitUse;
 use SolutionForest\FilamentTree\Commands\FileGenerators\Concerns\CanGenerateTreeMethods;
 use SolutionForest\FilamentTree\Commands\FileGenerators\Concerns\CanGenerateTreeProperties;
 use SolutionForest\FilamentTree\Resources\Pages\TreePage;
@@ -14,11 +13,11 @@ use SolutionForest\FilamentTree\Resources\Pages\TreePage;
 class ResourceTreePageClassGenerator extends ClassGenerator
 {
     use CanGenerateResourceProperty;
-    use CanGenerateTreeProperties;
     use CanGenerateTreeMethods;
+    use CanGenerateTreeProperties;
 
     /**
-     * @param  class-string<Resource>  $resourceFqn
+     * @param  class-string<resource>  $resourceFqn
      */
     final public function __construct(
         protected string $fqn,
@@ -75,7 +74,7 @@ class ResourceTreePageClassGenerator extends ClassGenerator
     {
         return $this->appendCommentedMethodsToPage(parent::generate());
     }
-    
+
     public function getFqn(): string
     {
         return $this->fqn;
@@ -88,5 +87,4 @@ class ResourceTreePageClassGenerator extends ClassGenerator
     {
         return $this->resourceFqn;
     }
-
 }

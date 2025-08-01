@@ -13,8 +13,8 @@ use SolutionForest\FilamentTree\Widgets\Tree;
 class TreeWidgetClassGenerator extends ClassGenerator
 {
     use CanGenerateModelProperty;
-    use CanGenerateTreeProperties;
     use CanGenerateTreeMethods;
+    use CanGenerateTreeProperties;
 
     /**
      * @param  class-string<Model>  $modelFqn

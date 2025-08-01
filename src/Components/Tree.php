@@ -71,6 +71,7 @@ class Tree extends ViewComponent
                 return $action;
             }
         }
+
         return null;
     }
 
@@ -84,14 +85,16 @@ class Tree extends ViewComponent
         if (! $record) {
             return null;
         }
+
         return $record->getAttributeValue($record->getKeyName());
     }
 
-    public function getParentKey(?Model $record):?string
+    public function getParentKey(?Model $record): ?string
     {
         if (! $record) {
             return null;
         }
+
         return $record->getAttributeValue((method_exists($record, 'determineParentKey') ? $record->determineParentColumnName() : Utils::parentColumnName()));
     }
 

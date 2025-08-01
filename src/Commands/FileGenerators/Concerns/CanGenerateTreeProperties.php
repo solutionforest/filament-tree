@@ -17,8 +17,7 @@ trait CanGenerateTreeProperties
     }
 
     /**
-     * @param array<string,Property> $property
-     * @return void
+     * @param  array<string,Property>  $property
      */
     protected function configureTreeProperties(array $property): void {}
 }

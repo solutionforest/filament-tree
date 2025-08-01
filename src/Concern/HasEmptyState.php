@@ -3,8 +3,8 @@
 namespace SolutionForest\FilamentTree\Concern;
 
 use Closure;
-use SolutionForest\FilamentTree\Actions\Action;
 use Illuminate\Contracts\View\View;
+use SolutionForest\FilamentTree\Actions\Action;
 
 trait HasEmptyState
 {

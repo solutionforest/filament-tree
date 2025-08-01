@@ -10,17 +10,18 @@ use SolutionForest\FilamentTree\Support\Utils;
 
 trait HasRecords
 {
-    protected Collection | null $records = null;
+    protected ?Collection $records = null;
 
     #[On('refreshTree')]
-    public function getRecords(): Collection | null
+    public function getRecords(): ?Collection
     {
         if ($this->records) {
             return $this->records;
         }
+
         return $this->records = $this->getSortedQuery()->get();
     }
-    
+
     public function getTreeRecord(?string $key): ?Model
     {
         return $this->resolveTreeRecord($key);
@@ -45,7 +46,8 @@ trait HasRecords
                 if (method_exists($record, 'determineParentColumnName')) {
                     return $record->getAttributeValue($record->determineParentColumnName()) == Utils::defaultParentId();
                 }
-                return $record->getAttributeValue('parent')  === Utils::defaultParentId();
+
+                return $record->getAttributeValue('parent') === Utils::defaultParentId();
             });
     }
 
@@ -55,6 +57,7 @@ trait HasRecords
         if (method_exists($this->getModel(), 'scopeOrdered')) {
             return $this->getWithRelationQuery()->ordered();
         }
+
         return $query;
     }
 
@@ -64,6 +67,7 @@ trait HasRecords
         if (method_exists($this->getModel(), 'children') && $this->getModel()::has('children')) {
             return $query->with('children');
         }
+
         return $query;
     }
 

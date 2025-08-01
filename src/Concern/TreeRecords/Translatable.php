@@ -2,15 +2,11 @@
 
 namespace SolutionForest\FilamentTree\Concern\TreeRecords;
 
-use SolutionForest\FilamentTree\Actions\EditAction;
-use SolutionForest\FilamentTree\Actions\ViewAction;
 use Filament\Actions\CreateAction;
-use Filament\Support\Contracts\TranslatableContentDriver;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Actions;
-use SolutionForest\FilamentTree\Concern\TreeRecords\HasActiveLocaleSwitcher;
+use SolutionForest\FilamentTree\Actions\EditAction;
+use SolutionForest\FilamentTree\Actions\ViewAction;
 use SolutionForest\FilamentTree\Concern\HasTranslatableRecords;
 
 trait Translatable
@@ -61,6 +57,7 @@ trait Translatable
                         );
                     }
                 }
+
                 return $model::create($data);
             });
         }
@@ -81,7 +78,7 @@ trait Translatable
             $action->using(function (array $data, Model $record) use ($action) {
 
                 $data = $action->evaluate($action->getMutateFormDataBeforeSave(), ['data' => $data]);
-                
+
                 $record->fill($data);
                 if (method_exists($record, 'setTranslation') &&
                     method_exists($record, 'getTranslatableAttributes')
@@ -116,6 +113,7 @@ trait Translatable
                 $data[$attr] = $record->getAttributeValue($attr);
             }
         }
+
         return $data;
     }
 }

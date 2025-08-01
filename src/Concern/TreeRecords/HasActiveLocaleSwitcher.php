@@ -38,9 +38,9 @@ trait HasActiveLocaleSwitcher
 
             // Find translatable locales from the resource
             foreach ($fiPanel?->getPlugins() as $pluginKey => $plugin) {
-                if (method_exists($plugin, 'getDefaultLocales')) { 
+                if (method_exists($plugin, 'getDefaultLocales')) {
                     $locales = $plugin->getDefaultLocales();
-                    if (!empty($locales)) {
+                    if (! empty($locales)) {
                         return $locales;
                     }
                 }

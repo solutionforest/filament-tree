@@ -1,31 +1,31 @@
 <?php
 
 return [
-	'root' => 'Raíz',
+    'root' => 'Raíz',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Buttons
-	|--------------------------------------------------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | Buttons
+    |--------------------------------------------------------------------------
     */
-	'button.save' => 'Guardar',
-	'button.expand_all' => 'Expandir',
-	'button.collapse_all' => 'Colapsar',
+    'button.save' => 'Guardar',
+    'button.expand_all' => 'Expandir',
+    'button.collapse_all' => 'Colapsar',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Form
-	|--------------------------------------------------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | Form
+    |--------------------------------------------------------------------------
     */
-	'components.tree.buttons.select_all.label' => 'Seleccionar todo',
-	'components.tree.buttons.deselect_all.label' => 'Deseleccionar todo',
-	'components.tree.buttons.expand_all.label' => 'Expandir',
-	'components.tree.buttons.collapse_all.label' => 'Colapsar',
+    'components.tree.buttons.select_all.label' => 'Seleccionar todo',
+    'components.tree.buttons.deselect_all.label' => 'Deseleccionar todo',
+    'components.tree.buttons.expand_all.label' => 'Expandir',
+    'components.tree.buttons.collapse_all.label' => 'Colapsar',
 
-	/*
-	|--------------------------------------------------------------------------
-	| Message
-	|--------------------------------------------------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | Message
+    |--------------------------------------------------------------------------
     */
-	'actions.delete.confirmation.with_children' => 'Está seguro que desea eliminar este registro y sus registros dependientes?',
+    'actions.delete.confirmation.with_children' => 'Está seguro que desea eliminar este registro y sus registros dependientes?',
 ];

@@ -30,7 +30,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('getFormSchema')
             ->setProtected()
             ->setReturnType('array')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
             return [
                 //
             ];
@@ -46,7 +46,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('getViewFormSchema')
             ->setProtected()
             ->setReturnType('array')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
             return [
                 // INFOLIST, CAN DELETE
             ];
@@ -62,7 +62,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('hasDeleteAction')
             ->setProtected()
             ->setReturnType('bool')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
                 return false;
             PHP);
 
@@ -76,7 +76,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('hasEditAction')
             ->setProtected()
             ->setReturnType('bool')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
                 return true;
             PHP);
 
@@ -90,7 +90,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('hasViewAction')
             ->setProtected()
             ->setReturnType('bool')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
                 return false;
             PHP);
 
@@ -104,7 +104,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('getHeaderWidgets')
             ->setProtected()
             ->setReturnType('array')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
                 return [];
             PHP);
 
@@ -118,7 +118,7 @@ trait CanGenerateTreeMethods
         $method = $class->addMethod('getFooterWidgets')
             ->setProtected()
             ->setReturnType('array')
-            ->setBody(<<<PHP
+            ->setBody(<<<'PHP'
                 return [];
             PHP);
 
@@ -189,13 +189,13 @@ trait CanGenerateTreeMethods
     {
         // Add the commented-out method before the closing brace
         $commentedMethod = $this->getCommentedMethodsForPage();
-        
+
         // Insert before the last closing brace
         $lastBracePos = strrpos($contents, '}');
         if ($lastBracePos !== false) {
             $contents = substr_replace($contents, $commentedMethod, $lastBracePos, 0);
         }
-        
+
         return $contents;
     }
 
@@ -203,13 +203,13 @@ trait CanGenerateTreeMethods
     {
         // Add the commented-out method before the closing brace
         $commentedMethod = $this->getCommentedMethodsForWidget();
-        
+
         // Insert before the last closing brace
         $lastBracePos = strrpos($contents, '}');
         if ($lastBracePos !== false) {
             $contents = substr_replace($contents, $commentedMethod, $lastBracePos, 0);
         }
-        
+
         return $contents;
     }
 }

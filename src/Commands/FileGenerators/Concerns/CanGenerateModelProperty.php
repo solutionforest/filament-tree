@@ -26,11 +26,11 @@ trait CanGenerateModelProperty
 
     public function getModelForImport(): array
     {
-        return (($this->getModelBasename() === $this->getBasename()) ? [$this->getModelFqn() => 'TreeModel'] : [$this->getModelFqn()]);
+        return ($this->getModelBasename() === $this->getBasename()) ? [$this->getModelFqn() => 'TreeModel'] : [$this->getModelFqn()];
     }
 
     public function getModelFqcnEnd(): string
     {
-        return (($this->getModelBasename() === $this->getBasename()) ? 'TreeModel' : $this->simplifyFqn($this->getModelFqn()));
+        return ($this->getModelBasename() === $this->getBasename()) ? 'TreeModel' : $this->simplifyFqn($this->getModelFqn());
     }
 }

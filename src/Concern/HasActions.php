@@ -18,10 +18,10 @@ trait HasActions
     protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
     {
         if ($this instanceof HasTree && filled($action['context']['tree'] ?? null)) {
-            
+
             $resolvedAction = null;
-            
-            $resolvedAction = $this->getCachedTree()?->getAction( $action['name']) ?? throw new ActionNotResolvableException("Action [{$action['name']}] not found on tree.");
+
+            $resolvedAction = $this->getCachedTree()?->getAction($action['name']) ?? throw new ActionNotResolvableException("Action [{$action['name']}] not found on tree.");
 
             if (filled($action['context']['recordKey'] ?? null)) {
                 $record = $this->getTreeRecord($action['context']['recordKey']);
@@ -31,8 +31,8 @@ trait HasActions
 
             return $resolvedAction;
 
-        } 
-        
+        }
+
         return parent::resolveAction($action, $parentActions);
     }
 
@@ -62,7 +62,7 @@ trait HasActions
         }
     }
 
-    protected function configureTreeAction(Action $action): void { }
+    protected function configureTreeAction(Action $action): void {}
 
     /**
      * @deprecated Use `callMountedAction()` instead.
@@ -75,7 +75,7 @@ trait HasActions
     /**
      * @deprecated Version 3.x.x
      */
-    public function mountedTreeActionRecord($record): void { }
+    public function mountedTreeActionRecord($record): void {}
 
     public function mountTreeAction(string $name, ?string $record = null, array $arguments = [])
     {
@@ -133,7 +133,7 @@ trait HasActions
     /**
      * @deprecated Version 3.x.x
      */
-    protected function resetMountedTreeActionProperties(): void { }
+    protected function resetMountedTreeActionProperties(): void {}
 
     /**
      * @deprecated Use `unmountAction()` instead.
@@ -143,7 +143,7 @@ trait HasActions
         $this->unmountAction($shouldCancelParentActions);
     }
 
-    protected function cacheMountedTreeActionForm(): void { }
+    protected function cacheMountedTreeActionForm(): void {}
 
     /**
      * @deprecated Use `getMountedActionSchema()` instead.
@@ -156,7 +156,7 @@ trait HasActions
     /**
      * @deprecated Use `getMountedAction()?->getRecord()?->getKey()` instead.
      */
-    public function getMountedTreeActionRecordKey(): int | string | null
+    public function getMountedTreeActionRecordKey(): int|string|null
     {
         return $this->getMountedAction()?->getRecord()?->getKey() ?? null;
     }
@@ -217,12 +217,12 @@ trait HasActions
     /**
      * @deprecated Version 3.x.x
      */
-    protected function closeTreeActionModal(): void { }
+    protected function closeTreeActionModal(): void {}
 
     /**
      * @deprecated Version 3.x.x
      */
-    protected function openTreeActionModal(): void { }
+    protected function openTreeActionModal(): void {}
 
     /**
      * Action for each record

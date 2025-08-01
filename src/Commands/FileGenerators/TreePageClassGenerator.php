@@ -15,9 +15,9 @@ use SolutionForest\FilamentTree\Pages\TreePage;
 
 class TreePageClassGenerator extends ClassGenerator
 {
-    use CanGenerateTreeProperties;
-    use CanGenerateTreeMethods;
     use CanGenerateModelProperty;
+    use CanGenerateTreeMethods;
+    use CanGenerateTreeProperties;
 
     /**
      * @param  class-string<Model>  $modelFqn
@@ -58,7 +58,6 @@ class TreePageClassGenerator extends ClassGenerator
     {
         return TreePage::class;
     }
-
 
     protected function addPropertiesToClass(ClassType $class): void
     {

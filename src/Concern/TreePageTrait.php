@@ -10,7 +10,6 @@ use SolutionForest\FilamentTree\Actions\DeleteAction;
 use SolutionForest\FilamentTree\Actions\EditAction;
 use SolutionForest\FilamentTree\Actions\ViewAction;
 use SolutionForest\FilamentTree\Components\Tree;
-use SolutionForest\FilamentTree\Concern\InteractWithTree;
 
 trait TreePageTrait
 {

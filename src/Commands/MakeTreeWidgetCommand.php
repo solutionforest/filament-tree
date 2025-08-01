@@ -61,7 +61,7 @@ class MakeTreeWidgetCommand extends Command
     protected string $widgetsNamespace;
 
     protected string $widgetsDirectory;
-    
+
     protected function configure()
     {
         $this->addArgument(
@@ -332,7 +332,7 @@ class MakeTreeWidgetCommand extends Command
 
     protected function configureLocation(): void
     {
-        $this->fqn = $this->widgetsNamespace . '\\' . $this->fqnEnd;
+        $this->fqn = $this->widgetsNamespace.'\\'.$this->fqnEnd;
     }
 
     protected function createCustomWidget(): void

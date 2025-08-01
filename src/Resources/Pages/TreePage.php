@@ -44,9 +44,10 @@ abstract class TreePage extends BasePage implements HasTree
         } catch (\Throwable $th) {
             //
         }
+
         return $this->traitGetViewFormSchema();
     }
-    
+
     /**
      * @return array<NavigationItem | NavigationGroup>
      */
@@ -58,7 +59,7 @@ abstract class TreePage extends BasePage implements HasTree
 
         return [];
     }
-    
+
     protected function configureCreateAction(CreateAction $action): CreateAction
     {
         return $this->traitConfigureCreateAction($action)

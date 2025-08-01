@@ -18,7 +18,7 @@ class Tree extends BaseWidget implements HasTree
 
     protected string $view = 'filament-tree::widgets.tree';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static string $model;
 
@@ -39,7 +39,7 @@ class Tree extends BaseWidget implements HasTree
         return static::$model ?? class_basename(static::class);
     }
 
-    protected function getFormModel(): Model | string | null
+    protected function getFormModel(): Model|string|null
     {
         return $this->getModel();
     }

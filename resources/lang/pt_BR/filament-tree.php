@@ -2,7 +2,7 @@
 
 return [
     'root' => 'Raiz',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Buttons
@@ -18,10 +18,10 @@ return [
         |--------------------------------------------------------------------------
     */
     'components.tree.buttons.select_all.label' => 'Selecionar Todos',
-    'components.tree.buttons.deselect_all.label' => 'Desmarcar Todos', 
+    'components.tree.buttons.deselect_all.label' => 'Desmarcar Todos',
     'components.tree.buttons.expand_all.label' => 'Expandir Tudo',
     'components.tree.buttons.collapse_all.label' => 'Recolher Tudo',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Message

@@ -137,7 +137,7 @@ class MakeTreePageCommand extends Command
             $this->configureResource();
             // $this->configureResourcePageType();
             $this->configurePagesLocation();
-            
+
             $this->configureLocation();
             // dd($this);
 
@@ -154,14 +154,13 @@ class MakeTreePageCommand extends Command
             //     return static::FAILURE;
             // }
 
-
         } catch (FailureCommandOutput) {
             return static::FAILURE;
         }
-            
+
         $this->components->info("Filament tree page [{$this->fqn}] created successfully.");
         // $this->components->info("Successfully created {$this->fqnEnd} !");
-        
+
         if (filled($this->resourceFqn)) {
             $this->components->info("Make sure to register the page in [{$this->resourceFqn}::getPages()].");
         } elseif (empty($this->panel->getPageNamespaces())) {
@@ -355,7 +354,7 @@ class MakeTreePageCommand extends Command
 
     protected function configureLocation(): void
     {
-        $this->fqn = $this->pagesNamespace . '\\' . $this->fqnEnd;
+        $this->fqn = $this->pagesNamespace.'\\'.$this->fqnEnd;
 
         // if ((! $this->hasResource)) {
         //     $componentLocations = FilamentCli::getComponentLocations();
