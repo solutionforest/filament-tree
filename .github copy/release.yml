@@ -1,0 +1,28 @@
+changelog:
+  exclude:
+    labels:
+      - ":chart_with_upwards_trend: dependency-update"
+    authors:
+      - dependabot
+  categories:
+    - title: "⚠️ Breaking changes"
+      labels:
+        - ":warning: breaking"
+    - title: "🚀 New features"
+      labels:
+        - ":rocket: feature"
+    - title: "📘 Documentation updates"
+      labels:
+        - ":blue_book: documentation"
+    - title: "🐛 Bug fixes"
+      labels:
+        - ":beetle: bug"
+    - title: Other Changes
+      labels:
+        - "*"
+      exclude:
+        labels:
+          - dependencies
+    - title: 👒 Dependencies
+      labels:
+        - dependencies
