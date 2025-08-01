@@ -16,14 +16,14 @@ use SolutionForest\FilamentTree\Components\Tree as TreeComponent;
 use SolutionForest\FilamentTree\Concern\InteractWithTree;
 use SolutionForest\FilamentTree\Contract\HasTree;
 
-class Tree extends Widget implements HasTree, HasForms
+class Tree extends Widget implements HasForms, HasTree
 {
-    use InteractWithTree;
     use InteractsWithForms;
+    use InteractWithTree;
 
     protected static string $view = 'filament-tree::widgets.tree';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static string $model;
 
@@ -44,7 +44,7 @@ class Tree extends Widget implements HasTree, HasForms
         return static::$model ?? class_basename(static::class);
     }
 
-    protected function getFormModel(): Model | string | null
+    protected function getFormModel(): Model|string|null
     {
         return $this->getModel();
     }
@@ -195,7 +195,7 @@ class Tree extends Widget implements HasTree, HasForms
 
         $this->{$hook}();
     }
-    
+
     public function makeTranslatableContentDriver(): ?TranslatableContentDriver
     {
         return null;

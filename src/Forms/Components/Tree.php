@@ -21,15 +21,15 @@ class Tree extends Field
 
     protected null|Closure|array $nodes = null;
 
-    protected string | Closure | null $keyColumn = null;
+    protected string|Closure|null $keyColumn = null;
 
-    protected string | Closure | null $titleColumn = null;
+    protected string|Closure|null $titleColumn = null;
 
-    protected string | Closure | null $childrenColumn = null;
+    protected string|Closure|null $childrenColumn = null;
 
     protected ?Collection $cachedExistingRecords = null;
 
-    protected string | Closure | null $relationship = null;
+    protected string|Closure|null $relationship = null;
 
     protected ?Closure $modifyRelationshipQueryUsing = null;
 
@@ -66,10 +66,10 @@ class Tree extends Field
                 //
             }
         }
-        
+
         if ($result instanceof Arrayable) {
             return $result->toArray();
-        } 
+        }
 
         return $result;
     }
@@ -99,7 +99,7 @@ class Tree extends Field
         return $this->getNodeOptions($this->getNodes());
     }
 
-    public function getRelationship(): BelongsToMany | null
+    public function getRelationship(): ?BelongsToMany
     {
         if (! $this->hasRelationship()) {
             return null;
@@ -124,8 +124,8 @@ class Tree extends Field
 
         if ($relationship instanceof BelongsToMany) {
             $relationshipQuery->select([
-                $relationship->getTable() . '.*',
-                $relationshipQuery->getModel()->getTable() . '.*',
+                $relationship->getTable().'.*',
+                $relationshipQuery->getModel()->getTable().'.*',
             ]);
         }
 
@@ -174,7 +174,7 @@ class Tree extends Field
         return $this;
     }
 
-    public function relationship(string | Closure $relationshipName, ?Closure $callback = null): static
+    public function relationship(string|Closure $relationshipName, ?Closure $callback = null): static
     {
         $this->relationship = $relationshipName;
         $this->modifyRelationshipQueryUsing = $callback;
@@ -197,14 +197,14 @@ class Tree extends Field
             $existingRecords = $component->getCachedExistingRecords();
             $existingRecordKeys = $existingRecords->pluck($relationship->getRelated()->getKeyName())->toArray();
 
-            $recordsToDetach = collect($existingRecordKeys)->filter(fn ($keyToDetach) => !in_array($keyToDetach, $state));
+            $recordsToDetach = collect($existingRecordKeys)->filter(fn ($keyToDetach) => ! in_array($keyToDetach, $state));
 
-            $recordsToAttach = collect($state)->filter(fn ($keyToAttach) => !in_array($keyToAttach, $existingRecordKeys));
+            $recordsToAttach = collect($state)->filter(fn ($keyToAttach) => ! in_array($keyToAttach, $existingRecordKeys));
 
             if ($relationship instanceof BelongsToMany) {
                 $relationship->detach($recordsToDetach);
                 $relationship->attach($recordsToAttach);
-            } 
+            }
         });
 
         $this->dehydrated(false);

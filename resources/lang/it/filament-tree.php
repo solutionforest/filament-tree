@@ -2,7 +2,7 @@
 
 return [
     'root' => 'Radice',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Buttons
@@ -21,7 +21,7 @@ return [
     'components.tree.buttons.deselect_all.label' => 'Deseleziona tutto',
     'components.tree.buttons.expand_all.label' => 'Espandi tutto',
     'components.tree.buttons.collapse_all.label' => 'Contrai tutto',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Message

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use SolutionForest\FilamentTree\Concern\SupportTranslation;
 use SolutionForest\FilamentTree\Support\Utils;
 
 trait ModelTree
@@ -17,7 +16,7 @@ trait ModelTree
 
     public function initializeModelTree()
     {
-        if (!empty($this->getFillable())) {
+        if (! empty($this->getFillable())) {
             $this->mergeFillable([
                 $this->determineOrderColumnName(),
                 $this->determineParentColumnName(),
@@ -31,7 +30,7 @@ trait ModelTree
      */
     public static function bootModelTree()
     {
-        static::saving(function(Model $model) {
+        static::saving(function (Model $model) {
             if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === -1) {
                 $model->{$model->determineParentColumnName()} = static::defaultParentKey();
             }
@@ -85,17 +84,17 @@ trait ModelTree
         return $query->where($this->determineParentColumnName(), static::defaultParentKey());
     }
 
-    public function determineOrderColumnName() : string
+    public function determineOrderColumnName(): string
     {
         return Utils::orderColumnName();
     }
 
-    public function determineParentColumnName() : string
+    public function determineParentColumnName(): string
     {
         return Utils::parentColumnName();
     }
 
-    public function determineTitleColumnName() : string
+    public function determineTitleColumnName(): string
     {
         return Utils::titleColumnName();
     }
@@ -113,7 +112,7 @@ trait ModelTree
     /**
      * Format all nodes as tree.
      *
-     * @param array|\Illuminate\Support\Collection|null $nodes
+     * @param  array|\Illuminate\Support\Collection|null  $nodes
      */
     public function toTree($nodes = null): array
     {
@@ -224,7 +223,7 @@ trait ModelTree
         static::handleTranslatable($item);
 
         $key = $item[$primaryKeyName];
-        $title = isset($item[$titleKeyName])? $item[$titleKeyName] : $item[$primaryKeyName];
+        $title = isset($item[$titleKeyName]) ? $item[$titleKeyName] : $item[$primaryKeyName];
         if (! is_string($title)) {
             $title = (string) $title;
         }

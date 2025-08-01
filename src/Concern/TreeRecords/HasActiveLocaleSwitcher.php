@@ -24,7 +24,7 @@ trait HasActiveLocaleSwitcher
             method_exists(static::class, 'getResource')
                 ? static::getResource()::getTranslatableLocales()
                 : (
-                    method_exists(static::class, 'getTranslatableLocales') 
+                    method_exists(static::class, 'getTranslatableLocales')
                         ? $this->getTranslatableLocales()
                         : []
                 )

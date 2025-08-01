@@ -2,7 +2,7 @@
 
 return [
     'root' => 'Kök',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Buttons
@@ -21,7 +21,7 @@ return [
     'components.tree.buttons.deselect_all.label' => 'Seçimi Kaldır',
     'components.tree.buttons.expand_all.label' => 'Tümünü Genişlet',
     'components.tree.buttons.collapse_all.label' => 'Tümünü Daralt',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Message

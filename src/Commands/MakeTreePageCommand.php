@@ -11,18 +11,20 @@ use Illuminate\Support\Str;
 class MakeTreePageCommand extends Command
 {
     use CanManipulateFiles;
-    
-    protected $signature = "make:filament-tree-page {name?} {--model=} {--R|resource=} {--F|force}";
+
+    protected $signature = 'make:filament-tree-page {name?} {--model=} {--R|resource=} {--F|force}';
 
     public $description = 'Creates a Filament tree page class';
 
     protected ?string $resourceClass = null;
+
     protected string $page;
+
     protected string $pageClass;
 
     public function handle(): int
     {
-        $this->page =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Users`)', 'name')))
+        $this->page = Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `Users`)', 'name')))
             ->trim('/')
             ->trim('\\')
             ->trim(' ')
@@ -51,7 +53,7 @@ class MakeTreePageCommand extends Command
         $pageNamespace = Str::of($this->page)->contains('\\') ?
             (string) Str::of($this->page)->beforeLast('\\') :
             '';
-        
+
         $resourceClass = $this->resourceClass;
         $stub = $this->getStub();
 
@@ -62,7 +64,6 @@ class MakeTreePageCommand extends Command
             ->replace('//', '/')
             ->append('.php');
 
-        
         if (! $this->option('force') && $this->checkForCollision([$path])) {
             return false;
         }
@@ -75,25 +76,25 @@ class MakeTreePageCommand extends Command
                 ->trim(' ')
                 ->studly()
                 ->replace('/', '\\');
-    
+
             if (blank($model)) {
                 $model = $this->pageClass;
             }
-    
+
             $modelClass = (string) Str::of($model)->afterLast('\\');
 
             $this->copyStubToApp($stub, $path, [
                 'class' => $this->pageClass,
-                'namespace' => $namespace . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => $namespace.($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
                 'modelClass' => $modelClass == $this->pageClass ? 'TreePageModel' : $modelClass,
                 'model' => $model == $this->pageClass ? "{$model} as TreePageModel" : $model,
             ]);
         } else {
             $this->copyStubToApp($stub, $path, [
-                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages" . ($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
+                'namespace' => "{$resourceNamespace}\\{$resourceClass}\\Pages".($pageNamespace !== '' ? "\\{$pageNamespace}" : ''),
                 'resource' => $this->resourceClass == $this->pageClass ? "{$resourceNamespace}\\{$resourceClass} as TreePageResource" : "{$resourceNamespace}\\{$resourceClass}",
                 'class' => $this->pageClass,
-                'resourceClass' => $resourceClass == $this->pageClass ? "TreePageResource" : $resourceClass,
+                'resourceClass' => $resourceClass == $this->pageClass ? 'TreePageResource' : $resourceClass,
             ]);
         }
 
@@ -125,6 +126,7 @@ class MakeTreePageCommand extends Command
                 ->afterLast('\\');
         }
     }
+
     protected function askRequired(string $question, string $field, ?string $default = null): string
     {
         return $this->validateInput(fn () => $this->ask($question, $default), $field, ['required']);

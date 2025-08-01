@@ -41,7 +41,7 @@ class DeleteAction extends Action
 
             }
         });
-        
+
         $this->modalIcon('heroicon-o-trash');
 
         $this->hidden(static function (Model $record): bool {

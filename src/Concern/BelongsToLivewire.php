@@ -20,7 +20,7 @@ trait BelongsToLivewire
     {
         return $this->livewire;
     }
-    
+
     public function makeFilamentTranslatableContentDriver(): ?TranslatableContentDriver
     {
         return $this->getLivewire()->makeFilamentTranslatableContentDriver();

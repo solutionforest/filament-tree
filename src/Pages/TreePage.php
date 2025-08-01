@@ -5,7 +5,6 @@ namespace SolutionForest\FilamentTree\Pages;
 use Filament\Actions\Action as FilamentActionsAction;
 use Filament\Actions\CreateAction;
 use Filament\Infolists\Components\Component as InfolistsComponent;
-use Filament\Pages\Actions\Action as PagesAction;
 use Filament\Pages\Page;
 use SolutionForest\FilamentTree\Actions;
 use SolutionForest\FilamentTree\Components\Tree;

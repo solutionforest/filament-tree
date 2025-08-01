@@ -25,13 +25,13 @@ trait HasActions
      */
     public ?array $mountedTreeActionData = [];
 
-    public int | string | null $mountedTreeActionRecord = null;
+    public int|string|null $mountedTreeActionRecord = null;
 
     protected array $cachedTreeActions;
 
     protected ?Model $cachedMountedTreeActionRecord = null;
 
-    protected int | string | null $cachedMountedTreeActionRecordKey = null;
+    protected int|string|null $cachedMountedTreeActionRecordKey = null;
 
     public function cacheTreeActions(): void
     {
@@ -59,9 +59,7 @@ trait HasActions
         }
     }
 
-    protected function configureTreeAction(Action $action): void
-    {
-    }
+    protected function configureTreeAction(Action $action): void {}
 
     public function callMountedTreeAction(?string $arguments = null)
     {
@@ -181,7 +179,7 @@ trait HasActions
 
     public function mountedTreeActionShouldOpenModal(): bool
     {
-        return ($this->getMountedTreeAction())->shouldOpenModal(
+        return $this->getMountedTreeAction()->shouldOpenModal(
             checkForFormUsing: $this->mountedTableActionHasForm(...),
         );
         // $action = $this->getMountedTreeAction();
@@ -300,12 +298,12 @@ trait HasActions
         return $action->getForm(
             $this->makeForm()
                 ->model($this->getMountedTreeActionRecord() ?? $this->getTreeQuery()->getModel()::class)
-                ->statePath('mountedTreeActionData.' . array_key_last($this->mountedTreeActionData))
+                ->statePath('mountedTreeActionData.'.array_key_last($this->mountedTreeActionData))
                 ->operation(implode('.', $this->mountedTreeAction)),
         );
     }
 
-    public function getMountedTreeActionRecordKey(): int | string | null
+    public function getMountedTreeActionRecordKey(): int|string|null
     {
         return $this->mountedTreeActionRecord;
     }

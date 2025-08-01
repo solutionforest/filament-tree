@@ -30,6 +30,6 @@ trait SupportTranslation
                 $final[$key] = $model->getTranslationWithFallback($key, app()->getLocale());
             }
         }
-            
+
     }
 }

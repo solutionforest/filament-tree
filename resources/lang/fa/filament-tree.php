@@ -2,7 +2,7 @@
 
 return [
     'root' => 'مسیر اصلی',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Buttons
@@ -21,7 +21,7 @@ return [
     'components.tree.buttons.deselect_all.label' => 'لغو انتخاب همه',
     'components.tree.buttons.expand_all.label' => 'باز کردن همه',
     'components.tree.buttons.collapse_all.label' => 'بستن  همه',
-    
+
     /*
         |--------------------------------------------------------------------------
         | Message

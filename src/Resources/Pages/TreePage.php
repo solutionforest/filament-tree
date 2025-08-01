@@ -79,7 +79,7 @@ abstract class TreePage extends BasePage
     {
         abort_unless(static::getResource()::canViewAny(), 403);
     }
-    
+
     protected function configureCreateAction(CreateAction $action): CreateAction
     {
         return parent::configureCreateAction($action)
@@ -134,7 +134,7 @@ abstract class TreePage extends BasePage
     {
         return static::$title ?? Str::headline(static::getResource()::getPluralModelLabel());
     }
-    
+
     public function getTableRecordTitle(Model $record): string
     {
         return static::getResource()::getRecordTitle($record);

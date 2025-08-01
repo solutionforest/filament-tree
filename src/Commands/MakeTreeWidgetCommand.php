@@ -11,7 +11,7 @@ use Illuminate\Support\Str;
 class MakeTreeWidgetCommand extends Command
 {
     use CanManipulateFiles;
-    
+
     protected $description = 'Creates a Filament tree widget class.';
 
     protected $signature = 'make:filament-tree-widget {name?} {model?} {--R|resource=} {--F|force}';
@@ -44,7 +44,7 @@ class MakeTreeWidgetCommand extends Command
                 ->afterLast('\\');
         }
 
-        $widget =  Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `ProductCategory`)', 'name')))
+        $widget = Str::of(strval($this->argument('name') ?? $this->askRequired('Name (e.g. `ProductCategory`)', 'name')))
             ->trim('/')
             ->trim('\\')
             ->trim(' ')
@@ -76,9 +76,9 @@ class MakeTreeWidgetCommand extends Command
 
         $this->copyStubToApp('TreeWidget', $path, [
             'class' => $widgetClass,
-            'namespace' => filled($resource) ? "{$resourceNamespace}\\{$resource}\\Widgets" . ($widgetNamespace !== '' ? "\\{$widgetNamespace}" : '') : $namespace . ($widgetNamespace !== '' ? "\\{$widgetNamespace}" : ''),
+            'namespace' => filled($resource) ? "{$resourceNamespace}\\{$resource}\\Widgets".($widgetNamespace !== '' ? "\\{$widgetNamespace}" : '') : $namespace.($widgetNamespace !== '' ? "\\{$widgetNamespace}" : ''),
             'model' => $model == $widgetClass ? "{$model} as TreeWidgetModel" : $model,
-            'modelClass' => $modelClass == $widgetClass ? "TreeWidgetModel" : $modelClass,
+            'modelClass' => $modelClass == $widgetClass ? 'TreeWidgetModel' : $modelClass,
         ]);
 
         $this->info("Successfully created {$widget} !");
@@ -89,7 +89,7 @@ class MakeTreeWidgetCommand extends Command
 
         return static::SUCCESS;
     }
-    
+
     protected function askRequired(string $question, string $field, ?string $default = null): string
     {
         return $this->validateInput(fn () => $this->ask($question, $default), $field, ['required']);

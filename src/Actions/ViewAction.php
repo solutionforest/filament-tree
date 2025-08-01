@@ -47,8 +47,7 @@ class ViewAction extends Action
             return $data;
         });
 
-        $this->action(static function (): void {
-        });
+        $this->action(static function (): void {});
     }
 
     public function mutateRecordDataUsing(?Closure $callback): static
