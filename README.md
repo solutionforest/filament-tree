@@ -310,7 +310,7 @@ Define the available "actions" for the tree page using the `getActions()` and `g
 The `getActions()` method defines actions that are displayed next to the page's heading:
 
 ```php
-    use Filament\Pages\Actions\CreateAction;
+    use Filament\Actions\CreateAction;
 
     protected function getActions(): array
     {
