@@ -128,7 +128,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.check-for-release.outputs.tag }}
-          release_name: "Release ${{ needs.check-for-release.outputs.version }}"
+          release_name: "${{ needs.check-for-release.outputs.version }}"
           body: ${{ steps.generate_notes.outputs.notes }}
           draft: true
           prerelease: false
