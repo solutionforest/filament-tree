@@ -111,7 +111,7 @@ jobs:
           # Add installation instructions
           RELEASE_NOTES="$RELEASE_NOTES"$'\n'"## Installation"$'\n\n'
           RELEASE_NOTES="$RELEASE_NOTES\`\`\`bash"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES""composer require solution-forest/tab-layout-plugin:^${{ needs.check-for-release.outputs.version }}"$'\n'
+          RELEASE_NOTES="$RELEASE_NOTES""composer require solution-forest/filament-tree:^${{ needs.check-for-release.outputs.version }}"$'\n'
           RELEASE_NOTES="$RELEASE_NOTES\`\`\`"$'\n\n'
 
           # Save to file for GitHub release
