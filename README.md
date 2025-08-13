@@ -22,7 +22,7 @@ Auto Reset every hour.
 | Filament Version | Plugin Version |
 |------------------|----------------|
 | v3               | 2.x.x          |
-| v4               | 3.x.x-beta    |
+| v4               | 3.x.x          |
 
 ## Installation
 
