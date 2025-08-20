@@ -18,8 +18,9 @@ Demo password : 12345678
 Auto Reset every hour.
 
 ## Supported Filament versions
+
 | Filament Version | Plugin Version |
-|------------------|----------------|
+| ---------------- | -------------- |
 | v3               | 2.x.x          |
 | v4               | 3.x.x          |
 
@@ -47,7 +48,7 @@ Add the plugin's views and css to your `theme.css` file.
 @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/jquery.nestable.css';
 @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/button.css';
 @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/custom-nestable-item.css';
-@source '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php'
+@source '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php';
 ```
 
 Then, publish the config file using:
@@ -325,14 +326,16 @@ The `getActions()` method defines actions that are displayed next to the page's 
 The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example:
 
 ```php
-use Filament\Pages\Actions\Action;
+use SolutionForest\FilamentTree\Actions\DeleteAction;
+use SolutionForest\FilamentTree\Actions\EditAction;
+use SolutionForest\FilamentTree\Actions\ViewAction;
 
 protected function getTreeActions(): array
 {
     return [
-        Actions\ViewAction::make(),
-        Actions\EditAction::make(),
-        Actions\DeleteAction::make(),
+        ViewAction::make(),
+        EditAction::make(),
+        DeleteAction::make(),
     ];
 }
 
@@ -405,6 +408,139 @@ public function getTreeRecordTitle(?\Illuminate\Database\Eloquent\Model $record 
     $id = $record->getKey();
     $title = $record->{(method_exists($record, 'determineTitleColumnName') ? $record->determineTitleColumnName() : 'title')};
     return "[{$id}] {$title}";
+}
+```
+
+#### Configuring Tree Item Actions
+
+You can customize the behavior and appearance of tree item actions (Delete, Edit, and View) by overriding the configuration methods in your widget or page class. Each action type has its own configuration method:
+
+##### Configure Delete Action
+
+Override the `configureDeleteAction()` method to customize the delete action:
+
+```php
+protected function configureDeleteAction(DeleteAction $action): DeleteAction
+{
+    $action
+        ->label('Remove Item')
+        ->icon('heroicon-o-trash')
+        ->color('danger')
+        ->requiresConfirmation()
+        ->modalHeading('Delete Category')
+        ->modalDescription('Are you sure you want to delete this category? This action cannot be undone.')
+        ->modalSubmitActionLabel('Yes, delete it');
+
+    return $action;
+}
+```
+
+##### Configure Edit Action
+
+Override the `configureEditAction()` method to customize the edit action:
+
+```php
+protected function configureEditAction(EditAction $action): EditAction
+{
+    $action
+        ->label('Edit Item')
+        ->icon('heroicon-o-pencil')
+        ->color('primary')
+        ->modalHeading('Edit Category')
+        ->modalSubmitActionLabel('Save Changes')
+        ->slideOver();
+
+    return $action;
+}
+```
+
+##### Configure View Action
+
+Override the `configureViewAction()` method to customize the view action:
+
+```php
+protected function configureViewAction(ViewAction $action): ViewAction
+{
+    $action
+        ->label('View Details')
+        ->icon('heroicon-o-eye')
+        ->color('secondary')
+        ->modalHeading('Category Details')
+        ->modalWidth('2xl')
+        ->slideOver();
+
+    return $action;
+}
+```
+
+##### Example: Complete Action Configuration
+
+Here's a complete example showing how to configure all three actions in a tree widget:
+
+```php
+<?php
+
+namespace App\Filament\Widgets;
+
+use App\Models\ProductCategory;
+use Filament\Forms\Components\TextInput;
+use SolutionForest\FilamentTree\Actions\DeleteAction;
+use SolutionForest\FilamentTree\Actions\EditAction;
+use SolutionForest\FilamentTree\Actions\ViewAction;
+use SolutionForest\FilamentTree\Widgets\Tree as BaseWidget;
+
+class ProductCategoryWidget extends BaseWidget
+{
+    protected static string $model = ProductCategory::class;
+
+    protected function getFormSchema(): array
+    {
+        return [
+            TextInput::make('title')->required(),
+        ];
+    }
+
+    protected function hasDeleteAction(): bool
+    {
+        return true;
+    }
+
+    protected function hasEditAction(): bool
+    {
+        return true;
+    }
+
+    protected function hasViewAction(): bool
+    {
+        return true;
+    }
+
+    protected function configureDeleteAction(DeleteAction $action): DeleteAction
+    {
+        $action
+            ->requiresConfirmation()
+            ->modalDescription('This will permanently delete the category and all its subcategories.');
+
+        return $action;
+    }
+
+    protected function configureEditAction(EditAction $action): EditAction
+    {
+        $action
+            ->slideOver()
+            ->modalWidth('md');
+
+        return $action;
+    }
+
+    protected function configureViewAction(ViewAction $action): ViewAction
+    {
+        $action
+            ->slideOver()
+            ->disabled(fn ($record) => $record->parent_id === -1); // Disable for root items
+
+        return $action;
+    }
 }
 ```
 
