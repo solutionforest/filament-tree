@@ -1,12 +1,13 @@
-name: "Generate Release Note"
+name: 'Generate Release Note'
 
 on:
   push:
     tags:
-      - "v*" # Triggers for any tag starting with 'v' (e.g., v1.0, v2.1.3)
-      - "release-*" # Triggers for any tag starting with 'release-'
-      - "2.*.*" # Triggers for any tag starting with '2.' (e.g., 2.0.0, 2.1.0)
-      - "3.*.*" # Triggers for any tag starting with '3.' (e.g., 3.0.0, 3.1.0)
+      - 'v*' # Triggers for any tag starting with 'v' (e.g., v1.0, v2.1.3)
+      - 'release-*' # Triggers for any tag starting with 'release-'
+      - '1.*.*' # Triggers for any tag starting with '1.' (e.g., 1.0.0, 1.1.0)
+      - '2.*.*' # Triggers for any tag starting with '2.' (e.g., 2.0.0, 2.1.0)
+      - '3.*.*' # Triggers for any tag starting with '3.' (e.g., 3.0.0, 3.1.0)
 
 permissions:
   contents: write
@@ -19,9 +20,10 @@ jobs:
       should-release: ${{ steps.check.outputs.should-release }}
       version: ${{ steps.check.outputs.version }}
       tag: ${{ steps.check.outputs.tag }}
+      latest_tag: ${{ steps.check.outputs.latest_tag }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -43,7 +45,16 @@ jobs:
             exit 0
           fi
 
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${{ github.ref_name }}"
+
+          if [[ -z "$MAJOR" || -z "$MINOR" || -z "$PATCH" ]]; then
+            LATEST_TAG=null
+          else
+            LATEST_TAG=$(git tag --list "${MAJOR}.${MINOR}.*" | sort -V | tail -n 1)
+          fi
+
           echo "should-release=true" >> $GITHUB_OUTPUT
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
           echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
 
@@ -53,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -61,7 +72,7 @@ jobs:
         id: generate_notes
         run: |
           # Get the latest tag
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          LATEST_TAG="${{ needs.check-for-release.outputs.latest_tag }}"
 
           if [ -z "$LATEST_TAG" ]; then
             # If no previous tag, get all commits
@@ -83,6 +94,10 @@ jobs:
             elif echo "$commit" | grep -qE "^- feat"; then
               FEATURES="$FEATURES$commit"$'\n'
             elif echo "$commit" | grep -qE "^- fix"; then
+              # Skip "Fix styling" commits
+              if echo "$commit" | grep -qE "Fix styling"; then
+                continue
+              fi
               FIXES="$FIXES$commit"$'\n'
             else
               OTHER="$OTHER$commit"$'\n'
@@ -114,9 +129,6 @@ jobs:
           RELEASE_NOTES="$RELEASE_NOTES""composer require solution-forest/filament-tree:^${{ needs.check-for-release.outputs.version }}"$'\n'
           RELEASE_NOTES="$RELEASE_NOTES\`\`\`"$'\n\n'
 
-          # Save to file for GitHub release
-          echo "$RELEASE_NOTES" > release_notes.md
-
           # Output for GitHub (escape newlines)
           echo "notes<<EOF" >> $GITHUB_OUTPUT
           echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
@@ -128,7 +140,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ needs.check-for-release.outputs.tag }}
-          release_name: "${{ needs.check-for-release.outputs.version }}"
+          release_name: '${{ needs.check-for-release.outputs.version }}'
           body: ${{ steps.generate_notes.outputs.notes }}
           draft: true
           prerelease: false
