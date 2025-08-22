@@ -2,6 +2,16 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.0.2 - 2025-08-22
+
+### What's Changed in 3.0.2
+
+#### 🐛 Bug fixes
+
+- fix: update getModel() method signature for Filament v4 compatibility (225c2db)
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.0.1...3.0.2
+
 ## 3.0.1 - 2025-08-22
 
 <!-- Release notes generated using configuration in .github/release.yml at 3.x -->
@@ -32,6 +42,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 ```
