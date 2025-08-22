@@ -3,144 +3,220 @@ name: 'Generate Release Note'
 on:
   push:
     tags:
-      - 'v*' # Triggers for any tag starting with 'v' (e.g., v1.0, v2.1.3)
-      - 'release-*' # Triggers for any tag starting with 'release-'
-      - '1.*.*' # Triggers for any tag starting with '1.' (e.g., 1.0.0, 1.1.0)
-      - '2.*.*' # Triggers for any tag starting with '2.' (e.g., 2.0.0, 2.1.0)
-      - '3.*.*' # Triggers for any tag starting with '3.' (e.g., 3.0.0, 3.1.0)
+      - '[0-9]+.[0-9]+.[0-9]+' # Triggers for tags like 1.0.0, 2.1.3, etc.
+      - 'v[0-9]+.[0-9]+.[0-9]+' # Triggers for tags like v1.0.0, v2.1.3, etc.
 
 permissions:
   contents: write
   pull-requests: read
 
 jobs:
-  check-for-release:
+  check-release-needed:
     runs-on: ubuntu-latest
     outputs:
-      should-release: ${{ steps.check.outputs.should-release }}
-      version: ${{ steps.check.outputs.version }}
-      tag: ${{ steps.check.outputs.tag }}
-      latest_tag: ${{ steps.check.outputs.latest_tag }}
+      should-create-release: ${{ steps.check.outputs.should-create-release }}
+      current-tag: ${{ steps.check.outputs.current-tag }}
+      latest-tag: ${{ steps.check.outputs.latest-tag }}
+      clean-version: ${{ steps.check.outputs.clean-version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if release is needed
+      - name: Check if release notes generation is needed
         id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Tag pushed: ${{ github.ref_name }}"
+          CURRENT_TAG="${{ github.ref_name }}"
+          echo "Current tag: $CURRENT_TAG"
 
-          if [[ -z "${{ github.ref_name }}" ]]; then
-            echo "No tag name found in the event."
-            echo "should-release=false" >> $GITHUB_OUTPUT
+          # Remove 'v' prefix if present for version comparison
+          CLEAN_VERSION="${CURRENT_TAG#v}"
+          echo "Clean version: $CLEAN_VERSION"
+
+          # Check if any release (including draft) already exists for this tag
+          EXISTING_RELEASE=$(gh release view "$CURRENT_TAG" --json isDraft,tagName 2>/dev/null || echo "")
+
+          if [[ -n "$EXISTING_RELEASE" ]]; then
+            echo "Release (draft or published) already exists for tag: $CURRENT_TAG"
+            echo "should-create-release=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          HAVE_RELEASE=$(gh release view ${{ github.ref_name }} --json tagName --jq '.tagName' 2>/dev/null || echo "")
-          if [[ -n "$HAVE_RELEASE" ]]; then
-            echo "Release already exists for tag: ${{ github.ref_name }}"
-            echo "should-release=false" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          IFS='.' read -r MAJOR MINOR PATCH <<< "${{ github.ref_name }}"
+          # Parse version components
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CLEAN_VERSION"
 
           if [[ -z "$MAJOR" || -z "$MINOR" || -z "$PATCH" ]]; then
-            LATEST_TAG=null
-          else
-            LATEST_TAG=$(git tag --list "${MAJOR}.${MINOR}.*" | sort -V | tail -n 1)
+            echo "Invalid version format: $CLEAN_VERSION"
+            echo "should-create-release=false" >> $GITHUB_OUTPUT
+            exit 0
           fi
 
-          echo "should-release=true" >> $GITHUB_OUTPUT
-          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-          echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          # Find the latest tag with same major.minor but lower patch version
+          LATEST_TAG=""
 
-  create-release:
-    needs: check-for-release
-    if: needs.check-for-release.outputs.should-release == 'true'
+          # Get all tags, filter by pattern, and find the latest one before current
+          ALL_TAGS=$(git tag --list | grep -E "^v?${MAJOR}\.${MINOR}\.[0-9]+$" | sed 's/^v//' | sort -V)
+
+          for tag in $ALL_TAGS; do
+            IFS='.' read -r tag_major tag_minor tag_patch <<< "$tag"
+            if [[ "$tag_patch" -lt "$PATCH" ]]; then
+              LATEST_TAG="$tag"
+            fi
+          done
+
+          # Add 'v' prefix back if original tag had it
+          if [[ "$CURRENT_TAG" == v* ]] && [[ -n "$LATEST_TAG" ]]; then
+            LATEST_TAG="v$LATEST_TAG"
+          fi
+
+          echo "Latest tag found: $LATEST_TAG"
+
+          echo "should-create-release=true" >> $GITHUB_OUTPUT
+          echo "current-tag=$CURRENT_TAG" >> $GITHUB_OUTPUT
+          echo "latest-tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "clean-version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+
+  generate-release-notes:
+    needs: check-release-needed
+    if: needs.check-release-needed.outputs.should-create-release == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate Release Notes
-        id: generate_notes
+      - name: Generate release notes content
+        id: generate-notes
+        env:
+          PACKAGE_NAME: 'solution-forest/filament-tree'
         run: |
-          # Get the latest tag
-          LATEST_TAG="${{ needs.check-for-release.outputs.latest_tag }}"
+          CURRENT_TAG="${{ needs.check-release-needed.outputs.current-tag }}"
+          LATEST_TAG="${{ needs.check-release-needed.outputs.latest-tag }}"
+          CLEAN_VERSION="${{ needs.check-release-needed.outputs.clean-version }}"
 
-          if [ -z "$LATEST_TAG" ]; then
-            # If no previous tag, get all commits
-            COMMITS=$(git log --pretty=format:"- %s (%h)" --reverse)
+          echo "Generating release notes for: $CURRENT_TAG"
+          echo "Previous tag: $LATEST_TAG"
+
+          # Get commits between tags
+          if [[ -z "$LATEST_TAG" ]]; then
+            echo "No previous tag found, getting all commits"
+            COMMITS=$(git log --pretty=format:"%s|||%H" --reverse)
           else
-            # Get commits since last tag
-            COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"- %s (%h)" --reverse)
+            echo "Getting commits since: $LATEST_TAG"
+            COMMITS=$(git log ${LATEST_TAG}..HEAD --pretty=format:"%s|||%H" --reverse)
           fi
 
-          # Categorize commits
+          # Initialize categories
           BREAKING_CHANGES=""
-          FEATURES=""
-          FIXES=""
-          OTHER=""
+          NEW_FEATURES=""
+          DOCUMENTATION=""
+          BUG_FIXES=""
+          OTHER_CHANGES=""
 
-          while IFS= read -r commit; do
-            if echo "$commit" | grep -qE "(BREAKING CHANGE|!:)"; then
-              BREAKING_CHANGES="$BREAKING_CHANGES$commit"$'\n'
-            elif echo "$commit" | grep -qE "^- feat"; then
-              FEATURES="$FEATURES$commit"$'\n'
-            elif echo "$commit" | grep -qE "^- fix"; then
-              # Skip "Fix styling" commits
-              if echo "$commit" | grep -qE "Fix styling"; then
-                continue
+          # Process each commit
+          while IFS= read -r commit_line; do
+            if [[ -z "$commit_line" ]]; then
+              continue
+            fi
+            
+            # Split commit message and hash
+            COMMIT_MSG="${commit_line%|||*}"
+            COMMIT_HASH="${commit_line#*|||}"
+            SHORT_HASH="${COMMIT_HASH:0:7}"
+            
+            # Skip excluded commit patterns
+            if echo "$COMMIT_MSG" | grep -qiE "^(Create |Update |Fix styling|wip|Merge branch)"; then
+              continue
+            fi
+            
+            # Skip dependabot merge requests
+            if echo "$COMMIT_MSG" | grep -qiE "Merge pull request.*dependabot/github_actions"; then
+              continue
+            fi
+            
+            # Handle merge pull request commits - get PR title
+            if echo "$COMMIT_MSG" | grep -qiE "^Merge pull request #[0-9]+"; then
+              PR_NUMBER=$(echo "$COMMIT_MSG" | grep -oE "#[0-9]+" | sed 's/#//')
+              if [[ -n "$PR_NUMBER" ]]; then
+                # Try to get PR title using GitHub CLI
+                PR_TITLE=$(gh pr view "$PR_NUMBER" --json title --jq '.title' 2>/dev/null || echo "")
+                if [[ -n "$PR_TITLE" ]]; then
+                  COMMIT_MSG="$PR_TITLE"
+                fi
               fi
-              FIXES="$FIXES$commit"$'\n'
+            fi
+            
+            # Format commit for release notes
+            FORMATTED_COMMIT="- $COMMIT_MSG ($SHORT_HASH)"
+            
+            # Categorize commits
+            if echo "$COMMIT_MSG" | grep -qiE "(BREAKING CHANGE|breaking:|!:)"; then
+              BREAKING_CHANGES="$BREAKING_CHANGES$FORMATTED_COMMIT"$'\n'
+            elif echo "$COMMIT_MSG" | grep -qiE "^(feat|feature):|Merge.*feature/|Add.*feature"; then
+              NEW_FEATURES="$NEW_FEATURES$FORMATTED_COMMIT"$'\n'
+            elif echo "$COMMIT_MSG" | grep -qiE "^docs?:|documentation|readme|Update.*\.md"; then
+              DOCUMENTATION="$DOCUMENTATION$FORMATTED_COMMIT"$'\n'
+            elif echo "$COMMIT_MSG" | grep -qiE "^(fix|bugfix):|Fix "; then
+              BUG_FIXES="$BUG_FIXES$FORMATTED_COMMIT"$'\n'
             else
-              OTHER="$OTHER$commit"$'\n'
+              OTHER_CHANGES="$OTHER_CHANGES$FORMATTED_COMMIT"$'\n'
             fi
           done <<< "$COMMITS"
 
           # Build release notes
-          RELEASE_NOTES="## What's Changed in ${{ needs.check-for-release.outputs.version }}"$'\n\n'
+          RELEASE_NOTES="## What's Changed in $CURRENT_TAG"$'\n\n'
 
-          if [ -n "$BREAKING_CHANGES" ]; then
-            RELEASE_NOTES="$RELEASE_NOTES### 💥 Breaking Changes"$'\n'"$BREAKING_CHANGES"$'\n'
+          if [[ -n "$BREAKING_CHANGES" ]]; then
+            RELEASE_NOTES="$RELEASE_NOTES### ⚠️ Breaking changes"$'\n'"$BREAKING_CHANGES"$'\n'
           fi
 
-          if [ -n "$FEATURES" ]; then
-            RELEASE_NOTES="$RELEASE_NOTES### ✨ New Features"$'\n'"$FEATURES"$'\n'
+          if [[ -n "$NEW_FEATURES" ]]; then
+            RELEASE_NOTES="$RELEASE_NOTES### 🚀 New features"$'\n'"$NEW_FEATURES"$'\n'
           fi
 
-          if [ -n "$FIXES" ]; then
-            RELEASE_NOTES="$RELEASE_NOTES### 🐛 Bug Fixes"$'\n'"$FIXES"$'\n'
+          if [[ -n "$DOCUMENTATION" ]]; then
+            RELEASE_NOTES="$RELEASE_NOTES### 📘 Documentation updates"$'\n'"$DOCUMENTATION"$'\n'
           fi
 
-          if [ -n "$OTHER" ]; then
-            RELEASE_NOTES="$RELEASE_NOTES### 🔧 Other Changes"$'\n'"$OTHER"$'\n'
+          if [[ -n "$BUG_FIXES" ]]; then
+            RELEASE_NOTES="$RELEASE_NOTES### 🐛 Bug fixes"$'\n'"$BUG_FIXES"$'\n'
+          fi
+
+          if [[ -n "$OTHER_CHANGES" ]]; then
+            RELEASE_NOTES="$RELEASE_NOTES### 🔧 Other Changes"$'\n'"$OTHER_CHANGES"$'\n'
           fi
 
           # Add installation instructions
           RELEASE_NOTES="$RELEASE_NOTES"$'\n'"## Installation"$'\n\n'
           RELEASE_NOTES="$RELEASE_NOTES\`\`\`bash"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES""composer require solution-forest/filament-tree:^${{ needs.check-for-release.outputs.version }}"$'\n'
+          RELEASE_NOTES="$RELEASE_NOTES""composer require $PACKAGE_NAME:^$CLEAN_VERSION"$'\n'
           RELEASE_NOTES="$RELEASE_NOTES\`\`\`"$'\n\n'
 
-          # Output for GitHub (escape newlines)
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$RELEASE_NOTES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          RELEASE_NOTES="$RELEASE_NOTES""**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${CURRENT_TAG}"$'\n'
 
-      - name: Create Release
-        uses: actions/create-release@v1
+          # Save to output (properly escape for GitHub Actions)
+          {
+            echo "notes<<EOF"
+            echo "$RELEASE_NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Create draft release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ needs.check-for-release.outputs.tag }}
-          release_name: '${{ needs.check-for-release.outputs.version }}'
-          body: ${{ steps.generate_notes.outputs.notes }}
-          draft: true
-          prerelease: false
+        run: |
+          CURRENT_TAG="${{ needs.check-release-needed.outputs.current-tag }}"
+
+          gh release create "$CURRENT_TAG" \
+            --title "$CURRENT_TAG" \
+            --notes "${{ steps.generate-notes.outputs.notes }}" \
+            --draft \
+            --latest
+
+          echo "Draft release created successfully for $CURRENT_TAG"
