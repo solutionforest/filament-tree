@@ -63,7 +63,7 @@ class Action extends BaseAction implements HasTree
         return $this->getCustomPluralModelLabel() ?? $this->getTree()->getPluralModelLabel();
     }
 
-    public function getModel(bool $withDefault = true): string
+    public function getModel(bool $withDefault = true): ?string
     {
         return $this->getCustomModel() ?? $this->getLivewire()->getModel();
     }
