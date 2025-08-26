@@ -192,12 +192,6 @@ jobs:
             RELEASE_NOTES="$RELEASE_NOTES### 🔧 Other Changes"$'\n'"$OTHER_CHANGES"$'\n'
           fi
 
-          # Add installation instructions
-          RELEASE_NOTES="$RELEASE_NOTES"$'\n'"## Installation"$'\n\n'
-          RELEASE_NOTES="$RELEASE_NOTES\`\`\`bash"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES""composer require $PACKAGE_NAME:^$CLEAN_VERSION"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES\`\`\`"$'\n\n'
-
           RELEASE_NOTES="$RELEASE_NOTES""**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${CURRENT_TAG}"$'\n'
 
           # Save to output (properly escape for GitHub Actions)
