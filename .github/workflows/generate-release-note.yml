@@ -20,7 +20,7 @@ jobs:
       clean-version: ${{ steps.check.outputs.clean-version }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -191,12 +191,6 @@ jobs:
           if [[ -n "$OTHER_CHANGES" ]]; then
             RELEASE_NOTES="$RELEASE_NOTES### 🔧 Other Changes"$'\n'"$OTHER_CHANGES"$'\n'
           fi
-
-          # Add installation instructions
-          RELEASE_NOTES="$RELEASE_NOTES"$'\n'"## Installation"$'\n\n'
-          RELEASE_NOTES="$RELEASE_NOTES\`\`\`bash"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES""composer require $PACKAGE_NAME:^$CLEAN_VERSION"$'\n'
-          RELEASE_NOTES="$RELEASE_NOTES\`\`\`"$'\n\n'
 
           RELEASE_NOTES="$RELEASE_NOTES""**Full Changelog**: https://github.com/${{ github.repository }}/compare/${LATEST_TAG}...${CURRENT_TAG}"$'\n'
 
