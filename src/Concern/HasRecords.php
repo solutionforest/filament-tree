@@ -44,10 +44,25 @@ trait HasRecords
                     return $record->isRoot();
                 }
                 if (method_exists($record, 'determineParentColumnName')) {
-                    return $record->getAttributeValue($record->determineParentColumnName()) == Utils::defaultParentId();
+                    $parentValue = $record->getAttributeValue($record->determineParentColumnName());
+                    $defaultParentId = Utils::defaultParentId();
+                    
+                    // Handle both integer and UUID/string parent keys
+                    if (is_numeric($defaultParentId)) {
+                        return $parentValue == $defaultParentId;
+                    } else {
+                        return $parentValue === $defaultParentId || $parentValue === null;
+                    }
                 }
 
-                return $record->getAttributeValue('parent') === Utils::defaultParentId();
+                $parentValue = $record->getAttributeValue('parent');
+                $defaultParentId = Utils::defaultParentId();
+                
+                if (is_numeric($defaultParentId)) {
+                    return $parentValue === $defaultParentId;
+                } else {
+                    return $parentValue === $defaultParentId || $parentValue === null;
+                }
             });
     }
 

@@ -29,7 +29,7 @@ class Utils
         return config('filament-tree.column_name.title', 'title');
     }
 
-    public static function defaultParentId(): ?int
+    public static function defaultParentId(): int|string|null
     {
         return config('filament-tree.default_parent_id', -1);
     }
@@ -63,9 +63,11 @@ class Utils
             $pk = is_numeric($pk) ? intval($pk) : $pk;
             if (
                 ($pk === $parentId)
-                // Allow parentId is nullable or negative number
+                // Allow parentId is nullable or negative number for integer keys
                 // https://github.com/solutionforest/filament-tree/issues/28
-                || (($pk === '' || $pk <= 0) && $parentId <= 0)
+                || (is_numeric($pk) && is_numeric($parentId) && (($pk === '' || $pk <= 0) && $parentId <= 0))
+                // Allow null parent for UUID or string keys (top-level nodes)
+                || (($pk === null || $pk === '') && ($parentId === null))
             ) {
                 foreach ($nodeGroup as $node) {
                     $node = collect($node)->toArray();

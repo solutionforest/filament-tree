@@ -33,9 +33,23 @@ trait ModelTree
     public static function bootModelTree()
     {
         static::saving(function (Model $model) {
-            if (empty($model->{$model->determineParentColumnName()}) || $model->{$model->determineParentColumnName()} === -1) {
-                $model->{$model->determineParentColumnName()} = static::defaultParentKey();
+            $parentColumnName = $model->determineParentColumnName();
+            $parentValue = $model->{$parentColumnName};
+            $defaultParentKey = static::defaultParentKey();
+            
+            // For integer parent keys, check for empty or -1, for UUID/string check for empty or null
+            if (is_numeric($defaultParentKey)) {
+                // Integer parent key logic (backward compatibility)
+                if (empty($parentValue) || $parentValue === -1) {
+                    $model->{$parentColumnName} = $defaultParentKey;
+                }
+            } else {
+                // UUID/string parent key logic
+                if (empty($parentValue)) {
+                    $model->{$parentColumnName} = $defaultParentKey;
+                }
             }
+            
             if (empty($model->{$model->determineOrderColumnName()}) || $model->{$model->determineOrderColumnName()} === 0) {
                 $model->setHighestOrderNumber();
             }
@@ -58,7 +72,16 @@ trait ModelTree
 
     public function isRoot(): bool
     {
-        return $this->getAttributeValue($this->determineParentColumnName()) === static::defaultParentKey();
+        $parentValue = $this->getAttributeValue($this->determineParentColumnName());
+        $defaultParentKey = static::defaultParentKey();
+        
+        // Handle both integer and UUID/string parent keys
+        if (is_numeric($defaultParentKey)) {
+            return $parentValue === $defaultParentKey;
+        } else {
+            // For UUID/string keys, root nodes have null parent
+            return $parentValue === $defaultParentKey || $parentValue === null;
+        }
     }
 
     public function setHighestOrderNumber(): void
@@ -83,7 +106,15 @@ trait ModelTree
 
     public function scopeIsRoot(Builder $query)
     {
-        return $query->where($this->determineParentColumnName(), static::defaultParentKey());
+        $defaultParentKey = static::defaultParentKey();
+        
+        if (is_numeric($defaultParentKey)) {
+            return $query->where($this->determineParentColumnName(), $defaultParentKey);
+        } else {
+            // For UUID/string keys, root nodes have null parent
+            return $query->where($this->determineParentColumnName(), $defaultParentKey)
+                         ->orWhereNull($this->determineParentColumnName());
+        }
     }
 
     public function determineOrderColumnName(): string
