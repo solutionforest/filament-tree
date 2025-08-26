@@ -93,8 +93,6 @@ jobs:
 
       - name: Generate release notes content
         id: generate-notes
-        env:
-          PACKAGE_NAME: 'solution-forest/filament-tree'
         run: |
           CURRENT_TAG="${{ needs.check-release-needed.outputs.current-tag }}"
           LATEST_TAG="${{ needs.check-release-needed.outputs.latest-tag }}"
