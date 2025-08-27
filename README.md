@@ -127,7 +127,7 @@ Schema::create('product_categories', function (Blueprint $table) {
 });
 ```
 
-For UUID support, also update your configuration to use `null` as the default parent ID:
+**Important**: For UUID support, you must update your configuration to use `null` as the default parent ID:
 
 ```php
 // config/filament-tree.php
@@ -137,7 +137,7 @@ return [
         'parent' => 'parent_id',
         'title' => 'title',
     ],
-    'default_parent_id' => null, // Use null for UUID parent keys
+    'default_parent_id' => null, // Required: Use null for UUID parent keys
     'default_children_key_name' => 'children',
 ];
 ```
@@ -145,6 +145,10 @@ return [
 The `treeColumns()` method accepts the following parameters:
 - `$titleType` (default: 'string') - The column type for the title field
 - `$parentType` (default: 'integer') - The column type for parent_id field. Options: 'integer', 'uuid', 'string'
+
+**Configuration Summary**:
+- For **integer** parent keys: `'default_parent_id' => -1` (default)
+- For **UUID/string** parent keys: `'default_parent_id' => null` (required)
 
 The above table structure contains three required fields: `parent_id`, `order`, `title`, and other fields do not have any requirements.
 

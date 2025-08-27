@@ -49,7 +49,7 @@ trait HasRecords
                     
                     // Handle both integer and UUID/string parent keys
                     if (is_numeric($defaultParentId)) {
-                        return $parentValue == $defaultParentId;
+                        return $parentValue === $defaultParentId;
                     } else {
                         return $parentValue === $defaultParentId || $parentValue === null;
                     }

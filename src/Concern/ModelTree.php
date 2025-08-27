@@ -112,8 +112,7 @@ trait ModelTree
             return $query->where($this->determineParentColumnName(), $defaultParentKey);
         } else {
             // For UUID/string keys, root nodes have null parent
-            return $query->where($this->determineParentColumnName(), $defaultParentKey)
-                         ->orWhereNull($this->determineParentColumnName());
+            return $query->whereNull($this->determineParentColumnName());
         }
     }
 
@@ -216,7 +215,11 @@ trait ModelTree
             childrenKeyName: $childrenKeyName
         );
 
-        $result[static::defaultParentKey()] = __('filament-tree::filament-tree.root');
+        // Only add root option for integer parent keys
+        $defaultParentKey = static::defaultParentKey();
+        if (is_numeric($defaultParentKey)) {
+            $result[$defaultParentKey] = __('filament-tree::filament-tree.root');
+        }
 
         foreach ($nodes as $node) {
             static::buildSelectArrayItem($result, $node, $primaryKeyName, $titleKeyName, $childrenKeyName, 1, $maxDepth);

@@ -65,9 +65,9 @@ class Utils
                 ($pk === $parentId)
                 // Allow parentId is nullable or negative number for integer keys
                 // https://github.com/solutionforest/filament-tree/issues/28
-                || (is_numeric($pk) && is_numeric($parentId) && (($pk === '' || $pk <= 0) && $parentId <= 0))
+                || (is_numeric($pk) && is_numeric($parentId) && ($pk <= 0) && ($parentId <= 0))
                 // Allow null parent for UUID or string keys (top-level nodes)
-                || (($pk === null || $pk === '') && ($parentId === null))
+                || (($pk === null) && ($parentId === null))
             ) {
                 foreach ($nodeGroup as $node) {
                     $node = collect($node)->toArray();

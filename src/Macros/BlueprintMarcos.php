@@ -13,6 +13,11 @@ class BlueprintMarcos
     public function treeColumns()
     {
         return function (string $titleType = 'string', string $parentType = 'integer') {
+            // Validate parent type
+            if (!in_array($parentType, ['integer', 'uuid', 'string'])) {
+                throw new \InvalidArgumentException("Parent type must be one of: 'integer', 'uuid', 'string'. Got: {$parentType}");
+            }
+            
             $this->{$titleType}(Utils::titleColumnName());
             
             if ($parentType === 'uuid') {
