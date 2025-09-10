@@ -53,13 +53,24 @@ class DeleteAction extends Action
         });
 
         $this->action(function (): void {
+            $record = $this->getRecord();
+            
+            // Execute before hook (useful for cascade checks, cleanup)
+            $this->callBeforeActionHook($record);
+            
+            // Apply record mutations if needed
+            $record = $this->getMutatedRecord($record);
+
+            // Delete the record
             $result = $this->process(static fn (Model $record) => $record->delete());
 
             if (! $result) {
                 $this->failure();
-
                 return;
             }
+
+            // Execute after hook (useful for cleanup, logging)
+            $this->callAfterActionHook($record, [], $record);
 
             $this->success();
         });

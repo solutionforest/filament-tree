@@ -1,0 +1,71 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelNamespace }}\{{ model }};
+use SolutionForest\FilamentTree\Resources\TreeResource;
+use {{ schemaNamespace }}\{{ schemaClass }};
+use {{ treeNamespace }}\{{ treeClass }};
+use {{ namespace }}\Pages;
+use SolutionForest\FilamentTree\Components\Tree;
+use Filament\Schemas\Schema;
+use BackedEnum;
+
+class {{ class }} extends TreeResource
+{
+    protected static ?string $model = {{ model }}::class;
+
+    protected static string|BackedEnum|null $navigationIcon = '{{ navigationIcon }}';
+
+    protected static ?string $navigationLabel = '{{ navigationLabel }}';
+
+    protected static ?string $modelLabel = '{{ modelLabel }}';
+
+    protected static ?string $pluralModelLabel = '{{ pluralModelLabel }}';
+
+    protected static ?int $navigationSort = null;
+
+    /**
+     * Configure the tree structure
+     */
+    public static function tree(Tree $tree): Tree
+    {
+        return {{ treeClass }}::tree($tree);
+    }
+
+    /**
+     * Define the form schema for create/edit actions
+     */
+    public static function form(Schema $schema): Schema
+    {
+        return {{ schemaClass }}::configure($schema);
+    }
+
+    /**
+     * Get tree actions (appears on each tree node)
+     */
+    public static function getTreeActions(): array
+    {
+        return {{ treeClass }}::getTreeActions();
+    }
+
+    /**
+     * Get header actions (create root level items)
+     */
+    public static function getTreeHeaderActions(): array
+    {
+        return {{ treeClass }}::getTreeHeaderActions();
+    }
+
+    /**
+     * Get the pages available for this resource.
+     */
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\List{{ pluralModel }}::route('/'),
+            'create' => Pages\Create{{ model }}::route('/create'),
+            'edit' => Pages\Edit{{ model }}::route('/{record}/edit'),{{ viewPage }}
+        ];
+    }{{ customMethods }}
+}

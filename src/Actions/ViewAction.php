@@ -33,6 +33,12 @@ class ViewAction extends Action
         $this->disabledForm();
 
         $this->fillForm(function (Model $record, Tree $tree): array {
+            // Execute before hook for data preparation
+            $hookData = $this->callBeforeActionHook($record, []);
+            
+            // Apply record mutations
+            $record = $this->getMutatedRecord($record);
+
             if ($translatableContentDriver = $tree->makeFilamentTranslatableContentDriver()) {
                 $data = $translatableContentDriver->getRecordAttributesToArray($record);
             } else {
@@ -42,6 +48,9 @@ class ViewAction extends Action
             if ($this->mutateRecordDataUsing) {
                 $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data, 'record' => $record]);
             }
+
+            // Apply form data mutations
+            $data = $this->getMutatedFormData($data);
 
             return $data;
         });

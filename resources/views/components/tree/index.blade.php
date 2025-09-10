@@ -2,7 +2,7 @@
     $containerKey = 'filament_tree_container_' . $this->getId();
     $maxDepth = $getMaxDepth() ?? 1;
     $records = collect($this->getRootLayerRecords() ?? []);
-
+    $canUpdateOrder = $getCanUpdateOrder();
 @endphp
 
 <div class="filament-tree-component"
@@ -12,7 +12,8 @@
     ax-load-src="{{ \Filament\Support\Facades\FilamentAsset::getAlpineComponentSrc('filament-tree-component', 'solution-forest/filament-tree') }}"
     x-data="treeNestableComponent({
         containerKey: {{ $containerKey }},
-        maxDepth: {{ $maxDepth }}
+        maxDepth: {{ $maxDepth }},
+        canUpdateOrder: {{ $canUpdateOrder ? 'true' : 'false' }}
     })">
     <x-filament::section :heading="($this->displayTreeTitle() ?? false) ? $this->getTreeTitle() : null">
         <menu class="nestable-menu" id="nestable-menu">
@@ -24,6 +25,7 @@
                     {{ __('filament-tree::filament-tree.button.collapse_all') }}
                 </x-filament::button>
             </div>
+            @if($canUpdateOrder)
             <div class="btn-group">
                 <x-filament::button tag="button" data-action="save" x-on:click="save()" wire:loading.attr="disabled" wire:loading.class="cursor-wait opacity-70">
                     <x-filament::loading-indicator class="h-4 w-4" wire:loading wire:target="updateTree"/>
@@ -33,6 +35,7 @@
 
                 </x-filament::button>
             </div>
+            @endif
         </menu>
         <div class="filament-tree dd" id="{{ $containerKey }}" x-ref="treeContainer">
             <x-filament-tree::tree.list :records="$records" :containerKey="$containerKey" :tree="$tree"/>

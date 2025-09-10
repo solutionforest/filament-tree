@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ resourceNamespace }}\{{ resource }};
+use SolutionForest\FilamentTree\Resources\Pages\ViewTreeRecord;
+
+class View{{ model }} extends ViewTreeRecord
+{
+    protected static string $resource = {{ resource }}::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            // Add custom header actions here (e.g., EditAction)
+        ];
+    }
+}

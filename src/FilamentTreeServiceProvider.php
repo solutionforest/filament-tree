@@ -8,6 +8,7 @@ use Filament\Support\Assets\Js;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Schema\Blueprint;
 use SolutionForest\FilamentTree\Commands\MakeTreePageCommand;
+use SolutionForest\FilamentTree\Commands\MakeTreeResourceCommand;
 use SolutionForest\FilamentTree\Commands\MakeTreeWidgetCommand;
 use SolutionForest\FilamentTree\Macros\BlueprintMarcos;
 use Spatie\LaravelPackageTools\Package;
@@ -26,6 +27,7 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
             ->hasTranslations()
             ->hasCommands([
                 MakeTreePageCommand::class,
+                MakeTreeResourceCommand::class,
                 MakeTreeWidgetCommand::class,
             ]);
     }
@@ -35,6 +37,7 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
         parent::boot();
 
         $this->registerBlueprintMacros();
+        $this->registerPublishableStubs();
     }
 
     public function packageBooted(): void
@@ -49,5 +52,14 @@ class FilamentTreeServiceProvider extends PackageServiceProvider
     protected function registerBlueprintMacros()
     {
         Blueprint::mixin(new BlueprintMarcos);
+    }
+
+    protected function registerPublishableStubs(): void
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__ . '/../stubs/filament-tree' => base_path('stubs/filament-tree'),
+            ], 'filament-tree-stubs');
+        }
     }
 }

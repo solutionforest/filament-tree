@@ -18,10 +18,14 @@ trait HasActions
     protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
     {
         if ($this instanceof HasTree && filled($action['context']['tree'] ?? null)) {
-
             $resolvedAction = null;
-
-            $resolvedAction = $this->getCachedTree()?->getAction($action['name']) ?? throw new ActionNotResolvableException("Action [{$action['name']}] not found on tree.");
+            $tree = $this->getCachedTree();
+            
+            if ($tree) {
+                $resolvedAction = $tree->getAction($action['name']);
+            }
+            
+            $resolvedAction = $resolvedAction ?? throw new ActionNotResolvableException("Action [{$action['name']}] not found on tree.");
 
             if (filled($action['context']['recordKey'] ?? null)) {
                 $record = $this->getTreeRecord($action['context']['recordKey']);
@@ -30,7 +34,6 @@ trait HasActions
             }
 
             return $resolvedAction;
-
         }
 
         return parent::resolveAction($action, $parentActions);

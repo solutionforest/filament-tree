@@ -24,6 +24,27 @@ return [
 
     /*
         |--------------------------------------------------------------------------
+        | Actions
+        |--------------------------------------------------------------------------
+    */
+    'actions.create.label' => 'Create',
+    'actions.create.modal.heading' => 'Create :label',
+    'actions.create.modal.actions.create.label' => 'Create',
+    'actions.create.notifications.created.title' => 'Created successfully',
+
+    'actions.create-child.label' => 'Create Child',
+    'actions.create-child.modal.heading' => 'Create child :label under :parent',
+    'actions.create-child.modal.actions.create.label' => 'Create',
+    'actions.create-child.notifications.created.title' => 'Child created successfully',
+
+    // Specialized child creation labels
+    'actions.create-child.state.label' => 'Create State',
+    'actions.create-child.state.modal.heading' => 'Create state under :parent',
+    'actions.create-child.city.label' => 'Create City',
+    'actions.create-child.city.modal.heading' => 'Create city under :parent',
+
+    /*
+        |--------------------------------------------------------------------------
         | Message
         |--------------------------------------------------------------------------
     */

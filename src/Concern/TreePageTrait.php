@@ -23,6 +23,13 @@ trait TreePageTrait
 
     protected static int $maxDepth = 999;
 
+    // Action configuration properties with defaults
+    protected bool $hasCreateAction = true;
+    protected bool $hasAddChildAction = false;
+    protected bool $hasEditAction = true;
+    protected bool $hasViewAction = false;
+    protected bool $hasDeleteAction = false;
+
     public static function tree(Tree $tree): Tree
     {
         return $tree;
@@ -47,27 +54,37 @@ trait TreePageTrait
 
     protected function hasCreateAction(): bool
     {
-        return true;
+        return $this->hasCreateAction;
+    }
+
+    protected function hasAddChildAction(): bool
+    {
+        return $this->hasAddChildAction;
     }
 
     protected function hasDeleteAction(): bool
     {
-        return false;
+        return $this->hasDeleteAction;
     }
 
     protected function hasEditAction(): bool
     {
-        return true;
+        return $this->hasEditAction;
     }
 
     protected function hasViewAction(): bool
     {
-        return false;
+        return $this->hasViewAction;
     }
 
     protected function getCreateAction(): CreateAction
     {
         return $this->configureCreateAction(CreateAction::make());
+    }
+
+    protected function getAddChildAction(): Actions\Action
+    {
+        return $this->configureAddChildAction(Actions\Action::make('create_child'));
     }
 
     protected function getDeleteAction(): DeleteAction
@@ -102,6 +119,7 @@ trait TreePageTrait
             $action instanceof DeleteAction => $this->configureDeleteAction($action),
             $action instanceof EditAction => $this->configureEditAction($action),
             $action instanceof ViewAction => $this->configureViewAction($action),
+            $action->getName() === 'create_child' => $this->configureAddChildAction($action),
             default => null,
         };
     }
@@ -121,6 +139,55 @@ trait TreePageTrait
         $action->model($this->getModel());
 
         $this->afterConfiguredCreateAction($action);
+
+        return $action;
+    }
+
+    protected function configureAddChildAction(Actions\Action $action): Actions\Action
+    {
+        $action->tree($this->getCachedTree());
+
+        $action->iconButton()
+            ->icon('heroicon-m-plus')
+            ->tooltip('Add Child');
+
+        // Only configure URL navigation if we're in a resource context
+        if (method_exists(static::class, 'getResource')) {
+            // Configure the action to navigate to create page with parent_id
+            $action->url(fn ($record) => static::getResource()::getUrl('create', ['parent_id' => $record->id]));
+        } else {
+            // For non-resource contexts (original tree pages), use modal forms
+            $schema = $this->getCreateFormSchema();
+            if (empty($schema)) {
+                $schema = $this->getFormSchema();
+            }
+            
+            $action->schema($schema)
+                ->model($this->getModel())
+                ->livewire($this)
+                ->fillForm(function ($record): array {
+                    // Pre-fill the form with parent_id set to current record
+                    return ['parent_id' => $record->id];
+                })
+                ->action(function (array $data, $record): void {
+                    $modelClass = $this->getModel();
+                    
+                    // Set parent_id from the current record (the one being acted upon)
+                    $data['parent_id'] = $record->id;
+                    
+                    // Set order to be last among siblings
+                    $maxOrder = $modelClass::where('parent_id', $record->id)->max('order') ?? 0;
+                    $data['order'] = $maxOrder + 1;
+                    
+                    // Create the new record
+                    $modelClass::create($data);
+                    
+                    // Refresh the tree
+                    $this->dispatch('refreshTree');
+                });
+        }
+
+        $this->afterConfiguredAddChildAction($action);
 
         return $action;
     }
@@ -191,6 +258,11 @@ trait TreePageTrait
         return $action;
     }
 
+    protected function afterConfiguredAddChildAction(Actions\Action $action): Actions\Action
+    {
+        return $action;
+    }
+
     protected function afterConfiguredDeleteAction(DeleteAction $action): DeleteAction
     {
         return $action;
@@ -229,6 +301,7 @@ trait TreePageTrait
     protected function getTreeActions(): array
     {
         return array_merge(
+            ($this->hasAddChildAction() ? [$this->getAddChildAction()] : []),
             ($this->hasEditAction() ? [$this->getEditAction()] : []),
             ($this->hasViewAction() ? [$this->getViewAction()] : []),
             ($this->hasDeleteAction() ? [$this->getDeleteAction()] : []),

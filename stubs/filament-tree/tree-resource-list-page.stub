@@ -1,0 +1,11 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ resourceNamespace }}\{{ resource }};
+use SolutionForest\FilamentTree\Resources\Pages\ListTreeRecords;
+
+class List{{ model }} extends ListTreeRecords
+{
+    protected static string $resource = {{ resource }}::class;
+}

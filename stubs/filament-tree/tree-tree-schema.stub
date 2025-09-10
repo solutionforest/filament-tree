@@ -1,0 +1,37 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelNamespace }}\{{ model }};
+use SolutionForest\FilamentTree\Components\Tree;
+use SolutionForest\FilamentTree\Trees\BaseTree;
+
+class {{ class }} extends BaseTree
+{
+    /**
+     * Configure the tree structure
+     */
+    public static function tree(Tree $tree): Tree
+    {
+        return $tree
+            ->maxDepth({{ maxDepth }});
+    }
+
+    /**
+     * Get the associated resource class
+     */
+    public static function getResource(): string
+    {
+        return \{{ resourceClass }}::class;
+    }
+
+    // Action configuration - override as needed:
+    // protected bool $hasCreateAction = true;
+    // protected bool $hasAddChildAction = true; 
+    // protected bool $hasEditAction = true;
+    // protected bool $hasViewAction = false;
+    // protected bool $hasDeleteAction = true;
+
+    // All default actions are inherited from BaseTree
+    // To customize actions completely, override getTreeActions() or getTreeHeaderActions()
+}

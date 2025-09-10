@@ -1,0 +1,19 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelNamespace }}\{{ model }};
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Hidden;
+
+class {{ class }}
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema->components([{{ formComponents }}
+        ]);
+    }
+}

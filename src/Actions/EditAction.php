@@ -50,11 +50,26 @@ class EditAction extends Action
 
         $this->action(function (): void {
             $this->process(function (array $data, Model $record, Tree $tree) {
+                // Execute before hook
+                $data = $this->callBeforeActionHook($record, $data);
+                
+                // Apply form data mutations
+                $data = $this->getMutatedFormData($data);
+                
+                // Apply record mutations
+                $record = $this->getMutatedRecord($record);
+
+                // Update the record
                 if ($translatableContentDriver = $tree->makeFilamentTranslatableContentDriver()) {
                     $translatableContentDriver->updateRecord($record, $data);
                 } else {
                     $record->update($data);
                 }
+
+                // Execute after hook
+                $record = $this->callAfterActionHook($record, $data, $record);
+                
+                return $record;
             });
 
             $this->success();

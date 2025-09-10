@@ -7,7 +7,7 @@ use SolutionForest\FilamentTree\Contract\HasTree;
 
 trait BelongsToTree
 {
-    protected Tree $tree;
+    protected ?Tree $tree = null;
 
     public function tree(Tree $tree): static
     {
@@ -16,13 +16,13 @@ trait BelongsToTree
         return $this;
     }
 
-    public function getTree(): Tree
+    public function getTree(): ?Tree
     {
         return $this->tree;
     }
 
-    public function getLivewire(): HasTree
+    public function getLivewire(): ?HasTree
     {
-        return $this->getTree()->getLivewire();
+        return $this->tree?->getLivewire();
     }
 }

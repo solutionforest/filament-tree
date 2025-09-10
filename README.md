@@ -1,6 +1,9 @@
 > [!IMPORTANT]
 > Please note that we will only be updating to version 2.x or 3.x, excluding any bug fixes.
 
+> [!NOTE]
+> **Enhanced Fork**: This is an enhanced fork of the original Filament Tree plugin. We've built upon the excellent work of the original authors to add policy authorization, dedicated tree resources that replace table views, and enhanced Filament v4 compatibility. This fork was developed to meet specific requirements - replacing tables with trees in some resources and applying Laravel policies - and we found it more beneficial to enhance the existing plugin rather than start from scratch. We've tried our best to make the component behave exactly like the original until the new features are activated, maintaining full backward compatibility. Until the original developers accept these enhancements (if they choose to), this should be treated as a beta version developed with these specific use cases in mind. We invite anyone interested to help us debug and improve these changes.
+
 # Filament Tree
 
 Filament Tree is a plugin for Filament Admin that creates a model management page with a heritage tree structure view. This plugin can be used to create menus and more.
@@ -624,6 +627,234 @@ To publish the translations, use:
 ```bash
 php artisan vendor:publish --tag="filament-tree-translations"
 ```
+
+## 🆕 Enhanced Features
+
+This enhanced fork includes powerful new features that extend the capabilities of Filament Tree:
+
+### 1. Tree Resource Generation Command
+
+Create complete tree resources that replace table views with hierarchical tree interfaces:
+
+#### Command: `make:filament-tree-resource`
+
+```bash
+# Create a complete tree resource
+php artisan make:filament-tree-resource Location --model=Location
+
+# Include form generation (optional, off by default)
+php artisan make:filament-tree-resource Category --model=Category --generate-form
+```
+
+#### Generated Structure (Filament v4 Pattern)
+
+The command creates a complete resource following Filament v4's folder-based organization:
+
+```
+app/Filament/Resources/Locations/
+├── LocationResource.php           # Main resource class
+├── Pages/
+│   ├── ListLocations.php         # Tree view page (replaces table)
+│   ├── CreateLocation.php        # Create page with parent_id support
+│   ├── EditLocation.php          # Edit page
+│   └── ViewLocation.php          # View page  
+├── Schemas/
+│   └── LocationForm.php          # Reusable form schema
+└── Trees/
+    └── LocationsTree.php         # Tree configuration and actions
+```
+
+#### Key Differences from Original Approaches
+
+**Tree Resource vs Resource with Tree Widget:**
+- Creates a **dedicated tree resource** (not a regular resource + tree widget)
+- The tree view **completely replaces** the table view
+- Designed specifically for hierarchical data management
+
+**Page-Based Navigation (No Modals):**
+- Uses dedicated pages for Create, Edit, List, and View operations
+- Matches standard Filament resource behavior
+- Better UX for complex forms and workflows
+- Supports deep linking and browser navigation
+
+**Enhanced Capabilities:**
+- **Relation Manager Support**: Add ContactsRelationManager, etc. (not supported in widget/old integration)
+- **Custom Record Actions**: Full support for custom actions on tree records
+- **Policy Integration**: Complete Laravel policy authorization
+- **Parent ID Auto-Population**: Child creation automatically sets parent relationships
+
+#### Usage Example
+
+```php
+// Generated LocationResource.php
+class LocationResource extends TreeResource
+{
+    protected static ?string $model = Location::class;
+    protected static ?string $navigationIcon = 'heroicon-o-map';
+    
+    public static function getRelations(): array
+    {
+        return [
+            ContactsRelationManager::class,
+            // Add more relation managers
+        ];
+    }
+}
+
+// Generated LocationsTree.php  
+class LocationsTree extends BaseTree
+{
+    public static function tree(Tree $tree): Tree
+    {
+        return $tree->maxDepth(4);
+    }
+    
+    public static function getResource(): string
+    {
+        return LocationResource::class;
+    }
+    
+    // Action configuration (all enabled by default)
+    // protected bool $hasCreateAction = true;
+    // protected bool $hasAddChildAction = true; 
+    // protected bool $hasEditAction = true;
+    // protected bool $hasViewAction = true;
+    // protected bool $hasDeleteAction = true;
+}
+```
+
+### 2. Laravel Policy Authorization
+
+Automatically hide unauthorized actions based on Laravel policies:
+
+```php
+// Enable in config/filament-tree.php
+'enable_policy_authorization' => true,
+```
+
+**Features:**
+- Actions are **completely hidden** when unauthorized (not just disabled)
+- Tree reordering disabled when user lacks update permissions
+- Works with any Laravel authorization system (Gates, Policies, Spatie)
+- Configurable ability mapping
+
+**Policy Methods Supported:**
+```php
+class LocationPolicy
+{
+    public function viewAny(User $user): bool
+    public function create(User $user): bool  
+    public function update(User $user, Location $location): bool
+    public function delete(User $user, Location $location): bool
+}
+```
+
+### 3. Enhanced Action System
+
+#### CreateChildAction with Auto Parent-Child Relationships
+
+```php
+use SolutionForest\FilamentTree\Actions\CreateChildAction;
+
+protected function getTreeActions(): array
+{
+    return [
+        CreateChildAction::make()
+            ->beforeAction(function ($record, $data) {
+                // Customize data before creation
+                $data['type'] = match($record->type) {
+                    'country' => 'state',
+                    'state' => 'city',
+                    default => 'district'
+                };
+                return $data;
+            })
+            ->afterAction(function ($record, $data, $result) {
+                // Log, notify, or perform side effects
+                activity()->performedOn($result)->log("Created child under {$record->name}");
+                return $result;
+            }),
+    ];
+}
+```
+
+#### Action Hooks System
+
+All tree actions now support powerful before/after hooks:
+
+```php
+use SolutionForest\FilamentTree\Actions\EditAction;
+use SolutionForest\FilamentTree\Actions\DeleteAction;
+
+protected function getTreeActions(): array
+{
+    return [
+        EditAction::make()
+            ->beforeAction(function ($record, $data) {
+                // Validate, prepare, or log before action
+                return $data;
+            })
+            ->afterAction(function ($record, $data, $result) {
+                // Clear cache, send notifications, log changes
+                return $result;
+            }),
+            
+        DeleteAction::make()
+            ->beforeAction(function ($record) {
+                // Safety checks
+                if ($record->children()->count() > 0) {
+                    throw new \Exception('Cannot delete record with children');
+                }
+                return true;
+            }),
+    ];
+}
+```
+
+### 4. Enhanced Configuration
+
+The config file now includes additional options:
+
+```php
+return [
+    // Existing options...
+    
+    /**
+     * Enable Laravel policy authorization
+     */
+    'enable_policy_authorization' => false,
+    
+    /**
+     * Policy abilities mapping
+     */
+    'policy_abilities' => [
+        'create' => 'create',
+        'createChild' => 'create',
+        'edit' => 'update',
+        'view' => 'view',
+        'delete' => 'delete',
+    ],
+    
+    /**
+     * TreeResource configuration
+     */
+    'resources' => [
+        'enabled' => true,
+        'namespace' => 'App\\Filament\\Resources',
+        'path' => app_path('Filament/Resources'),
+    ],
+];
+```
+
+### 5. Backward Compatibility
+
+All original functionality remains fully supported:
+
+- **`make:filament-tree-page`**: Creates standalone tree pages with modal forms
+- **`make:filament-tree-widget`**: Creates tree widgets for dashboards
+- **Resource Integration**: Original "create in resource" option still works
+
+The enhanced features are additive and don't break existing implementations.
 
 ## Testing
 

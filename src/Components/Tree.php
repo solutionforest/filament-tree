@@ -21,6 +21,8 @@ class Tree extends ViewComponent
 
     protected array $actions = [];
 
+    protected bool $canUpdateOrder = true;
+
     public const LOADING_TARGETS = ['activeLocale'];
 
     public function __construct(HasTree $livewire)
@@ -46,7 +48,19 @@ class Tree extends ViewComponent
 
     public function actions(array $actions): static
     {
-        $this->actions = $actions;
+        $this->actions = collect($actions)->map(function ($action) {
+            if ($action instanceof \SolutionForest\FilamentTree\Actions\Action) {
+                return $action->tree($this);
+            }
+            return $action;
+        })->all();
+
+        return $this;
+    }
+
+    public function canUpdateOrder(bool $canUpdateOrder): static
+    {
+        $this->canUpdateOrder = $canUpdateOrder;
 
         return $this;
     }
@@ -54,6 +68,11 @@ class Tree extends ViewComponent
     public function getMaxDepth(): int
     {
         return $this->maxDepth;
+    }
+
+    public function getCanUpdateOrder(): bool
+    {
+        return $this->canUpdateOrder;
     }
 
     public function getActions(): array
