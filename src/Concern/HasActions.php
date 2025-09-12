@@ -4,7 +4,6 @@ namespace SolutionForest\FilamentTree\Concern;
 
 use Closure;
 use Filament\Actions\Action as FilamentActionsAction;
-use Filament\Actions\ActionGroup as FilamentActionsActionGroup;
 use Filament\Actions\Exceptions\ActionNotResolvableException;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
@@ -15,6 +14,7 @@ use SolutionForest\FilamentTree\Contract\HasTree;
 trait HasActions
 {
     protected array $cachedTreeToolbarActions = [];
+
     protected array $cachedTreeActions = [];
 
     protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
@@ -42,10 +42,10 @@ trait HasActions
 
                     if (filled($action['context']['recordKey'] ?? null)) {
                         $record = $this->getTreeRecord($action['context']['recordKey']);
-                        
+
                         $resolvedAction->getRootGroup()?->record($record) ?? $resolvedAction->record($record);
                     }
-                    
+
                     return $resolvedAction;
                 }
             }
@@ -71,14 +71,14 @@ trait HasActions
                 // Set tree on action
                 if (method_exists($action, 'tree')) {
                     $action = $action->tree($this->getCachedTree());
-                } 
+                }
                 // Set livewire on action
                 else {
                     $action = $action->livewire($this);
                 }
 
                 return $action;
-            }; 
+            };
 
             return collect($actions)
                 ->whereInstanceOf([
@@ -90,17 +90,17 @@ trait HasActions
                     if ($action instanceof ActionGroup) {
                         return $action->getFlatActions();
                     }
+
                     return [$action];
-                }) 
+                })
                 // Configure action
-                ->map(fn (Action|FilamentActionsAction $action) =>
-                    $action->configureUsing(
-                        Closure::fromCallable([$this, 'configureTreeAction']),
-                        fn () => $action->configure(),
-                    )
+                ->map(fn (Action|FilamentActionsAction $action) => $action->configureUsing(
+                    Closure::fromCallable([$this, 'configureTreeAction']),
+                    fn () => $action->configure(),
+                )
                 )
                 // Key by action name (resolve used)
-                ->mapWithKeys(fn (Action | FilamentActionsAction $action) => [
+                ->mapWithKeys(fn (Action|FilamentActionsAction $action) => [
                     $action->getName() => $configureResolvedAction($action),
                 ])
                 ->all();
