@@ -2,6 +2,22 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.0 - 2025-09-12
+
+<!-- Release notes generated using configuration in .github/release.yml at 3.x -->
+### What's Changed
+
+#### Other Changes
+
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/solutionforest/filament-tree/pull/82
+* Feature/add toolbar actions by @cklei-carly in https://github.com/solutionforest/filament-tree/pull/87
+
+### New Contributors
+
+* @cklei-carly made their first contribution in https://github.com/solutionforest/filament-tree/pull/87
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.0.2...3.1.0
+
 ## 3.0.2 - 2025-08-22
 
 ### What's Changed in 3.0.2
@@ -42,6 +58,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
