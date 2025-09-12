@@ -119,6 +119,21 @@ public function getTreeRecordIcon(?Model $record = null): ?string
 }
 ```
 
+**Toolbar Actions**: Add global actions displayed above the tree:
+
+```php
+protected function getTreeToolbarActions(): array
+{
+    return [
+        CreateAction::make(),
+        ExportAction::make(),
+        ImportAction::make(),
+    ];
+}
+```
+
+> **Note**: Toolbar actions are only supported in version 3.1.0 and later.
+
 ## Key File Locations
 
 - Models: Add `ModelTree` trait to any hierarchical model
