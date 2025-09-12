@@ -3,121 +3,87 @@
 
 # Filament Tree
 
-Filament Tree is a plugin for Filament Admin that creates a model management page with a heritage tree structure view. This plugin can be used to create menus and more.
-
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 [![Total Downloads](https://img.shields.io/packagist/dt/solution-forest/filament-tree.svg?style=flat-square)](https://packagist.org/packages/solution-forest/filament-tree)
 
-This plugin creates model management page with heritage tree structure view for Filament Admin. It could be used to create menu, etc.
+Filament Tree is a plugin for Filament Admin that creates hierarchical tree management with drag-and-drop functionality. Perfect for building menus, categories, organizational structures, and any nested data relationships.
 
-Demo site : https://filament-cms-website-demo.solutionforest.net/admin
+**🎯 Key Features:**
 
-Demo username : demo@solutionforest.net
+- Drag-and-drop tree interface with unlimited depth
+- Support for Widgets, Pages, and Resources
+- Customizable actions, icons, and styling
+- Translation support with Spatie Translatable
+- Built-in create, edit, delete, and view actions
+- Toolbar actions for global operations
 
-Demo password : 12345678
-Auto Reset every hour.
+**🚀 Demo:** [https://filament-cms-website-demo.solutionforest.net/admin](https://filament-cms-website-demo.solutionforest.net/admin)  
+**Credentials:** `demo@solutionforest.net` / `12345678` (Auto-reset every hour)
 
-## Supported Filament versions
+## Version Compatibility
 
 | Filament Version | Plugin Version |
 | ---------------- | -------------- |
 | v3               | 2.x.x          |
 | v4               | 3.x.x          |
 
+> [!IMPORTANT]
+> We only provide updates for versions 3.x, excluding bug fixes for older versions.
+
 ## Installation
 
-To install the package, run the following command:
+1. **Install the package:**
 
-```bash
-composer require solution-forest/filament-tree
-```
+   ```bash
+   composer require solution-forest/filament-tree
+   ```
 
-> **Important: Need to publish assets after version 2.x**
+2. **Publish and register assets:**
 
-```bash
-php artisan filament:assets
-```
+   ```bash
+   php artisan filament:assets
+   ```
 
-> **Note: Add plugin Blade files to your custom theme `tailwind.config.js` for dark mode.**
->
-> To set up your own custom theme, you can visit the [official instruction page](https://filamentphp.com/docs/4.x/styling/overview#creating-a-custom-theme) on the Filament website.
+3. **Publish configuration (optional):**
 
-Add the plugin's views and css to your `theme.css` file.
+   ```bash
+   php artisan vendor:publish --tag="filament-tree-config"
+   ```
 
-```css
-@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/jquery.nestable.css';
-@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/button.css';
-@import '<path-to-vendor>/solution-forest/filament-tree/resources/css/custom-nestable-item.css';
-@source '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php';
-```
+4. **For custom themes:** Add to your `tailwind.config.js`:
+   ```css
+   @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/jquery.nestable.css';
+   @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/button.css';
+   @import '<path-to-vendor>/solution-forest/filament-tree/resources/css/custom-nestable-item.css';
+   @source '<path-to-vendor>/solution-forest/filament-tree/resources/**/*.blade.php';
+   ```
 
-Then, publish the config file using:
+## Quick Start
 
-```bash
-php artisan vendor:publish --tag="filament-tree-config"
-```
+### 1. Database Setup
 
-You can set your preferred options by adding the following code to your `config/filament-tree.php` file:
+Create your migration with the required tree structure:
 
 ```php
-<?php
-
-return [
-    /**
-     * Tree model fields
-     */
-    'column_name' => [
-        'order' => 'order',
-        'parent' => 'parent_id',
-        'title' => 'title',
-    ],
-    /**
-     * Tree model default parent key
-     */
-    'default_parent_id' => -1,
-    /**
-     * Tree model default children key name
-     */
-    'default_children_key_name' => 'children',
-];
-
-```
-
-![Using tree widget on page](https://github.com/user-attachments/assets/1f09d707-b6ac-4d68-9009-55dade707c43)
-
-## Usage
-
-### Prepare the database and model
-
-To use Filament Tree, follow these table structure conventions:
-
-> **Tip: The `parent_id` field must always default to -1!!!**
-
-```
-Schema::create('product_categories', function (Blueprint $table) {
+Schema::create('categories', function (Blueprint $table) {
     $table->id();
-    $table->integer('parent_id')->default(-1);
-    $table->integer('order')->default(0)->index();
+    $table->treeColumns(); // Adds parent_id, order, title columns
+    $table->timestamps();
+});
+
+// Or manually:
+Schema::create('categories', function (Blueprint $table) {
+    $table->id();
+    $table->integer('parent_id')->default(-1)->index(); // Must default to -1!
+    $table->integer('order')->default(0);
     $table->string('title');
     $table->timestamps();
 });
 ```
 
-This plugin provides a convenient method called `treeColumns()` that you can use to add the required columns for the tree structure to your table more easily. Here's an example:
+### 2. Model Setup
 
-```
-Schema::create('product_categories', function (Blueprint $table) {
-    $table->id();
-    $table->treeColumns();
-    $table->timestamps();
-});
-```
-
-This will automatically add the required columns for the tree structure to your table.
-
-The above table structure contains three required fields: `parent_id`, `order`, `title`, and other fields do not have any requirements.
-
-The corresponding model is `app/Models/ProductCategory.php`:
+Add the `ModelTree` trait to your Eloquent model:
 
 ```php
 <?php
@@ -127,426 +93,213 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Concern\ModelTree;
 
-class ProductCategory extends Model
+class Category extends Model
 {
     use ModelTree;
 
-    protected $fillable = ["parent_id", "title", "order"];
+    protected $fillable = ['parent_id', 'title', 'order'];
 
     protected $casts = [
-        'parent_id' => 'int'
+        'parent_id' => 'integer'
     ];
-
-    protected $table = 'product_categories';
 }
 ```
 
-The field names of the three fields `parent_id`, `order`, and `title` in the table structure can also be modified:
+### 3. Generate Tree Components
 
-```php
-<?php
+Choose your implementation:
 
-namespace App\Models;
+```bash
+# For a standalone tree widget
+php artisan make:filament-tree-widget CategoryWidget --model=Category
 
-use Illuminate\Database\Eloquent\Model;
-use SolutionForest\FilamentTree\Concern\ModelTree;
+# For a tree page
+php artisan make:filament-tree-page CategoryTree --model=Category
 
-class ProductCategory extends Model
-{
-    use ModelTree;
-
-    protected $fillable = ["parent_id", "title", "order"];
-
-    protected $table = 'product_categories';
-
-    // Default if you need to override
-
-    // public function determineOrderColumnName(): string
-    // {
-    //     return "order";
-    // }
-
-    // public function determineParentColumnName(): string
-    // {
-    //     return "parent_id";
-    // }
-
-    // public function determineTitleColumnName(): string
-    // {
-    //     return 'title';
-    // }
-
-    // public static function defaultParentKey()
-    // {
-    //     return -1;
-    // }
-
-    // public static function defaultChildrenKeyName(): string
-    // {
-    //     return "children";
-    // }
-
-}
-
+# For a resource tree page
+php artisan make:filament-tree-page CategoryTree --resource=Category
 ```
 
-### Widget
+![Tree Widget Example](https://github.com/user-attachments/assets/1f09d707-b6ac-4d68-9009-55dade707c43)
 
-Filament provides a powerful feature that allows you to display widgets inside pages, below the header and above the footer. This can be useful for adding additional functionality to your resource pages.
+![Tree Widget Example](https://github.com/user-attachments/assets/1f09d707-b6ac-4d68-9009-55dade707c43)
 
-To create a Tree Widget and apply it to a resource page, you can follow these steps:
+## Implementation Options
 
-#### 1. Creating a Filament Resource Page
+### Tree Widgets
 
-To create a resources page, run the following command:
+Perfect for embedding trees within existing resource pages or dashboard.
 
-```
-php artisan make:filament-resource ProductCategory
-```
+**1. Generate the widget:**
 
-#### 2. Create Tree Widget
-
-Prepare the filament-tree Widget and show it in Resource page.
-
-```php
-php artisan make:filament-tree-widget ProductCategoryWidget
+```bash
+php artisan make:filament-tree-widget CategoryWidget --model=Category
 ```
 
-Now you can see the Widget in Filament Folder
+**2. Configure the widget:**
 
 ```php
 <?php
 
 namespace App\Filament\Widgets;
 
-use App\Models\ProductCategory as ModelsProductCategory;
-use App\Filament\Widgets;
+use App\Models\Category;
 use Filament\Forms\Components\TextInput;
 use SolutionForest\FilamentTree\Widgets\Tree as BaseWidget;
 
-class ProductCategoryWidget extends BaseWidget
+class CategoryWidget extends BaseWidget
 {
-    protected static string $model = ModelsProductCategory::class;
-
-    // you can customize the maximum depth of your tree
-    protected static int $maxDepth = 2;
-
-    protected ?string $treeTitle = 'ProductCategory';
-
+    protected static string $model = Category::class;
+    protected static int $maxDepth = 3;
+    protected ?string $treeTitle = 'Categories';
     protected bool $enableTreeTitle = true;
 
     protected function getFormSchema(): array
     {
         return [
-            TextInput::make('title'),
+            TextInput::make('title')->required(),
+            // Add more form fields as needed
         ];
     }
 }
 ```
 
-#### 3. Displaying a widget on a resource page
-
-Once you have created the widget, modify the `getHeaderWidgets()` or `getFooterWidgets()` methods of the resource page to show the tree view:
+**3. Display in resource pages:**
 
 ```php
-<?php
-
-namespace App\Filament\Resources\ProductCategoryResource\Pages;
-
-use App\Filament\Resources\ProductCategoryResource;
-use App\Filament\Widgets\ProductCategory;
-use Filament\Pages\Actions;
-use Filament\Resources\Pages\ListRecords;
-
-class ListProductCategories extends ListRecords
+// In your resource's ListRecords page
+protected function getHeaderWidgets(): array
 {
-    protected static string $resource = ProductCategoryResource::class;
-
-    protected function getActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
-
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            ProductCategory::class
-        ];
-    }
+    return [CategoryWidget::class];
 }
 ```
 
-### Resources
+### Tree Pages
 
-Filament allows you to create a custom pages for resources, you also can create a tree page that display hierarchical data.
+Standalone pages dedicated to tree management.
 
-#### Create a Page
+**1. Generate the page:**
 
-To create a tree page for resource, you can use:
-
-```
-php artisan make:filament-tree-page ProductCategoryTree --resource=ProductCategory
+```bash
+php artisan make:filament-tree-page CategoryTree --model=Category
 ```
 
-#### Register a Page to the resource
-
-You must register the tree page to a route in the static `getPages()` methods of your resource. For example:
+**2. Register the page:**
 
 ```php
+// In your PanelProvider
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->pages([
+            CategoryTree::class,
+        ]);
+}
+```
+
+### Resource Tree Pages
+
+Integrated tree pages within Filament resources.
+
+**1. Generate for resource:**
+
+```bash
+php artisan make:filament-tree-page CategoryTree --resource=Category
+```
+
+**2. Register in resource:**
+
+```php
+// In your CategoryResource
 public static function getPages(): array
 {
     return [
-        // ...
-        'tree-list' => Pages\ProductCategoryTree::route('/tree-list'),
+        'index' => Pages\ListCategories::route('/'),
+        'create' => Pages\CreateCategory::route('/create'),
+        'edit' => Pages\EditCategory::route('/{record}/edit'),
+        'tree' => Pages\CategoryTree::route('/tree'), // Add this line
     ];
 }
 ```
 
-#### Actions
+## Tree Customization
 
-Define the available "actions" for the tree page using the `getActions()` and `getTreeActions()` methods of your page class.
+### Record Display
 
-The `getActions()` method defines actions that are displayed next to the page's heading:
+Customize how records appear in the tree:
 
-```php
-    use Filament\Actions\CreateAction;
-
-    protected function getActions(): array
-    {
-        return [
-            CreateAction::make(),
-            // SAMPLE CODE, CAN DELETE
-            //\Filament\Pages\Actions\Action::make('sampleAction'),
-        ];
-    }
-```
-
-The `getTreeActions()` method defines the actions that are displayed for each record in the tree. For example:
+**Custom record titles:**
 
 ```php
-use SolutionForest\FilamentTree\Actions\DeleteAction;
-use SolutionForest\FilamentTree\Actions\EditAction;
-use SolutionForest\FilamentTree\Actions\ViewAction;
-
-protected function getTreeActions(): array
+public function getTreeRecordTitle(?\Illuminate\Database\Eloquent\Model $record = null): string
 {
-    return [
-        ViewAction::make(),
-        EditAction::make(),
-        DeleteAction::make(),
-    ];
-}
+    if (!$record) return '';
 
-```
-
-Alternatively, you can use the `hasDeleteAction()`, `hasEditAction()`, and `hasViewAction()` methods to customize each action individually.
-
-```php
-protected function hasDeleteAction(): bool
-{
-    return false;
-}
-
-protected function hasEditAction(): bool
-{
-    return true;
-}
-
-protected function hasViewAction(): bool
-{
-    return false;
+    return "[{$record->id}] {$record->title}";
 }
 ```
 
-#### Record ICON
-
-To customize the prefix icon for each record in a tree page, you can use the `getTreeRecordIcon()` method in your tree page class. This method should return a string that represents the name of the icon you want to use for the record. For example:
+**Record icons:**
 
 ```php
 public function getTreeRecordIcon(?\Illuminate\Database\Eloquent\Model $record = null): ?string
 {
     if ($record->parent_id != -1) {
-        return null; // no icon for child records
+        return null; // No icon for child records
     }
 
     return match ($record->title) {
-        'Top' => 'heroicon-o-arrow-up',
-        'Bottom' => 'heroicon-o-arrow-down',
-        'Shoes' => 'heroicon-o-shopping-bag',
-        'Accessories' => 'heroicon-o-briefcase',
-        default => null, // no icon for other records
+        'Categories' => 'heroicon-o-tag',
+        'Products' => 'heroicon-o-shopping-bag',
+        'Settings' => 'heroicon-o-cog',
+        default => 'heroicon-o-folder',
     };
 }
 ```
 
-![Item record on tree](https://github.com/user-attachments/assets/f5d2fcb8-f366-47e9-956d-6b81c8edd2ac)
+![Tree with Icons](https://github.com/user-attachments/assets/f5d2fcb8-f366-47e9-956d-6b81c8edd2ac)
 
-#### Node collapsed state
+### Tree Actions
 
-You can customize a collapsed state of the node. If you would like to show your tree initially collapsed you can use:
+Configure actions that appear for each tree record:
 
-```php
-public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
-{
-    // All tree nodes will be collapsed by default.
-    return true;
-}
-```
-
-#### Record Title
-
-To customize the ttile for each record in a tree page, you can use the `getTreeRecordTitle()` method in your tree page class. This method should return a string that represents the name of the icon you want to use for the record. For example:
+**Quick setup with boolean methods:**
 
 ```php
-public function getTreeRecordTitle(?\Illuminate\Database\Eloquent\Model $record = null): string
-{
-    if (! $record) {
-        return '';
-    }
-    $id = $record->getKey();
-    $title = $record->{(method_exists($record, 'determineTitleColumnName') ? $record->determineTitleColumnName() : 'title')};
-    return "[{$id}] {$title}";
-}
+protected function hasDeleteAction(): bool { return true; }
+protected function hasEditAction(): bool { return true; }
+protected function hasViewAction(): bool { return false; }
 ```
 
-#### Configuring Tree Item Actions
-
-You can customize the behavior and appearance of tree item actions (Delete, Edit, and View) by overriding the configuration methods in your widget or page class. Each action type has its own configuration method:
-
-##### Configure Delete Action
-
-Override the `configureDeleteAction()` method to customize the delete action:
-
-```php
-protected function configureDeleteAction(DeleteAction $action): DeleteAction
-{
-    $action
-        ->label('Remove Item')
-        ->icon('heroicon-o-trash')
-        ->color('danger')
-        ->requiresConfirmation()
-        ->modalHeading('Delete Category')
-        ->modalDescription('Are you sure you want to delete this category? This action cannot be undone.')
-        ->modalSubmitActionLabel('Yes, delete it');
-
-    return $action;
-}
-```
-
-##### Configure Edit Action
-
-Override the `configureEditAction()` method to customize the edit action:
+**Advanced action configuration:**
 
 ```php
 protected function configureEditAction(EditAction $action): EditAction
 {
-    $action
-        ->label('Edit Item')
-        ->icon('heroicon-o-pencil')
-        ->color('primary')
+    return $action
+        ->slideOver()
         ->modalHeading('Edit Category')
-        ->modalSubmitActionLabel('Save Changes')
-        ->slideOver();
-
-    return $action;
+        ->modalSubmitActionLabel('Save Changes');
 }
-```
 
-##### Configure View Action
+protected function configureDeleteAction(DeleteAction $action): DeleteAction
+{
+    return $action
+        ->requiresConfirmation()
+        ->modalDescription('This will permanently delete the category and all subcategories.');
+}
 
-Override the `configureViewAction()` method to customize the view action:
-
-```php
 protected function configureViewAction(ViewAction $action): ViewAction
 {
-    $action
-        ->label('View Details')
-        ->icon('heroicon-o-eye')
-        ->color('secondary')
-        ->modalHeading('Category Details')
-        ->modalWidth('2xl')
-        ->slideOver();
-
-    return $action;
+    return $action
+        ->slideOver()
+        ->modalWidth('2xl');
 }
 ```
 
-##### Example: Complete Action Configuration
+### Toolbar Actions
 
-Here's a complete example showing how to configure all three actions in a tree widget:
-
-```php
-<?php
-
-namespace App\Filament\Widgets;
-
-use App\Models\ProductCategory;
-use Filament\Forms\Components\TextInput;
-use SolutionForest\FilamentTree\Actions\DeleteAction;
-use SolutionForest\FilamentTree\Actions\EditAction;
-use SolutionForest\FilamentTree\Actions\ViewAction;
-use SolutionForest\FilamentTree\Widgets\Tree as BaseWidget;
-
-class ProductCategoryWidget extends BaseWidget
-{
-    protected static string $model = ProductCategory::class;
-
-    protected function getFormSchema(): array
-    {
-        return [
-            TextInput::make('title')->required(),
-        ];
-    }
-
-    protected function hasDeleteAction(): bool
-    {
-        return true;
-    }
-
-    protected function hasEditAction(): bool
-    {
-        return true;
-    }
-
-    protected function hasViewAction(): bool
-    {
-        return true;
-    }
-
-    protected function configureDeleteAction(DeleteAction $action): DeleteAction
-    {
-        $action
-            ->requiresConfirmation()
-            ->modalDescription('This will permanently delete the category and all its subcategories.');
-
-        return $action;
-    }
-
-    protected function configureEditAction(EditAction $action): EditAction
-    {
-        $action
-            ->slideOver()
-            ->modalWidth('md');
-
-        return $action;
-    }
-
-    protected function configureViewAction(ViewAction $action): ViewAction
-    {
-        $action
-            ->slideOver()
-            ->disabled(fn ($record) => $record->parent_id === -1); // Disable for root items
-
-        return $action;
-    }
-}
-```
-
-#### Toolbar Actions
-
-You can add global actions that appear in the toolbar above the tree by implementing the `getTreeToolbarActions()` method. These actions are displayed alongside the default expand/collapse and save buttons:
+Add global actions displayed above the tree (v3.1.0+):
 
 ```php
 protected function getTreeToolbarActions(): array
@@ -554,43 +307,61 @@ protected function getTreeToolbarActions(): array
     return [
         \SolutionForest\FilamentTree\Actions\CreateAction::make()
             ->label('Add Category')
-            ->icon('heroicon-o-plus')
-            ->color('primary'),
+            ->icon('heroicon-o-plus'),
         \Filament\Actions\ExportAction::make()
-            ->label('Export Tree')
-            ->icon('heroicon-o-document-arrow-down'),
+            ->label('Export Tree'),
         \Filament\Actions\ImportAction::make()
-            ->label('Import Tree')
-            ->icon('heroicon-o-document-arrow-up'),
+            ->label('Import Categories'),
     ];
 }
 ```
 
-The toolbar actions are automatically generated by the Artisan command and include a `CreateAction` by default for tree widgets, but return an empty array for tree pages. You can customize this method to add any actions you need.
-
 > **Note**: Toolbar actions are only supported in version 3.1.0 and later.
 
-### Pages
+### Icons and Styling
 
-This plugin enables you to create tree pages in the admin panel. To create a tree page for a model, use the `make:filament-tree-page` command. For example, to create a tree page for the ProductCategory model, you can run:
-
-#### Create a Page
-
-> **Tip: Note that you should make sure the model contains the required columns or already uses the `ModelTree` trait**
+**Tree depth control:**
 
 ```php
-php artisan make:filament-tree-page ProductCategory --model=ProductCategory
+protected static int $maxDepth = 4; // Limit nesting depth
 ```
 
-#### Actions, Widgets and Icon for each record
+**Node collapsed state:**
 
-Once you've created the tree page, you can customize the available actions, widgets, and icon for each record. You can use the same methods as for resource pages. See the [Resource Page](#resources) for more information on how to customize actions, widgets, and icons.
+```php
+public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
+{
+    return true; // Start with all nodes collapsed
+}
+```
 
-### Translation
+### Form Schemas
 
-Suggest used with Spatie Translatable [https://github.com/lara-zeus/translatable](https://github.com/lara-zeus/spatie-translatable) Plugin.
+Define forms for different operations:
 
-1. Ensure your model already apply translatable setup. (Refence on https://spatie.be/docs/laravel-translatable/v6/installation-setup)
+```php
+// Used for all operations (fallback)
+protected function getFormSchema(): array
+{
+    return [
+        TextInput::make('title')->required(),
+        Textarea::make('description'),
+    ];
+}
+
+// Specific schemas for different actions
+protected function getCreateFormSchema(): array { /* ... */ }
+protected function getEditFormSchema(): array { /* ... */ }
+protected function getViewFormSchema(): array { /* ... */ }
+```
+
+## Advanced Features
+
+### Translation Support
+
+Integration with [Spatie Laravel Translatable](https://github.com/spatie/laravel-translatable):
+
+**1. Setup your model:**
 
 ```php
 use Filament\Actions\LocaleSwitcher;
@@ -599,65 +370,200 @@ use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use HasTranslations;
-    use TreeModel;
+    use HasTranslations, ModelTree;
 
-    protected $translatable = [
-        'title',
-    ];
+    protected $translatable = ['title'];
 }
 ```
 
-2. You need to add the necessary trait and `LocaleSwitcher` header action to your tree page:
+**2. Configure your tree page:**
 
 ```php
-use App\Models\Category as TreePageModel;
 use SolutionForest\FilamentTree\Concern\TreeRecords\Translatable;
-use SolutionForest\FilamentTree\Pages\TreePage as BasePage;
 
-class Category extends BasePage
+class CategoryTree extends TreePage
 {
     use Translatable;
 
-    protected static string $model = TreePageModel::class;
-
     public function getTranslatableLocales(): array
     {
-        return ['en', 'fr'];
+        return ['en', 'fr', 'es'];
     }
 
     protected function getActions(): array
     {
-        return [
-            LocaleSwitcher::make(),
-        ];
+        return [LocaleSwitcher::make()];
     }
 }
 ```
 
-### Publishing Views
+### Custom Column Names
 
-To publish the views, use:
+Override default column names if your table structure differs:
 
-```bash
-php artisan vendor:publish --tag="filament-tree-views"
+```php
+class Category extends Model
+{
+    use ModelTree;
+
+    public function determineOrderColumnName(): string
+    {
+        return 'sort_order'; // Instead of 'order'
+    }
+
+    public function determineParentColumnName(): string
+    {
+        return 'parent_category_id'; // Instead of 'parent_id'
+    }
+
+    public function determineTitleColumnName(): string
+    {
+        return 'name'; // Instead of 'title'
+    }
+
+    public static function defaultParentKey(): int
+    {
+        return 0; // Instead of -1
+    }
+}
 ```
 
-### Publishing Translations
+### Node State Management
 
-To publish the translations, use:
+**Performance optimization for large trees:**
+
+```php
+// Pre-collapse deep nodes to improve initial load
+public function getNodeCollapsedState(?\Illuminate\Database\Eloquent\Model $record = null): bool
+{
+    return $record && $record->getDepth() > 2;
+}
+
+// Custom tree depth per implementation
+protected static int $maxDepth = 5;
+```
+
+**Conditional record display:**
+
+```php
+public function getTreeRecordTitle(?\Illuminate\Database\Eloquent\Model $record = null): string
+{
+    if (!$record) return '';
+
+    $title = $record->title;
+
+    // Add indicators
+    if ($record->children()->count() > 0) {
+        $title .= " ({$record->children()->count()})";
+    }
+
+    if (!$record->is_active) {
+        $title = "🚫 " . $title;
+    }
+
+    return $title;
+}
+```
+
+## Configuration
+
+The configuration file `config/filament-tree.php` allows you to customize default behavior:
+
+```php
+<?php
+
+return [
+    /**
+     * Default column names for tree structure
+     */
+    'column_name' => [
+        'order' => 'order',
+        'parent' => 'parent_id',
+        'title' => 'title',
+    ],
+
+    /**
+     * Default parent ID for root nodes
+     */
+    'default_parent_id' => -1,
+
+    /**
+     * Default children relationship key
+     */
+    'default_children_key_name' => 'children',
+];
+```
+
+**Publish additional resources:**
 
 ```bash
+# Publish views for customization
+php artisan vendor:publish --tag="filament-tree-views"
+
+# Publish translations
 php artisan vendor:publish --tag="filament-tree-translations"
 ```
 
-## Testing
+## Best Practices
 
-To run the tests, run:
+### Database Design
+
+- **Always use `-1` as default for `parent_id`** - required for proper tree functionality
+- Index the `parent_id` and `order` columns for better performance
+- Consider adding `is_active` or `status` columns for soft filtering
+
+### Performance
+
+- Limit tree depth with `$maxDepth` for better user experience
+- Use eager loading when accessing tree relationships in custom code
+- Consider starting with collapsed nodes for large trees
+
+### User Experience
+
+- Provide clear icons to distinguish node types
+- Use descriptive action labels and confirmation dialogs
+- Group related toolbar actions logically
+
+### Development
+
+- Use the Artisan generators for consistent code structure
+- Extend configuration methods rather than overriding entire actions
+- Test with deeply nested data to ensure performance
+
+## Development
+
+### Frontend Build Process
 
 ```bash
-composer test
+# Development with watch mode
+npm run dev
+
+# Production build
+npm run build
+
+# CSS only
+npm run build:styles
+
+# JavaScript only
+npm run build:scripts
 ```
+
+### Testing
+
+```bash
+# Run all tests
+composer test
+
+# Code analysis
+composer analyse
+
+# Code formatting
+composer lint
+```
+
+### Contributing
+
+See [CONTRIBUTING](.github/CONTRIBUTING.md) for development guidelines.
 
 ## Changelog
 
