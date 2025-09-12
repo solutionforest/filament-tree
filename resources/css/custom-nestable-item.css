@@ -106,5 +106,15 @@
 }
 
 .filament-tree-component .nestable-menu {
-    @apply flex gap-2 mb-4;
+    @apply mb-4;
+}
+.filament-tree-component .nestable-menu,
+.filament-tree-component .nestable-menu .toolbar-btns {
+    @apply flex items-center gap-2;
+}
+.filament-tree-component .nestable-menu {
+    @apply justify-between;
+}
+.filament-tree-component .nestable-menu .toolbar-btns.main {
+    @apply flex-1;
 }
