@@ -31,7 +31,7 @@ trait CanGenerateTreeMethods
             return [
                 \SolutionForest\FilamentTree\Actions\CreateAction::make(),
             ];
-            PHP : <<<PHP
+            PHP : <<<'PHP'
             return [];
             PHP;
 

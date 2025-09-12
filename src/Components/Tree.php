@@ -99,7 +99,7 @@ class Tree extends ViewComponent
     public function getToolbarAction($name)
     {
         foreach ($this->toolbarActions as $action) {
-            
+
             if ($action instanceof FilamentActionsActionGroup || $action instanceof ActionGroup) {
                 if ($groupedAction = collect($action->getFlatActions())->get($name)) {
                     return $groupedAction;
