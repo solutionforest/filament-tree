@@ -69,6 +69,7 @@ class TreeWidgetClassGenerator extends ClassGenerator
     {
         $this->addGetFormSchemaMethodToClass($class);
         $this->addGetViewFormSchemaMethodToClass($class);
+        $this->addGetTreeToolbarActionsMethodToClass($class,true);
     }
 
     public function generate(): string

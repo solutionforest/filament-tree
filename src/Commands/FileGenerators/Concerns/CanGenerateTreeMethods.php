@@ -25,6 +25,26 @@ trait CanGenerateTreeMethods
 
     protected function configureGetTreeActionsMethod(Method $method): void {}
 
+    protected function addGetTreeToolbarActionsMethodToClass(ClassType $class, bool $preset = false): void
+    {
+        $body = $preset ? <<<PHP
+            return [
+                \SolutionForest\FilamentTree\Actions\CreateAction::make(),
+            ];
+            PHP : <<<PHP
+            return [];
+            PHP;
+
+        $method = $class->addMethod('getTreeToolbarActions')
+            ->setProtected()
+            ->setReturnType('array')
+            ->setBody($body);
+
+        $this->configureGetTreeToolbarActionsMethod($method);
+    }
+
+    protected function configureGetTreeToolbarActionsMethod(Method $method): void {}
+
     protected function addGetFormSchemaMethodToClass(ClassType $class): void
     {
         $method = $class->addMethod('getFormSchema')

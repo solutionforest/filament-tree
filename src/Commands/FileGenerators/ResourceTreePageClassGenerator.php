@@ -62,6 +62,7 @@ class ResourceTreePageClassGenerator extends ClassGenerator
 
     protected function addMethodsToClass(ClassType $class): void
     {
+        $this->addGetTreeToolbarActionsMethodToClass($class);
         $this->addGetTreeActionsMethodToClass($class);
         $this->addHasDeleteActionMethodToClass($class);
         $this->addHasEditActionMethodToClass($class);

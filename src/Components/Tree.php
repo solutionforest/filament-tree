@@ -2,9 +2,10 @@
 
 namespace SolutionForest\FilamentTree\Components;
 
-use Filament\Schemas\Schema;
+use Filament\Actions\ActionGroup as FilamentActionsActionGroup;
 use Filament\Support\Components\ViewComponent;
 use Illuminate\Database\Eloquent\Model;
+use SolutionForest\FilamentTree\Actions\ActionGroup;
 use SolutionForest\FilamentTree\Concern\BelongsToLivewire;
 use SolutionForest\FilamentTree\Contract\HasTree;
 use SolutionForest\FilamentTree\Support\Utils;
@@ -20,6 +21,8 @@ class Tree extends ViewComponent
     protected int $maxDepth = 999;
 
     protected array $actions = [];
+
+    protected array $toolbarActions = [];
 
     public const LOADING_TARGETS = ['activeLocale'];
 
@@ -51,6 +54,13 @@ class Tree extends ViewComponent
         return $this;
     }
 
+    public function toolbarActions(array $actions): static
+    {
+        $this->toolbarActions = $actions;
+
+        return $this;
+    }
+
     public function getMaxDepth(): int
     {
         return $this->maxDepth;
@@ -64,9 +74,40 @@ class Tree extends ViewComponent
     public function getAction($name)
     {
         foreach ($this->actions as $action) {
-            if ($action instanceof \Filament\Actions\ActionGroup) {
-                return collect($action->getFlatActions())->get($name);
+
+            if ($action instanceof FilamentActionsActionGroup || $action instanceof ActionGroup) {
+                if ($groupedAction = collect($action->getFlatActions())->get($name)) {
+                    return $groupedAction;
+                } else {
+                    continue;
+                }
             }
+
+            if ($action->getName() === $name) {
+                return $action;
+            }
+        }
+
+        return null;
+    }
+
+    public function getToolbarActions(): array
+    {
+        return $this->toolbarActions;
+    }
+
+    public function getToolbarAction($name)
+    {
+        foreach ($this->toolbarActions as $action) {
+            
+            if ($action instanceof FilamentActionsActionGroup || $action instanceof ActionGroup) {
+                if ($groupedAction = collect($action->getFlatActions())->get($name)) {
+                    return $groupedAction;
+                } else {
+                    continue;
+                }
+            }
+
             if ($action->getName() === $name) {
                 return $action;
             }
@@ -96,10 +137,5 @@ class Tree extends ViewComponent
         }
 
         return $record->getAttributeValue((method_exists($record, 'determineParentKey') ? $record->determineParentColumnName() : Utils::parentColumnName()));
-    }
-
-    public function getMountedActionForm(): ?Schema
-    {
-        return $this->getLivewire()->getMountedTreeActionForm();
     }
 }

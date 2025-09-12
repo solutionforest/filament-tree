@@ -2,10 +2,10 @@
 
 namespace SolutionForest\FilamentTree\Actions;
 
-use Filament\Actions\ViewAction as BaseViewAction;
+use Filament\Actions\CreateAction as BaseCreateAction;
 use SolutionForest\FilamentTree\Concern\Actions\TreeActionTrait;
 
-class ViewAction extends BaseViewAction
+class CreateAction extends BaseCreateAction
 {
     use TreeActionTrait;
 }
