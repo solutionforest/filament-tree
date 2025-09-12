@@ -13,23 +13,42 @@ use SolutionForest\FilamentTree\Contract\HasTree;
 
 trait HasActions
 {
+    protected array $cachedTreeToolbarActions = [];
+
     protected array $cachedTreeActions = [];
 
     protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
     {
-        if ($this instanceof HasTree && filled($action['context']['tree'] ?? null)) {
+        if ($this instanceof HasTree) {
 
             $resolvedAction = null;
 
-            $resolvedAction = $this->getCachedTree()?->getAction($action['name']) ?? throw new ActionNotResolvableException("Action [{$action['name']}] not found on tree.");
+            if (
+                filled($action['context']['tree'] ?? null) ||
+                filled($action['arguments']['treeToolbar'] ?? null)
+            ) {
 
-            if (filled($action['context']['recordKey'] ?? null)) {
-                $record = $this->getTreeRecord($action['context']['recordKey']);
+                if (! isset($action['name']) || empty($action['name'])) {
+                    throw new ActionNotResolvableException('Action name is not specified.');
+                }
 
-                $resolvedAction->getRootGroup()?->record($record) ?? $resolvedAction->record($record);
+                if (($action['arguments']['treeToolbar'] ?? false) === true) {
+                    $resolvedAction = $this->cachedTreeToolbarActions[$action['name']] ?? null;
+                } else {
+                    $resolvedAction = $this->cachedTreeActions[$action['name']] ?? null;
+                }
+
+                if ($resolvedAction) {
+
+                    if (filled($action['context']['recordKey'] ?? null)) {
+                        $record = $this->getTreeRecord($action['context']['recordKey']);
+
+                        $resolvedAction->getRootGroup()?->record($record) ?? $resolvedAction->record($record);
+                    }
+
+                    return $resolvedAction;
+                }
             }
-
-            return $resolvedAction;
 
         }
 
@@ -39,30 +58,60 @@ trait HasActions
     public function cacheTreeActions(): void
     {
         $this->cachedTreeActions = [];
+        $this->cachedTreeToolbarActions = [];
 
-        $actions = Action::configureUsing(
-            Closure::fromCallable([$this, 'configureTreeAction']),
-            fn (): array => $this->getTreeActions(),
-        );
+        $configuringTreeActions = function ($actions, $extraArgs = []) {
 
-        foreach ($actions as $index => $action) {
-            if ($action instanceof ActionGroup) {
-                foreach ($action->getActions() as $groupedAction) {
-                    $groupedAction->tree($this->getCachedTree());
+            $configureResolvedAction = function ($action) use ($extraArgs) {
+
+                if (! empty($extraArgs) && method_exists($action, 'arguments')) {
+                    $action = $action->arguments($extraArgs);
                 }
 
-                $this->cachedTreeActions[$index] = $action;
+                // Set tree on action
+                if (method_exists($action, 'tree')) {
+                    $action = $action->tree($this->getCachedTree());
+                }
+                // Set livewire on action
+                else {
+                    $action = $action->livewire($this);
+                }
 
-                continue;
-            }
+                return $action;
+            };
 
-            $action->tree($this->getCachedTree());
+            return collect($actions)
+                ->whereInstanceOf([
+                    ActionGroup::class,
+                    Action::class,
+                    FilamentActionsAction::class,
+                ])
+                ->flatMap(function (ActionGroup|Action|FilamentActionsAction $action) {
+                    if ($action instanceof ActionGroup) {
+                        return $action->getFlatActions();
+                    }
 
-            $this->cachedTreeActions[$action->getName()] = $action;
-        }
+                    return [$action];
+                })
+                // Configure action
+                ->map(fn (Action|FilamentActionsAction $action) => $action->configureUsing(
+                    Closure::fromCallable([$this, 'configureTreeAction']),
+                    fn () => $action->configure(),
+                )
+                )
+                // Key by action name (resolve used)
+                ->mapWithKeys(fn (Action|FilamentActionsAction $action) => [
+                    $action->getName() => $configureResolvedAction($action),
+                ])
+                ->all();
+        };
+
+        $this->cachedTreeActions = $configuringTreeActions($this->getCachedTree()->getActions());
+        $this->cachedTreeToolbarActions = $configuringTreeActions($this->getCachedTree()->getToolbarActions(), ['treeToolbar' => true]);
+
     }
 
-    protected function configureTreeAction(Action $action): void {}
+    protected function configureTreeAction(Action|FilamentActionsAction $action): void {}
 
     /**
      * @deprecated Use `callMountedAction()` instead.
@@ -96,6 +145,11 @@ trait HasActions
     public function getCachedTreeActions(): array
     {
         return $this->cachedTreeActions;
+    }
+
+    public function getCachedTreeToolbarActions(): array
+    {
+        return $this->cachedTreeToolbarActions;
     }
 
     /**
@@ -228,6 +282,11 @@ trait HasActions
      * Action for each record
      */
     protected function getTreeActions(): array
+    {
+        return [];
+    }
+
+    protected function getTreeToolbarActions(): array
     {
         return [];
     }

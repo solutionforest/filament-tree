@@ -21,4 +21,4 @@
     );
 @endphp
 
-<x-filament::actions :actions="$actions" :alignment="$alignment" class="fi-tree-actions"/>
+<x-filament::actions :actions="$actions" :alignment="$alignment" :fullWidth="true" class="fi-tree-actions"/>

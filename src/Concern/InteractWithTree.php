@@ -16,28 +16,33 @@ trait InteractWithTree
     use HasHeading;
     use HasRecords;
 
-    protected bool $hasMounted = false;
+    // protected bool $hasMounted = false;
 
     protected Tree $tree;
 
     public function bootInteractWithTree()
     {
-        $tree = $this->getTree();
-        $this->tree = $tree->configureUsing(
+        $this->tree = Tree::configureUsing(
             Closure::fromCallable([static::class, 'tree']),
-            fn (): Tree => static::tree($tree)->maxDepth(static::getMaxDepth()),
+            fn (): Tree => $this->makeTree()
+                ->maxDepth(static::getMaxDepth())
         );
 
-        $this->cacheTreeActions();
-        $this->cacheTreeEmptyStateActions();
-
-        $this->tree->actions(array_values($this->getCachedTreeActions()));
-
-        if ($this->hasMounted) {
-            return;
+        // Fill actions and toolbar actions if not set in the tree configurator
+        if (empty($this->tree->getActions())) {
+            $this->tree->actions($this->getTreeActions());
+        }
+        if (empty($this->tree->getToolbarActions())) {
+            $this->tree->toolbarActions($this->getTreeToolbarActions());
         }
 
-        $this->hasMounted = true;
+        $this->cacheTreeActions();
+
+        // if ($this->hasMounted) {
+        //     return;
+        // }
+
+        // $this->hasMounted = true;
     }
 
     public function mountInteractsWithTree(): void {}
@@ -47,7 +52,15 @@ trait InteractWithTree
         return $this->tree;
     }
 
+    /**
+     * @deprecated Use makeTree() instead.
+     */
     protected function getTree(): Tree
+    {
+        return $this->makeTree();
+    }
+
+    protected function makeTree(): Tree
     {
         return Tree::make($this);
     }

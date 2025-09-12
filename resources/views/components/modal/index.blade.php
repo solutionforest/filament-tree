@@ -1,19 +1,32 @@
-@captureSlots([
-    'actions',
-    'content',
-    'footer',
-    'header',
-    'heading',
-    'subheading',
-    'trigger',
-])
-
-<x-filament::modal
-    :attributes="\Filament\Support\prepare_inherited_attributes($attributes)->merge($slots)"
-    :dark-mode="\Filament\Facades\Filament::hasDarkMode()"
-    heading-component="filament-tree::modal.heading"
-    {{-- hr-component="tables::hr" --}}
-    subheading-component="filament-tree::modal.subheading"
+<x-dynamic-component 
+    component="filament::modal.index" 
+    :alignment="$alignment ?? null"
+    :ariaLabelledby="$ariaLabelledby ?? null"
+    :autofocus="$autofocus ?? null"
+    :closeButton="$closeButton ?? null"
+    :closeByClickingAway="$closeByClickingAway ?? null"
+    :closeByEscaping="$closeByEscaping ?? null"
+    :closeEventName="$closeEventName ?? null"
+    :closeQuietlyEventName="$closeQuietlyEventName ?? null"
+    :description="$description ?? null"
+    :extraModalWindowAttributeBag="$extraModalWindowAttributeBag ?? null"
+    :footer="$footer ?? null"
+    :footerActions="$footerActions ?? null"
+    :footerActionsAlignment="$footerActionsAlignment ?? null"
+    :header="$header ?? null"
+    :heading="$heading ?? null"
+    :icon="$icon ?? null"
+    :iconAlias="$iconAlias ?? null"
+    :iconColor="$iconColor ?? null"
+    :id="$id ?? null"
+    :openEventName="$openEventName ?? null"
+    :slideOver="$slideOver ?? null"
+    :stickyFooter="$stickyFooter ?? null"
+    :stickyHeader="$stickyHeader ?? null"
+    :trigger="$trigger ?? null"
+    :visible="$visible ?? null"
+    :width="$width ?? null"
+    :attributes="\Filament\Support\prepare_inherited_attributes($attributes)"
 >
     {{ $slot }}
-</x-filament::modal>
+</x-dynamic-component>

@@ -5,7 +5,7 @@ namespace SolutionForest\FilamentTree\Concern;
 use Filament\Actions\Action as FilamentActionsAction;
 use Filament\Actions\CreateAction;
 use Filament\Schemas\Components\Component;
-use SolutionForest\FilamentTree\Actions;
+use SolutionForest\FilamentTree\Actions\Action;
 use SolutionForest\FilamentTree\Actions\DeleteAction;
 use SolutionForest\FilamentTree\Actions\EditAction;
 use SolutionForest\FilamentTree\Actions\ViewAction;
@@ -96,7 +96,7 @@ trait TreePageTrait
         };
     }
 
-    protected function configureTreeAction(Actions\Action $action): void
+    protected function configureTreeAction(Action|FilamentActionsAction $action): void
     {
         match (true) {
             $action instanceof DeleteAction => $this->configureDeleteAction($action),
@@ -127,9 +127,9 @@ trait TreePageTrait
 
     protected function configureDeleteAction(DeleteAction $action): DeleteAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $this->afterConfiguredDeleteAction($action);
 
@@ -138,9 +138,9 @@ trait TreePageTrait
 
     protected function configureEditAction(EditAction $action): EditAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $schema = $this->getEditFormSchema();
 
@@ -152,7 +152,7 @@ trait TreePageTrait
 
         $action->model($this->getModel());
 
-        $action->mutateFormDataBeforeSaveUsing(fn (array $data) => $this->mutateFormDataBeforeSave($data));
+        // $action->mutateFormDataBeforeSaveUsing(fn (array $data) => $this->mutateFormDataBeforeSave($data));
 
         $this->afterConfiguredEditAction($action);
 
@@ -161,9 +161,9 @@ trait TreePageTrait
 
     protected function configureViewAction(ViewAction $action): ViewAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $schema = $this->getViewFormSchema();
 
@@ -242,10 +242,10 @@ trait TreePageTrait
         );
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
-    {
-        return $data;
-    }
+    // protected function mutateFormDataBeforeSave(array $data): array
+    // {
+    //     return $data;
+    // }
 
     // protected function callHook(string $hook): void
     // {

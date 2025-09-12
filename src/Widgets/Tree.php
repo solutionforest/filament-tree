@@ -2,9 +2,12 @@
 
 namespace SolutionForest\FilamentTree\Widgets;
 
+use Filament\Actions\Action as FilamentActionsAction;
+use Filament\Actions\CreateAction as FilamentActionsCreateAction;
 use Filament\Support\Contracts\TranslatableContentDriver;
 use Illuminate\Database\Eloquent\Model;
 use SolutionForest\FilamentTree\Actions\Action;
+use SolutionForest\FilamentTree\Actions\CreateAction;
 use SolutionForest\FilamentTree\Actions\DeleteAction;
 use SolutionForest\FilamentTree\Actions\EditAction;
 use SolutionForest\FilamentTree\Actions\ViewAction;
@@ -49,6 +52,11 @@ class Tree extends BaseWidget implements HasTree
         return [];
     }
 
+    protected function getCreateFormSchema(): array
+    {
+        return [];
+    }
+
     protected function getViewFormSchema(): array
     {
         return [];
@@ -68,9 +76,11 @@ class Tree extends BaseWidget implements HasTree
         );
     }
 
-    protected function configureTreeAction(Action $action): void
+    protected function configureTreeAction(Action|FilamentActionsAction $action): void
     {
         match (true) {
+            $action instanceof CreateAction, => $this->configureCreateAction($action),
+            $action instanceof FilamentActionsCreateAction => $this->configureCreateAction($action),
             $action instanceof DeleteAction => $this->configureDeleteAction($action),
             $action instanceof EditAction => $this->configureEditAction($action),
             $action instanceof ViewAction => $this->configureViewAction($action),
@@ -110,20 +120,37 @@ class Tree extends BaseWidget implements HasTree
 
     protected function configureDeleteAction(DeleteAction $action): DeleteAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $this->afterConfiguredDeleteAction($action);
 
         return $action;
     }
 
+    protected function configureCreateAction(FilamentActionsCreateAction|CreateAction $action): FilamentActionsCreateAction|CreateAction
+    {
+        $schema = $this->getCreateFormSchema();
+
+        if (empty($schema)) {
+            $schema = $this->getFormSchema();
+        }
+
+        $action->schema($schema);
+
+        $action->model($this->getModel());
+
+        $this->afterConfiguredCreateAction($action);
+
+        return $action;
+    }
+
     protected function configureEditAction(EditAction $action): EditAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $schema = $this->getEditFormSchema();
 
@@ -142,9 +169,9 @@ class Tree extends BaseWidget implements HasTree
 
     protected function configureViewAction(ViewAction $action): ViewAction
     {
-        $action->tree($this->getCachedTree());
+        // $action->tree($this->getCachedTree());
 
-        $action->iconButton();
+        $action->iconButton()->icon(fn () => $action->getGroupedIcon());
 
         $schema = $this->getViewFormSchema();
 
@@ -168,6 +195,11 @@ class Tree extends BaseWidget implements HasTree
     }
 
     protected function afterConfiguredDeleteAction(DeleteAction $action): DeleteAction
+    {
+        return $action;
+    }
+
+    protected function afterConfiguredCreateAction(FilamentActionsCreateAction|CreateAction $action): FilamentActionsCreateAction|CreateAction
     {
         return $action;
     }
