@@ -2,6 +2,14 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.2 - 2025-09-22
+
+### 🐛 Bug fixes
+
+- Fix tree action label problem
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.1...3.1.2
+
 ## 3.1.1 - 2025-09-22
 
 <!-- Release notes generated using configuration in .github/release.yml at 3.x -->
@@ -69,6 +77,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
