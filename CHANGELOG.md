@@ -2,6 +2,17 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.1 - 2025-09-22
+
+<!-- Release notes generated using configuration in .github/release.yml at 3.x -->
+### What's Changed
+
+#### Other Changes
+
+* fix: resolve getNodeCollapsedState() method call in tree item template by @cklei-carly in https://github.com/solutionforest/filament-tree/pull/89
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.0...3.1.1
+
 ## 3.1.0 - 2025-09-12
 
 <!-- Release notes generated using configuration in .github/release.yml at 3.x -->
@@ -58,6 +69,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
