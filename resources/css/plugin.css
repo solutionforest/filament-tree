@@ -9,4 +9,8 @@
 @import './button.css';
 @import './custom-nestable-item.css';
 
-@source '../views/**/*.blade.php';
+@source "../views";
+
+.filament-tree-list.hidden {
+    display: none;
+}
