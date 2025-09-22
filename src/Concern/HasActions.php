@@ -13,49 +13,17 @@ use SolutionForest\FilamentTree\Contract\HasTree;
 
 trait HasActions
 {
+    /**
+     * @var array<string, Action>
+     */
     protected array $cachedTreeToolbarActions = [];
 
+    /**
+     * @var array<string, Action>
+     */
     protected array $cachedTreeActions = [];
 
-    protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
-    {
-        if ($this instanceof HasTree) {
-
-            $resolvedAction = null;
-
-            if (
-                filled($action['context']['tree'] ?? null) ||
-                filled($action['arguments']['treeToolbar'] ?? null)
-            ) {
-
-                if (! isset($action['name']) || empty($action['name'])) {
-                    throw new ActionNotResolvableException('Action name is not specified.');
-                }
-
-                if (($action['arguments']['treeToolbar'] ?? false) === true) {
-                    $resolvedAction = $this->cachedTreeToolbarActions[$action['name']] ?? null;
-                } else {
-                    $resolvedAction = $this->cachedTreeActions[$action['name']] ?? null;
-                }
-
-                if ($resolvedAction) {
-
-                    if (filled($action['context']['recordKey'] ?? null)) {
-                        $record = $this->getTreeRecord($action['context']['recordKey']);
-
-                        $resolvedAction->getRootGroup()?->record($record) ?? $resolvedAction->record($record);
-                    }
-
-                    return $resolvedAction;
-                }
-            }
-
-        }
-
-        return parent::resolveAction($action, $parentActions);
-    }
-
-    public function cacheTreeActions(): void
+    public function cacheHasActions(): void
     {
         $this->cachedTreeActions = [];
         $this->cachedTreeToolbarActions = [];
@@ -94,11 +62,10 @@ trait HasActions
                     return [$action];
                 })
                 // Configure action
-                ->map(fn (Action|FilamentActionsAction $action) => $action->configureUsing(
-                    Closure::fromCallable([$this, 'configureTreeAction']),
-                    fn () => $action->configure(),
-                )
-                )
+                ->map(function ($action) {
+                    $this->configureTreeAction($action);
+                    return $action;
+                })
                 // Key by action name (resolve used)
                 ->mapWithKeys(fn (Action|FilamentActionsAction $action) => [
                     $action->getName() => $configureResolvedAction($action),
@@ -109,6 +76,44 @@ trait HasActions
         $this->cachedTreeActions = $configuringTreeActions($this->getCachedTree()->getActions());
         $this->cachedTreeToolbarActions = $configuringTreeActions($this->getCachedTree()->getToolbarActions(), ['treeToolbar' => true]);
 
+    }
+
+    protected function resolveAction(array $action, array $parentActions): ?FilamentActionsAction
+    {
+        if ($this instanceof HasTree) {
+
+            $resolvedAction = null;
+
+            if (
+                filled($action['context']['tree'] ?? null) ||
+                filled($action['arguments']['treeToolbar'] ?? null)
+            ) {
+
+                if (! isset($action['name']) || empty($action['name'])) {
+                    throw new ActionNotResolvableException('Action name is not specified.');
+                }
+
+                if (($action['arguments']['treeToolbar'] ?? false) === true) {
+                    $resolvedAction = $this->cachedTreeToolbarActions[$action['name']] ?? null;
+                } else {
+                    $resolvedAction = $this->cachedTreeActions[$action['name']] ?? null;
+                }
+
+                if ($resolvedAction) {
+
+                    if (filled($action['context']['recordKey'] ?? null)) {
+                        $record = $this->getTreeRecord($action['context']['recordKey']);
+
+                        $resolvedAction->getRootGroup()?->record($record) ?? $resolvedAction->record($record);
+                    }
+
+                    return $resolvedAction;
+                }
+            }
+
+        }
+
+        return parent::resolveAction($action, $parentActions);
     }
 
     protected function configureTreeAction(Action|FilamentActionsAction $action): void {}

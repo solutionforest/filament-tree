@@ -36,7 +36,7 @@ trait InteractWithTree
             $this->tree->toolbarActions($this->getTreeToolbarActions());
         }
 
-        $this->cacheTreeActions();
+        // $this->cacheTreeActions();
 
         // if ($this->hasMounted) {
         //     return;
