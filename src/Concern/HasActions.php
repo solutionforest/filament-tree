@@ -2,7 +2,6 @@
 
 namespace SolutionForest\FilamentTree\Concern;
 
-use Closure;
 use Filament\Actions\Action as FilamentActionsAction;
 use Filament\Actions\Exceptions\ActionNotResolvableException;
 use Filament\Schemas\Schema;
@@ -64,6 +63,7 @@ trait HasActions
                 // Configure action
                 ->map(function ($action) {
                     $this->configureTreeAction($action);
+
                     return $action;
                 })
                 // Key by action name (resolve used)
