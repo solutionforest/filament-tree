@@ -397,6 +397,27 @@ class CategoryTree extends TreePage
 }
 ```
 
+### Customizing Data Display in Tree Widgets
+
+For advanced use cases, you may want to limit or customize the data displayed in your tree widget: for example, showing only items matching specific criteria or related to a parent resource.
+
+You can achieve this by overriding the getTreeQuery method in your widget, allowing full control over the Eloquent query used to fetch records.
+
+```php
+use App\Models\Menuitem;
+use Illuminate\Database\Eloquent\Builder;
+class MenuItemsWidget extends Tree
+{
+    // Accessing the current record in the widget
+    public ?Model $record = null;
+
+    protected function getTreeQuery(): Builder
+    {
+        return MenuItem::query()
+            ->where('menu_id', $this->record?->id); // Filter by the current menu ID
+    }
+```
+
 ### Custom Column Names
 
 Override default column names if your table structure differs:
