@@ -2,6 +2,7 @@
 
 namespace SolutionForest\FilamentTree\Commands;
 
+use Filament\Support\Commands\Concerns\CanAskForLivewireComponentLocation;
 use Filament\Support\Commands\Concerns\CanAskForResource;
 use Filament\Support\Commands\Concerns\CanManipulateFiles;
 use Filament\Support\Commands\Concerns\HasCluster;
@@ -30,6 +31,7 @@ use function Laravel\Prompts\text;
 )]
 class MakeTreeWidgetCommand extends Command
 {
+    use CanAskForLivewireComponentLocation;
     use CanAskForResource;
     use CanCheckFileGenerationFlags;
     use CanManipulateFiles;
@@ -134,6 +136,10 @@ class MakeTreeWidgetCommand extends Command
             $this->createCustomWidget();
         } catch (FailureCommandOutput) {
             return static::FAILURE;
+        } catch (\Throwable $e) {
+            $this->components->error("Failed to create Filament tree widget [{$this->fqn}]: {$e->getMessage()}");
+
+            return static::FAILURE;
         }
 
         $this->components->info("Filament tree widget [{$this->fqn}] created successfully.");
@@ -198,11 +204,11 @@ class MakeTreeWidgetCommand extends Command
             $this->modelFqnEnd = class_basename($this->modelFqn);
         }
 
-        if ($this->option('model')) {
-            $this->callSilently('make:model', [
-                'name' => $this->modelFqn,
-            ]);
-        }
+        // if ($this->option('model')) {
+        //     $this->callSilently('make:model', [
+        //         'name' => $this->modelFqn,
+        //     ]);
+        // }
     }
 
     protected function configureHasResource(): void

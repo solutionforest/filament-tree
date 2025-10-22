@@ -139,7 +139,6 @@ class MakeTreePageCommand extends Command
             $this->configurePagesLocation();
 
             $this->configureLocation();
-            // dd($this);
 
             $this->createCustomPage();
             // $this->createPage();
@@ -155,6 +154,10 @@ class MakeTreePageCommand extends Command
             // }
 
         } catch (FailureCommandOutput) {
+            return static::FAILURE;
+        } catch (\Throwable $e) {
+            $this->components->error("Failed to create Filament tree page [{$this->fqn}]: {$e->getMessage()}");
+
             return static::FAILURE;
         }
 
@@ -229,11 +232,11 @@ class MakeTreePageCommand extends Command
             $this->modelFqnEnd = class_basename($this->modelFqn);
         }
 
-        if ($this->option('model')) {
-            $this->callSilently('make:model', [
-                'name' => $this->modelFqn,
-            ]);
-        }
+        // if ($this->option('model')) {
+        //     $this->callSilently('make:model', [
+        //         'name' => $this->modelFqn,
+        //     ]);
+        // }
     }
 
     protected function configureHasResource(): void
