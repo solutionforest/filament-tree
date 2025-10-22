@@ -46,8 +46,9 @@ trait ModelTree
             static::buildSortQuery()
                 ->where($model->determineParentColumnName(), $model->getKey())
                 ->get()
-                ->each
-                ->delete();
+                ->each(function ($child) {
+                    $child->delete();
+                });
         });
     }
 
