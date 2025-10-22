@@ -2,6 +2,25 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.3 - 2025-10-22
+
+### What's Changed
+
+#### Other Changes
+
+* Improve Advanced usage documentation by @inerba in https://github.com/solutionforest/filament-tree/pull/91
+* Bump stefanzweifel/git-auto-commit-action from 6 to 7 by @dependabot[bot] in https://github.com/solutionforest/filament-tree/pull/92
+
+#### 🐛 Bug fixes
+
+* fix: Replace invalid askForLivewireComponentLocation method call in https://github.com/solutionforest/filament-tree/issues/93
+
+### New Contributors
+
+* @inerba made their first contribution in https://github.com/solutionforest/filament-tree/pull/91
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.2...3.1.3
+
 ## 3.1.2 - 2025-09-22
 
 ### 🐛 Bug fixes
@@ -77,6 +96,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
