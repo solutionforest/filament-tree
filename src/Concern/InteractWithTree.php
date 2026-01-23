@@ -147,7 +147,7 @@ trait InteractWithTree
 
             Notification::make()
                 ->success()
-                ->title(__('filament-actions::edit.single.modal.actions.save.label'))
+                ->title(__('filament-actions::edit.single.notifications.saved.title'))
                 ->send();
 
             // Reload data
