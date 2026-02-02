@@ -26,6 +26,7 @@ Filament Tree is a plugin for Filament Admin that creates hierarchical tree mana
 | ---------------- | -------------- |
 | v3               | 2.x.x          |
 | v4               | 3.x.x          |
+| v5               | 4.x.x          |
 
 > [!IMPORTANT]
 > We only provide updates for versions 3.x, excluding bug fixes for older versions.
