@@ -23,6 +23,7 @@ Auto Reset every hour.
 | ---------------- | -------------- |
 | v3               | 2.x.x          |
 | v4               | 3.x.x          |
+| v5               | 4.x.x          |
 
 ## Installation
 
