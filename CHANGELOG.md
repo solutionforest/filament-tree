@@ -2,6 +2,41 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 4.0.0 - 2026-02-02
+
+### Filament Tree v4.0.0 Release
+
+This release upgrades Filament Tree to support Filament v5, introducing new features and improvements while maintaining compatibility with existing tree structures.
+
+#### What's New
+
+- Full compatibility with Filament v5
+- Enhanced drag-and-drop performance for large trees
+- Improved toolbar actions support (expanded from v3.1.0+)
+- Updated asset compilation for better integration
+
+#### Breaking Changes
+
+- Minimum required Filament version is now v5.0
+
+#### How to Upgrade
+
+1. Update your `composer.json` to require `"solution-forest/filament-tree": "^4.0"`
+2. Run `composer update`
+3. Publish updated assets: `php artisan filament:assets`
+4. If using custom themes, update your `tailwind.config.js` with the new asset paths
+5. Test your tree widgets/pages for any custom overrides that may need adjustment
+
+#### Migration Notes
+
+- Review your model classes for any custom `determine*ColumnName()` methods and ensure they align with the new defaults
+- Toolbar actions are now fully supported; update any conditional logic if previously limited
+- Run `composer analyse` and `composer test` to verify compatibility
+
+For full details, see the [commit changes](https://github.com/solutionforest/filament-tree/commit/096a6f068095d947e70188855bce4e5dd70d7b74). If you encounter issues, please check the [documentation](https://github.com/solutionforest/filament-tree#readme) or open an issue.
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.4...4.0.0
+
 ## 3.1.4 - 2026-02-02
 
 ### What's Changed in 3.1.4
@@ -107,6 +142,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
