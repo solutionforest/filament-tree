@@ -2,6 +2,17 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.4 - 2026-02-02
+
+### What's Changed in 3.1.4
+
+#### 🔧 Other Changes
+
+- Bump actions/checkout from 5 to 6 (2f2748f)
+- Merge pull request #98 from ssulima/ssulima-patch-1 (387d598)
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.3...3.1.4
+
 ## 3.1.3 - 2025-10-22
 
 ### What's Changed
@@ -96,6 +107,7 @@ All notable changes to `filament-tree` will be documented in this file.
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
