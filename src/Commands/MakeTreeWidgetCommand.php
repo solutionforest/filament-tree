@@ -64,7 +64,7 @@ class MakeTreeWidgetCommand extends Command
 
     protected string $widgetsDirectory;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument(
             name: 'name',
