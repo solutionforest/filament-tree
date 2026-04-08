@@ -2,6 +2,20 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.5 - 2026-04-08
+
+### What's Changed in 3.1.5
+
+#### 📘 Documentation updates
+
+- Add v5 compatibility row to README (db5c5e1)
+
+#### 🔧 Other Changes
+
+- Merge pull request #102 from malikdoksoz/malikdoksoz-patch-1 (b76b63d)
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.4...3.1.5
+
 ## 4.0.1 - 2026-04-08
 
 <!-- Release notes generated using configuration in .github/release.yml at 4.x -->
@@ -157,6 +171,7 @@ For full details, see the [commit changes](https://github.com/solutionforest/fil
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
