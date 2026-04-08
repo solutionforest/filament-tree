@@ -2,6 +2,21 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 4.0.1 - 2026-04-08
+
+<!-- Release notes generated using configuration in .github/release.yml at 4.x -->
+### What's Changed
+
+#### Other Changes
+
+* Fix: add void return type to configure() for Symfony 8 compatibility by @malikdoksoz in https://github.com/solutionforest/filament-tree/pull/102
+
+### New Contributors
+
+* @malikdoksoz made their first contribution in https://github.com/solutionforest/filament-tree/pull/102
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/4.0.0...4.0.1
+
 ## 4.0.0 - 2026-02-02
 
 ### Filament Tree v4.0.0 Release
@@ -142,6 +157,7 @@ For full details, see the [commit changes](https://github.com/solutionforest/fil
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
