@@ -73,7 +73,7 @@ class MakeTreePageCommand extends Command
 
     public static bool $shouldCheckModelsForSoftDeletes = true;
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument(
             name: 'name',
