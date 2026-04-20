@@ -360,7 +360,7 @@ protected function getViewFormSchema(): array { /* ... */ }
 
 ### Translation Support
 
-Integration with [Spatie Laravel Translatable](https://github.com/spatie/laravel-translatable):
+Integration with [Translatable Plugin](https://larazeus.com/docs/spatie-translatable/v1/introduction):
 
 **1. Setup your model:**
 
