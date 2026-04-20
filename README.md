@@ -360,7 +360,7 @@ protected function getViewFormSchema(): array { /* ... */ }
 
 ### Translation Support
 
-Integration with [Translatable Plugin](https://larazeus.com/docs/spatie-translatable/v1/introduction):
+Integration with [Translatable Plugin](https://larazeus.com/docs/spatie-translatable/v1/getting-started/installation):
 
 **1. Setup your model:**
 
