@@ -360,12 +360,11 @@ protected function getViewFormSchema(): array { /* ... */ }
 
 ### Translation Support
 
-Integration with [Translatable Plugin](https://larazeus.com/docs/spatie-translatable/v1/getting-started/installation):
+1. Follow the instruction from [Translatable Plugin](https://larazeus.com/docs/spatie-translatable/v1/getting-started/installation).
 
-**1. Setup your model:**
+2. Setup your model:
 
 ```php
-use Filament\Actions\LocaleSwitcher;
 use SolutionForest\FilamentTree\Concern\ModelTree;
 use Spatie\Translatable\HasTranslations;
 
@@ -377,9 +376,10 @@ class Category extends Model
 }
 ```
 
-**2. Configure your tree page:**
+3. Configure your tree page:
 
 ```php
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use SolutionForest\FilamentTree\Concern\TreeRecords\Translatable;
 
 class CategoryTree extends TreePage
