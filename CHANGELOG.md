@@ -2,6 +2,27 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 4.0.2 - 2026-04-20
+
+### What's Changed in 4.0.2
+
+#### 📘 Documentation updates
+
+- Add v5 compatibility row to README (db5c5e1)
+- Revise README for Translatable Plugin integration (3ccbadb)
+- Revise translation support instructions in README (8b7ff89)
+
+#### 🔧 Other Changes
+
+- Merge pull request #102 from malikdoksoz/malikdoksoz-patch-1 (b76b63d)
+- Support Filament translatable content driver (f5411a0)
+
+#### 🐛Bug fixes
+
+- Fix #99 (f5411a0)
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/4.0.1...4.0.2
+
 ## 3.1.6 - 2026-04-20
 
 ### What's Changed in 3.1.6
@@ -185,6 +206,7 @@ For full details, see the [commit changes](https://github.com/solutionforest/fil
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
