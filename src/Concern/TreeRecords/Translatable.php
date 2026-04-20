@@ -47,17 +47,32 @@ trait Translatable
 
         if (method_exists($action, 'using')) {
             $model = $action->getModel();
-            $action->using(function (array $data) use ($model) {
-                if (method_exists($model, 'getTranslatableAttributes')) {
-                    foreach (app($model)->getTranslatableAttributes() as $attr) {
-                        $data[$attr] = array_merge(
-                            [$this->getActiveLocale() => $data[$attr]],
-                            $this->getActiveLocale() !== app()->getFallbackLocale() ? [app()->getFallbackLocale() => $data[$attr]] : [],
-                        );
-                    }
+            $action->using(function (array $data, $livewire) use ($model) {
+                $translatableContentDriver = null;
+                if (method_exists($livewire, 'makeFilamentTranslatableContentDriver')) {
+                    $translatableContentDriver = $livewire->makeFilamentTranslatableContentDriver();
+                } elseif (class_exists('Filament\\SpatieLaravelTranslatableContentDriver')) {
+                    $translatableContentDriver = app('Filament\\SpatieLaravelTranslatableContentDriver');
                 }
 
-                return $model::create($data);
+                if ($translatableContentDriver) {
+                    $record = $translatableContentDriver->makeRecord($model, $data);
+                } else {
+                    if (method_exists($model, 'getTranslatableAttributes')) {
+                        foreach (app($model)->getTranslatableAttributes() as $attr) {
+                            $data[$attr] = array_merge(
+                                [$this->getActiveLocale() => $data[$attr]],
+                                $this->getActiveLocale() !== app()->getFallbackLocale() ? [app()->getFallbackLocale() => $data[$attr]] : [],
+                            );
+                        }
+                    }
+                    $record = new $model;
+                    $record->fill($data);
+                }
+
+                $record->save();
+
+                return $record;
             });
         }
 
@@ -74,19 +89,33 @@ trait Translatable
         });
 
         if (method_exists($action, 'using')) {
-            $action->using(function (array $data, Model $record) use ($action) {
+            $action->using(function (array $data, Model $record, $action, $livewire) {
 
-                $data = $action->evaluate($action->getMutateFormDataBeforeSave(), ['data' => $data]);
-
-                $record->fill($data);
-                if (method_exists($record, 'setTranslation') &&
-                    method_exists($record, 'getTranslatableAttributes')
-                ) {
-                    foreach ($record->getTranslatableAttributes() as $attr) {
-                        $record->setTranslation($attr, $this->getActiveLocale(), $data[$attr]);
-                    }
+                $translatableContentDriver = null;
+                if (method_exists($livewire, 'makeFilamentTranslatableContentDriver')) {
+                    $translatableContentDriver = $livewire->makeFilamentTranslatableContentDriver();
+                } elseif (class_exists('Filament\\SpatieLaravelTranslatableContentDriver')) {
+                    $translatableContentDriver = app('Filament\\SpatieLaravelTranslatableContentDriver');
                 }
-                $record->save();
+
+                if ($translatableContentDriver) {
+                    $translatableContentDriver->updateRecord($record, $data);
+                } else {
+                    // Preventing filmanet action not mutating the data before save
+                    if ($action && method_exists($action, 'getMutateFormDataBeforeSave')) {
+                        $data = $action->evaluate($action->getMutateFormDataBeforeSave(), ['data' => $data]);
+                    }
+
+                    $record->fill($data);
+                    if (method_exists($record, 'setTranslation') &&
+                        method_exists($record, 'getTranslatableAttributes')
+                    ) {
+                        foreach ($record->getTranslatableAttributes() as $attr) {
+                            $record->setTranslation($attr, $this->getActiveLocale(), $data[$attr]);
+                        }
+                    }
+                    $record->save();
+                }
             });
         }
 
