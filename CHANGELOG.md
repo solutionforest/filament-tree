@@ -2,6 +2,20 @@
 
 All notable changes to `filament-tree` will be documented in this file.
 
+## 3.1.6 - 2026-04-20
+
+### What's Changed in 3.1.6
+
+#### 📘 Documentation updates
+
+- Revise README for Translatable Plugin integration (3ccbadb)
+
+#### 🐛Bug fixes
+
+- Fix #99 (f5411a0)
+
+**Full Changelog**: https://github.com/solutionforest/filament-tree/compare/3.1.5...3.1.6
+
 ## 3.1.5 - 2026-04-08
 
 ### What's Changed in 3.1.5
@@ -171,6 +185,7 @@ For full details, see the [commit changes](https://github.com/solutionforest/fil
 
 ```bash
 composer require solution-forest/filament-tree:^3.0.0
+
 
 
 
