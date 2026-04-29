@@ -658,7 +658,7 @@ Filament Tree is open-sourced software licensed under the [MIT license](LICENSE.
 
 ## About Solution Forest
 
-[Solution Forest](https://solutionforest.com) Web development agency based in Hong Kong. We help customers to solve their problems. We Love Open Soruces.
+[Solution Forest](https://solutionforest.com) Web development agency based in Hong Kong. We help customers to solve their problems. We Love Open Sources.
 
 We have built a collection of best-in-class products:
 
