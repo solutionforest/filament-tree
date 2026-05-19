@@ -31,6 +31,11 @@ Filament Tree is a plugin for Filament Admin that creates hierarchical tree mana
 > [!IMPORTANT]
 > We only provide updates for versions 3.x, excluding bug fixes for older versions.
 
+## Which Package Should I Use?
+
+- Need a simple tree solution with quick setup? Use this package (`filament-tree`).
+- Need to handle heavy-load menus or large, complex trees? Consider [filament-nestable-tree](https://github.com/solutionforest/filament-nestable-tree).
+
 ## Installation
 
 1. **Install the package:**
