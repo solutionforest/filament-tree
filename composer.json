@@ -6,10 +6,10 @@
         "laravel",
         "filament-tree"
     ],
-    "homepage": "https://github.com/solution-forest/filament-tree",
+    "homepage": "https://github.com/solutionforest/filament-tree",
     "support": {
-        "issues": "https://github.com/solution-forest/filament-tree/issues",
-        "source": "https://github.com/solution-forest/filament-tree"
+        "issues": "https://github.com/solutionforest/filament-tree/issues",
+        "source": "https://github.com/solutionforest/filament-tree"
     },
     "license": "MIT",
     "authors": [{
